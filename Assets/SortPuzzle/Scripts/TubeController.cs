@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 public class TubeController : MonoBehaviour
 {
@@ -16,17 +17,24 @@ public class TubeController : MonoBehaviour
     private float rotationLerp;
 
     private GameManager GM;
-    public TubeController NextTube;
+    [HideInInspector] public TubeController NextTube;
     public SpriteRenderer tubeSR;
+    [HideInInspector] public SortingGroup sorting;
 
     private bool IsAddColor;
+    [Space(15)]
     public bool isFull, isEmpty, isBusy;
     private bool isAddingColor;
 
     private float ColorLerp;
 
+    private AudioSource audioSource;
+
     private void Start()
     {
+        sorting = GetComponent<SortingGroup>();
+        sorting.sortingOrder = 0;
+
         isAddingColor = false;
         isEmpty = false;
         isFull = false;
@@ -36,6 +44,10 @@ public class TubeController : MonoBehaviour
         GM = FindObjectOfType<GameManager>();
         GM.tubesInGame.Add(this.gameObject);
         GM.tubeControllers.Add(this);
+        audioSource = GM.audioSource;
+
+        tubeSR.sprite = GM.tubes[PlayerPrefs.GetInt("Tube")];
+        GetComponentInChildren<SpriteMask>().sprite = GM.tubesMasks[PlayerPrefs.GetInt("Tube")];
 
         for (int i = 3; i >= 0; i--)
         {
@@ -97,18 +109,14 @@ public class TubeController : MonoBehaviour
                 else
                 {
                     isrotating = false;
+                    sorting.sortingOrder = 0;
+                    audioSource.Stop();
+
                     NextTube.isBusy = false;
                     PourSprite.SetActive(false);
                     RemoveColor();
                     transform.position = Pos;
 
-                    NextTube.tubeSR.sortingOrder = 0;
-                    for (int i = 0; i < NextTube.ColorObjects_Renderers.Length; i++)
-                    {
-                        NextTube.ColorObjects_Renderers[i].sortingOrder = 0;
-                    }
-
-                    GM.SwitchTubes(true, Pos);
                     GM.addingColor = false;
 
                     transform.eulerAngles = Vector3.zero;
@@ -173,8 +181,35 @@ public class TubeController : MonoBehaviour
         if (currColors > 0 && NextTube.CheckCapacity(MatchCount, currColors, colorsInTube[currColors - 1]))
         {
             GM.SaveTubes();
+            float y = 0;
 
-            transform.position = OtherTube.transform.position + new Vector3(2f, 7f, 0f);
+            if (PlayerPrefs.GetInt("Tube") > 0)
+            {
+                if (NextTube.currColors == 0)
+                    y = 1.03f;
+                else if (NextTube.currColors == 1)
+                    y = 0.95f;
+                else if (NextTube.currColors == 2)
+                    y = 0.81f;
+                else if (NextTube.currColors == 3)
+                    y = 0.72f;
+            }
+            else
+            {
+                if (NextTube.currColors == 0)
+                    y = 1f;
+                else if (NextTube.currColors == 1)
+                    y = 0.9f;
+                else if (NextTube.currColors == 2)
+                    y = 0.8f;
+                else if (NextTube.currColors == 3)
+                    y = 0.7f;
+            }
+                
+
+            PourSprite.transform.localScale = new Vector3(1f, y, 1f);
+
+            transform.position = OtherTube.transform.position + new Vector3(1.5f, 7f, 0f);
             RotateTube();
         }
         else transform.position = Pos;
@@ -219,15 +254,11 @@ public class TubeController : MonoBehaviour
             GM.TubeClicked(this.gameObject);
         }
     }
+ 
+    
 
     private void RotateTube()
     {
-        NextTube.tubeSR.sortingOrder = 1;
-        for (int i = 0; i < NextTube.ColorObjects_Renderers.Length; i++)
-        {
-            NextTube.ColorObjects_Renderers[i].sortingOrder = 1;
-        }
-
         NextTube.isBusy = true;
 
         IsAddColor = true;
@@ -236,10 +267,18 @@ public class TubeController : MonoBehaviour
             RotStart = RotationData.SAngle4[currColors - 1];
             RotEnd = RotationData.EAngle4[currColors - 1];
         }
+
+        if(PlayerPrefs.GetInt("Tube") > 0)
+            PourSprite.transform.localPosition = new Vector3(0.3f, 0f, 0f);
+        else
+            PourSprite.transform.localPosition = new Vector3(-0.15f, 0f, 0f);
+
         PourSprite.SetActive(true);
         PourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
+
+        audioSource.Play();
+
         isrotating = true;
         GM.addingColor = true;
-        GM.SwitchTubes(false, transform.position);
     }
 }

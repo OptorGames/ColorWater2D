@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(BuySteps))]
+[RequireComponent(typeof(BuySteps), typeof(ButtonsManager))]
 public class GameManager : MonoBehaviour
 {
     public int EmptyTubes = 0;
@@ -33,9 +33,20 @@ public class GameManager : MonoBehaviour
     public List<TubeController> tubeControllers = new List<TubeController>();
     private List<AllTubesInfo> savedTubes = new List<AllTubesInfo>();
 
+    public AudioSource audioSource;
+    [HideInInspector] public ButtonsManager buttonsManager;
+
+    [Header("FromShop")]
+    public Sprite[] tubes;
+    public Sprite[] tubesMasks;
+
+    [SerializeField] private Sprite[] themes;
+
+    [SerializeField] private Image background;
+
     private void Start()
     {
-        HUD.dontDestroy.ads.GM = this;
+        buttonsManager = GetComponent<ButtonsManager>();
 
         Time.timeScale = 1;
         islevelStart = true;
@@ -45,10 +56,21 @@ public class GameManager : MonoBehaviour
         selectedTube = null;
         isGameOver = false;
 
+        SetSelectedBackground();
         UpdateTextSteps();
 
         int curr_level = PlayerPrefs.GetInt("CurrentLevel") + 1;
         LeveNumlText.text = "Level " + curr_level.ToString();
+
+        if (!PlayerPrefs.HasKey("Volume"))
+            PlayerPrefs.SetFloat("Volume", 1f);
+        else
+            audioSource.volume = PlayerPrefs.GetFloat("Volume");
+
+        if (!PlayerPrefs.HasKey("Vibrate"))
+            PlayerPrefs.SetInt("Vibrate", 1);
+
+        buttonsManager.LoadSettings();
     }
 
     private void Update()
@@ -79,30 +101,6 @@ public class GameManager : MonoBehaviour
         AddTubeButton.interactable = false;
     }
 
-    public void SwitchTubes(bool active_self, Vector3 tube_pos)
-    {
-        if (!active_self)
-        {
-            for (int i = 0; i < tubesInGame.Count; i++)
-            {
-                if (tubeControllers[i].Pos.y > tube_pos.y + 3 && !tubeControllers[i].isrotating)
-                {
-                    tubeControllers[i].gameObject.SetActive(false);
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < tubesInGame.Count; i++)
-            {
-                if (!tubesInGame[i].activeSelf)
-                {
-                    tubesInGame[i].SetActive(true);
-                }
-            }
-        }
-    }
-
     public void UpdateEF_Info()
     {
         EmptyTubes = 0;
@@ -117,8 +115,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void PlusCoins()
+    {
+        HUD.ads.ShowRewarded(2);
+    }
+
+    public void SetSelectedBackground()
+    {
+        background.sprite = themes[PlayerPrefs.GetInt("Theme")];
+    }
+
+    public void SetSelectedTubes()
+    {
+        for (int i = 0; i < tubeControllers.Count; i++)
+        {
+            tubeControllers[i].tubeSR.sprite = tubes[PlayerPrefs.GetInt("Tube")];
+            tubeControllers[i].GetComponentInChildren<SpriteMask>().sprite = tubesMasks[PlayerPrefs.GetInt("Tube")];
+        }
+    }
+
     public void TubeClicked(GameObject TubeObj)
     {
+        if (Time.timeScale == 0)
+            return;
+
         TubeController tube = TubeObj.GetComponent<TubeController>();
 
         if (selectedTube == null && !tube.isBusy)
@@ -134,6 +154,7 @@ public class GameManager : MonoBehaviour
             }
 
             tube.tubeSR.sortingOrder = 1;
+            tube.sorting.sortingOrder = 1;
             TubeObj.transform.position += new Vector3(0, 2, 0);
         }
         else if (selectedTube == TubeObj)
@@ -146,6 +167,7 @@ public class GameManager : MonoBehaviour
             }
 
             tube.tubeSR.sortingOrder = 0;
+            tube.sorting.sortingOrder = 0;
             selectedTube = null;
         }
         else if (!addingColor)
@@ -160,6 +182,7 @@ public class GameManager : MonoBehaviour
             }
 
             tubeSelected.tubeSR.sortingOrder = 0;
+            tube.sorting.sortingOrder = 0;
             selectedTube = null;
         }
     }
@@ -201,6 +224,12 @@ public class GameManager : MonoBehaviour
 
         if (savedTubes.Count >= 1)
         {
+            selectedTube = null;
+            for (int i = 0; i < tubeControllers.Count; i++)
+            {
+                tubeControllers[i].transform.position = tubeControllers[i].Pos;
+            }
+
             for (int i = 0; i < tubeControllers.Count; i++)
             {
                 if (tubeControllers.Count > savedTubes[savedTubes.Count - 1].tubes.Count && i == tubeControllers.Count - 1)
@@ -252,11 +281,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void Restart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
     public void RemoveEmpty()
     {
         EmptyTubes--;
@@ -265,6 +289,13 @@ public class GameManager : MonoBehaviour
     public void AddFull()
     {
         FullTubes++;
+
+        if (PlayerPrefs.GetInt("Vibrate") == 1)
+        {
+            Handheld.Vibrate();
+            Debug.Log("Vibrate");
+        }
+
         if (!islevelStart && FullTubes + EmptyTubes == tubesInGame.Count && !isGameOver)
         {
             isGameOver = true;

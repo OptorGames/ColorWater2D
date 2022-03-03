@@ -6,10 +6,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(JsonSaver))]
 public class MenuManager : MonoBehaviour
 {
-    [SerializeField] private string feedback_url;
-
-    [Space(15)]
-    private DontDestroyOnLoad DontDestroy;
     private JsonSaver json;
 
     [Header("Collections")]
@@ -60,7 +56,6 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
-        DontDestroy = FindObjectOfType<DontDestroyOnLoad>();
         json = GetComponent<JsonSaver>();
 
         Collections_Window.SetActive(false);
@@ -335,7 +330,6 @@ public class MenuManager : MonoBehaviour
 
     public void Button_SelectCollection(int i)
     {
-        DontDestroy.collections = collections;
         PlayerPrefs.SetInt("SelectedLevel", i);
 
         if (Collections_Window.activeSelf)
@@ -343,7 +337,6 @@ public class MenuManager : MonoBehaviour
         else if (Archive_Window.activeSelf)
             PlayerPrefs.SetInt("SelectedCollection", archived_collections[selected_archivedCollection].id);
 
-        LevelHandler.currentLevel = PlayerPrefs.GetInt("CurrentGameLevel");
         SceneManager.LoadScene("gameplay");
     }
 
@@ -369,10 +362,7 @@ public class MenuManager : MonoBehaviour
         Settings_Window.SetActive(!Settings_Window.activeSelf);
     }
 
-    public void FeedbackBtn()
-    {
-        Application.OpenURL(feedback_url);
-    }
+    
 
     public void Button_Archive()
     {

@@ -30,11 +30,13 @@ public class Ads : MonoBehaviour
 
         bannerView = manager.GetAdView(AdSize.Banner);
         ShowBanner();
+        rew_id = 10;
     }
 
     public void ShowBanner()
     {
-        bannerView.SetActive(true);
+        if (PlayerPrefs.GetInt("NoAds") != 1)
+            bannerView.SetActive(true);
     }
 
     public void HideBanner()
@@ -66,9 +68,9 @@ public class Ads : MonoBehaviour
 
     public void ShowRewarded(int id)
     {
+        rew_id = id;
         if (manager.IsReadyAd(AdType.Rewarded))
         {
-            rew_id = id;
             manager.ShowAd(AdType.Rewarded);
         }
         else
@@ -120,6 +122,17 @@ public class Ads : MonoBehaviour
 
             PlayerPrefs.SetInt("Steps", steps);
             GM.UpdateTextSteps();
+        }
+        else if (rew_id == 2)
+        {
+            int count = PlayerPrefs.GetInt("Coins") + 1;
+
+            PlayerPrefs.SetInt("Coins", count);
+            GM.buttonsManager.UpdateCountState();
+        }
+        else
+        {
+            Debug.LogError("Реклама з'явилась зашвидко, на телефоні такої проблеми немає.");
         }
     }
 }

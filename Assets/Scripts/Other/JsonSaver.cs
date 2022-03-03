@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class JsonSaver : MonoBehaviour
 {
@@ -12,44 +11,9 @@ public class JsonSaver : MonoBehaviour
 
     private string path;
 
-    private MenuManager manager;
-
     private void Awake()
     {
-        if (SceneManager.GetActiveScene().name == "menu")
-        {
-            manager = GetComponent<MenuManager>();
-            Debug.Log("Load Data from SaveJson");
-            Load();
-        }
-        else LoadPath();
-    }
-
-    public void LoadPath()
-    {
-#if !UNITY_EDITOR && UNITY_ANDROID
-        path = Application.persistentDataPath + "/data.json";
-#endif
-#if !UNITY_EDITOR && UNITY_IOS
-        path = Application.persistentDataPath + "/data.json";
-#endif
-#if UNITY_EDITOR
-        path = Application.streamingAssetsPath + "/data.json";
-#endif
-        if (File.Exists(path))
-        {
-            string text = File.ReadAllText(path);
-
-            int charsCount = text.Length;
-            byte[] bytes = new byte[charsCount / 2];
-
-            for (int i = 0; i < charsCount; i += 2)
-                bytes[i / 2] = Convert.ToByte(text.Substring(i, 2), 16);
-
-            text = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-
-            saveData = JsonUtility.FromJson<SaveData>(text);
-        }
+        Load();
     }
 
     public void Load()
@@ -89,12 +53,6 @@ public class JsonSaver : MonoBehaviour
                 collection.isCompleted = saveData.isCompleted[i];
                 data.collections.Add(collection);
             }
-
-            manager.SetColletionsInfo(data.collections);
-        }
-        else
-        {
-            manager.SortCollections();
         }
     }
 

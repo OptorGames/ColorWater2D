@@ -515,6 +515,7 @@ GameObject:
   - component: {fileID: 8021034583778681505}
   - component: {fileID: 807141331061904086}
   - component: {fileID: 5567580939145130814}
+  - component: {fileID: 8368366223573182338}
   m_Layer: 0
   m_Name: TubePrefab
   m_TagString: Untagged
@@ -570,8 +571,10 @@ MonoBehaviour:
   - {fileID: 6692660789269748944}
   - {fileID: 5661702774441324395}
   - {fileID: 1934822885990749989}
+  isrotating: 0
   NextTube: {fileID: 0}
   tubeSR: {fileID: 296600122893675249}
+  sorting: {fileID: 0}
   isFull: 0
   isEmpty: 0
   isBusy: 0
@@ -601,6 +604,17 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 3.5, y: 11.5}
   m_EdgeRadius: 0
+--- !u!210 &8368366223573182338
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5094860557186378648}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &5499987497726823957
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,7 +840,7 @@ SpriteMask:
   m_FrontSortingLayer: 0
   m_BackSortingLayer: 0
   m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
+  m_BackSortingOrder: -1
   m_IsCustomRangeActive: 0
   m_SpriteSortPoint: 0
 --- !u!1 &8002457113115086032
