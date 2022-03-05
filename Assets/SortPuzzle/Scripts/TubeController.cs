@@ -46,6 +46,12 @@ public class TubeController : MonoBehaviour
         GM.tubeControllers.Add(this);
         audioSource = GM.audioSource;
 
+        for (int i = 0; i < ColorObjects_Renderers.Length; i++)
+        {
+            ColorObjects_Renderers[i].transform.localPosition = new Vector3(0.1f, 4.65f, -1f);
+            ColorObjects_Renderers[i].transform.localScale = new Vector3(0.107349f, 0.6f, 1f);
+        }
+
         tubeSR.sprite = GM.tubes[PlayerPrefs.GetInt("Tube")];
         GetComponentInChildren<SpriteMask>().sprite = GM.tubesMasks[PlayerPrefs.GetInt("Tube")];
 
@@ -66,7 +72,7 @@ public class TubeController : MonoBehaviour
 
         if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] && colorsInTube[0] == colorsInTube[3])
         {
-            GM.AddFull();
+            GM.AddFull(transform.position);
             isFull = true;
 
         }
@@ -242,7 +248,7 @@ public class TubeController : MonoBehaviour
 
         if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] && colorsInTube[0] == colorsInTube[3])
         {
-            GM.AddFull();
+            GM.AddFull(transform.position);
             isFull = true;
         }
     }

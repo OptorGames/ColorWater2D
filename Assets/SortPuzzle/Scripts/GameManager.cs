@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Image background;
 
+    [SerializeField] private ParticleSystem confetti;
+
     private void Start()
     {
         buttonsManager = GetComponent<ButtonsManager>();
@@ -111,7 +113,7 @@ public class GameManager : MonoBehaviour
             if (tubeControllers[i].isEmpty)
                 AddEmpty();
             else if (tubeControllers[i].isFull)
-                AddFull();
+                AddFull(tubeControllers[i].transform.position);
         }
     }
 
@@ -213,6 +215,8 @@ public class GameManager : MonoBehaviour
             tubes_info.tubes.Add(tubeInfo);
         }
 
+        tubes_info.empty = EmptyTubes;
+        tubes_info.full = FullTubes;
         savedTubes.Add(tubes_info);
     }
 
@@ -256,6 +260,9 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            EmptyTubes = savedTubes[savedTubes.Count - 1].empty;
+            FullTubes = savedTubes[savedTubes.Count - 1].full;
+
             savedTubes.RemoveAt(savedTubes.Count - 1);
 
             count--;
@@ -269,15 +276,29 @@ public class GameManager : MonoBehaviour
         EmptyTubes++;
         if (!islevelStart && FullTubes + EmptyTubes == tubesInGame.Count && !isGameOver)
         {
+            levelHandler.Levels[PlayerPrefs.GetInt("CurrentGameLevel")].SetActive(false);
+            confetti.gameObject.SetActive(false);
+
             isGameOver = true;
             int currGameLevel = PlayerPrefs.GetInt("CurrentGameLevel") + 1;
 
             if (currGameLevel >= levelHandler.Levels.Length)
-                currGameLevel = 0;
+                currGameLevel = 40;
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
 
             HUD.WinGame();
+        }
+    }
+
+    private IEnumerator VibrateTurnOn()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        if (PlayerPrefs.GetInt("Vibrate") == 1 && !isGameOver)
+        {
+            Handheld.Vibrate();
+            Debug.Log("Vibrate");
         }
     }
 
@@ -286,23 +307,24 @@ public class GameManager : MonoBehaviour
         EmptyTubes--;
     }
 
-    public void AddFull()
+    public void AddFull(Vector3 pos)
     {
         FullTubes++;
+        confetti.transform.position = pos;
+        confetti.Play();
 
-        if (PlayerPrefs.GetInt("Vibrate") == 1)
-        {
-            Handheld.Vibrate();
-            Debug.Log("Vibrate");
-        }
+        StartCoroutine(VibrateTurnOn());
 
         if (!islevelStart && FullTubes + EmptyTubes == tubesInGame.Count && !isGameOver)
         {
+            levelHandler.Levels[PlayerPrefs.GetInt("CurrentGameLevel")].SetActive(false);
+            confetti.gameObject.SetActive(false);
+
             isGameOver = true;
             int currGameLevel = PlayerPrefs.GetInt("CurrentGameLevel") + 1;
 
             if (currGameLevel >= levelHandler.Levels.Length)
-                currGameLevel = 0;
+                currGameLevel = 40;
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
 
@@ -319,6 +341,8 @@ public class GameManager : MonoBehaviour
 public class AllTubesInfo
 {
     public List<TubeInfo> tubes = new List<TubeInfo>();
+    public int full;
+    public int empty;
 }
 
 public class TubeInfo
