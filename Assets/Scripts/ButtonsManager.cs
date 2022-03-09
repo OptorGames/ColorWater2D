@@ -88,7 +88,7 @@ public class ButtonsManager : MonoBehaviour
             PlayerPrefs.SetInt("Coins", coins);
             UpdateCountState();
         }
-        else if (Backgrounds_Window.activeSelf && PlayerPrefs.GetInt("UnlockedThemes") < 5)
+        else if (Backgrounds_Window.activeSelf && PlayerPrefs.GetInt("UnlockedThemes") < 9)
         {
             int count = PlayerPrefs.GetInt("UnlockedThemes") + 1;
             PlayerPrefs.SetInt("UnlockedThemes", count);

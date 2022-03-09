@@ -46,6 +46,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private ParticleSystem confetti;
 
+    private bool needUnPause = false;
+
     private void Start()
     {
         buttonsManager = GetComponent<ButtonsManager>();
@@ -85,6 +87,29 @@ public class GameManager : MonoBehaviour
         {
             ButBackStep.interactable = true;
         }
+
+        if (Time.timeScale <= 0.1f)
+        {
+            if(confetti.gameObject.activeSelf)
+                confetti.gameObject.SetActive(false);
+
+            if (audioSource.isPlaying)
+            {
+                audioSource.Pause();
+                needUnPause = true;
+            }
+        }
+        else
+        {
+            if(!confetti.gameObject.activeSelf)
+                confetti.gameObject.SetActive(true);
+
+            if (needUnPause)
+            {
+                audioSource.UnPause();
+                needUnPause = false;
+            }
+        }
     }
 
     public void UpdateTextSteps()
@@ -113,7 +138,7 @@ public class GameManager : MonoBehaviour
             if (tubeControllers[i].isEmpty)
                 AddEmpty();
             else if (tubeControllers[i].isFull)
-                AddFull(tubeControllers[i].transform.position);
+                AddFull(tubeControllers[i].transform.position, false);
         }
     }
 
@@ -291,12 +316,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator VibrateTurnOn()
+    private IEnumerator VibrateTurnOn(Vector3 pos)
     {
         yield return new WaitForSeconds(0.5f);
 
         if (PlayerPrefs.GetInt("Vibrate") == 1 && !isGameOver)
         {
+            confetti.transform.position = pos;
+            confetti.Play();
+
             Handheld.Vibrate();
             Debug.Log("Vibrate");
         }
@@ -307,13 +335,12 @@ public class GameManager : MonoBehaviour
         EmptyTubes--;
     }
 
-    public void AddFull(Vector3 pos)
+    public void AddFull(Vector3 pos, bool isPlay)
     {
         FullTubes++;
-        confetti.transform.position = pos;
-        confetti.Play();
 
-        StartCoroutine(VibrateTurnOn());
+        if (isPlay)
+            StartCoroutine(VibrateTurnOn(pos));
 
         if (!islevelStart && FullTubes + EmptyTubes == tubesInGame.Count && !isGameOver)
         {
