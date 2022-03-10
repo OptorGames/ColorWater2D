@@ -44,10 +44,10 @@ public class HudHandler : MonoBehaviour
 
         //if (PlayerPrefs.GetInt("SelectedLevel") == 1)
         //{
-        //    if(dontDestroy.collections[PlayerPrefs.GetInt("SelectedCollection")].image_progress1 < 100)
+        //    if (dontDestroy.collections[PlayerPrefs.GetInt("SelectedCollection")].image_progress1 < 100)
         //        dontDestroy.collections[PlayerPrefs.GetInt("SelectedCollection")].image_progress1 += 10;
         //}
-        //else if(PlayerPrefs.GetInt("SelectedLevel") == 2)
+        //else if (PlayerPrefs.GetInt("SelectedLevel") == 2)
         //{
         //    if (dontDestroy.collections[PlayerPrefs.GetInt("SelectedCollection")].image_progress2 < 100)
         //        dontDestroy.collections[PlayerPrefs.GetInt("SelectedCollection")].image_progress2 += 10;
