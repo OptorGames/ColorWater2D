@@ -63,7 +63,6 @@ public class GameManager : MonoBehaviour
 
         SetSelectedBackground();
         UpdateTextSteps();
-
         int curr_level = PlayerPrefs.GetInt("CurrentLevel") + 1;
         spawnController.level = curr_level;
         spawnController.SpawnObject();
