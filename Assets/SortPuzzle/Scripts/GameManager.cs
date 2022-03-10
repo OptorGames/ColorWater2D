@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> tubesInGame;
     private GameObject selectedTube;
     public HudHandler HUD;
+    public SpawnController spawnController;
     private static bool isGameOver;
     private bool islevelStart;
 
@@ -64,6 +65,8 @@ public class GameManager : MonoBehaviour
         UpdateTextSteps();
 
         int curr_level = PlayerPrefs.GetInt("CurrentLevel") + 1;
+        spawnController.level = curr_level;
+        spawnController.SpawnObject();
         LeveNumlText.text = "Level " + curr_level.ToString();
 
         if (!PlayerPrefs.HasKey("Volume"))

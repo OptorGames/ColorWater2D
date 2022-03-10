@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpawnController : MonoBehaviour
@@ -74,23 +74,33 @@ public class SpawnController : MonoBehaviour
             TubeController tc = clone.GetComponent<TubeController>();
 
             int i = 0;
+            int prevID = 0;
 
             while (i < tc.ColorObjects_Renderers.Length)
             {
                 int colorID = Random.Range(0, usedColors.Count);
-                if (usedColors[colorID].colorCount <= 3)
+
+                if (usedColors[colorID].colorCount <= 3 & prevID != colorID)
                 {
                     tc.ColorObjects_Renderers[i].color = colors[usedColors[colorID].colorID];
                     usedColors[colorID].colorCount++;
                     i++;
+                    prevID = colorID;
                 }
             }
+
         }
         else
         {
             GameObject clone = Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
             numberOfEmptyTube--;
         }
+    }
+
+    public void PrintDublicates_Count(int[] n)
+    {
+        int max = n.Max();
+        
     }
 }
 

@@ -7,6 +7,7 @@ TagManager:
   - ball
   - HoleBottom
   - OutOfBound
+  - Tube
   layers:
   - Default
   - TransparentFX

@@ -42,6 +42,11 @@ public class HudHandler : MonoBehaviour
         int old_value = PlayerPrefs.GetInt("CurrentLevel") + 1;
         PlayerPrefs.SetInt("CurrentLevel", old_value);
 
+        GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
+
+        for (int i = 0; i < tubes.Length; i++)
+            Destroy(tubes[i].gameObject);
+
         //if (PlayerPrefs.GetInt("SelectedLevel") == 1)
         //{
         //    if (dontDestroy.collections[PlayerPrefs.GetInt("SelectedCollection")].image_progress1 < 100)
