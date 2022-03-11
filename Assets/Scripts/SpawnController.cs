@@ -11,7 +11,8 @@ public class SpawnController : MonoBehaviour
     public GameObject tube;
     public GameObject emptyTube;
     public Vector3 origin;
-    private Color[] colors = { Color.red, Color.green, Color.blue, Color.yellow, Color.gray, Color.grey, Color.cyan };
+    //private Color[] colors = { Color.red, Color.green, Color.blue, Color.yellow, Color.gray, Color.grey, Color.cyan };
+    private string[] colors = { "#FA8072", "#DC143C", "#FF0000", "#8B0000", "#FFC0CB", "#C71585", "#FF4500", "#FF8C00", "#FFD700", "#FFFF00", "#FFE4B5", "#F0E68C", "#BDB76B", "#DDA0DD", "#BA55D3", "#8B008B", "#4682B4", "#8B4513", "#808080", "#C0C0C0", "#00FF00", "#008000", "#008000", "#0000FF", "#000080" };
     private int numberOfEmptyTube = 2;
     private List<UsedColor> usedColors = new List<UsedColor>();
 
@@ -27,10 +28,12 @@ public class SpawnController : MonoBehaviour
             level = 1;
         spawnCount = (level + 1) + numberOfEmptyTube;
 
-        print("level: " + level);
-        print("spawnCount: " + spawnCount);
+        int usedColb = spawnCount - numberOfEmptyTube;
 
-        while (usedColors.Count < spawnCount - numberOfEmptyTube)
+        if(usedColb > colors.Length)
+            usedColb = colors.Length;
+
+        while (usedColors.Count < usedColb)
         {
             int colorID = Random.Range(0, colors.Length);
             if (CheckOnExist(colorID))
@@ -78,19 +81,20 @@ public class SpawnController : MonoBehaviour
 
             int i = 0;
             int colorID = 0;
-
+            Color newColor = Color.white;
             while (i < tc.ColorObjects_Renderers.Length)
             {
                 colorID = Random.Range(0, usedColors.Count);
 
                 if (usedColors[colorID].colorCount <= 3)
                 {
-                    tc.ColorObjects_Renderers[i].color = colors[usedColors[colorID].colorID];
+                    ColorUtility.TryParseHtmlString(colors[usedColors[colorID].colorID], out newColor);
+                    tc.ColorObjects_Renderers[i].color = newColor;
                     usedColors[colorID].colorCount++;
                     i++;
                 }
 
-                if (tc.ColorObjects_Renderers.All(x => x.color == colors[usedColors[colorID].colorID]))
+                if (tc.ColorObjects_Renderers.All(x => x.color == newColor))
                 {
                     usedColors[colorID].colorCount--;
                     i--;
