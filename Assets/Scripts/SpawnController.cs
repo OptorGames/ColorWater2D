@@ -17,15 +17,18 @@ public class SpawnController : MonoBehaviour
 
     private void Start()
     {
-        
+
     }
 
     public void SpawnObject()
     {
-        level = level / 3;
+        level = level / 2;
         if (level == 0)
             level = 1;
         spawnCount = (level + 1) + numberOfEmptyTube;
+
+        print("level: " + level);
+        print("spawnCount: " + spawnCount);
 
         while (usedColors.Count < spawnCount - numberOfEmptyTube)
         {
@@ -74,18 +77,27 @@ public class SpawnController : MonoBehaviour
             TubeController tc = clone.GetComponent<TubeController>();
 
             int i = 0;
+            int colorID = 0;
 
             while (i < tc.ColorObjects_Renderers.Length)
             {
-                int colorID = Random.Range(0, usedColors.Count);
-                
+                colorID = Random.Range(0, usedColors.Count);
+
                 if (usedColors[colorID].colorCount <= 3)
                 {
                     tc.ColorObjects_Renderers[i].color = colors[usedColors[colorID].colorID];
                     usedColors[colorID].colorCount++;
                     i++;
                 }
+
+                if (tc.ColorObjects_Renderers.All(x => x.color == colors[usedColors[colorID].colorID]))
+                {
+                    usedColors[colorID].colorCount--;
+                    i--;
+                }
             }
+
+            
 
         }
         else
