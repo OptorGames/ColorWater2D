@@ -126,6 +126,8 @@ public class GameManager : MonoBehaviour
 
     public void AddTube()
     {
+        if (Tube == null)
+            Tube = GameObject.Find("TubeForBuy");
         Tube.SetActive(true);
         AddTubeButton.interactable = false;
     }
