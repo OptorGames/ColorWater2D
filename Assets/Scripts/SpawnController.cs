@@ -14,6 +14,7 @@ public class SpawnController : MonoBehaviour
     //private Color[] colors = { Color.red, Color.green, Color.blue, Color.yellow, Color.gray, Color.grey, Color.cyan };
     private string[] colors = { "#FA8072", "#DC143C", "#FF0000", "#8B0000", "#FFC0CB", "#C71585", "#FF4500", "#FF8C00", "#FFD700", "#FFFF00", "#FFE4B5", "#F0E68C", "#BDB76B", "#DDA0DD", "#BA55D3", "#8B008B", "#4682B4", "#8B4513", "#808080", "#C0C0C0", "#00FF00", "#008000", "#008000", "#0000FF", "#000080" };
     private int numberOfEmptyTube = 2;
+    private int usedColb;
     private List<UsedColor> usedColors = new List<UsedColor>();
 
     private void Start()
@@ -23,15 +24,14 @@ public class SpawnController : MonoBehaviour
 
     public void SpawnObject()
     {
-        level = level / 2;
-        if (level == 0)
-            level = 1;
-        spawnCount = (level + 1) + numberOfEmptyTube;
+        if (level >= 2)
+            level++;
+        level = level / 3;
+        spawnCount = (level + 2) + numberOfEmptyTube;
+        usedColb = spawnCount - numberOfEmptyTube;
 
-        int usedColb = spawnCount - numberOfEmptyTube;
-
-        if(usedColb > colors.Length)
-            usedColb = colors.Length;
+        if (usedColb > colors.Length)
+            usedColb = 20;
 
         while (usedColors.Count < usedColb)
         {
@@ -54,15 +54,20 @@ public class SpawnController : MonoBehaviour
     private void SpawnGrid()
     {
         int spawnedCount = 0;
-        int y = 0;
+        float y = 0;
         if (level >= 8)
             origin = new Vector3(origin.x, 8f, origin.z);
 
-        for (int i = 0; i < spawnCount; i++)
+        int spawnGrid = (usedColb + numberOfEmptyTube);
+        if (spawnGrid > 20)
+            spawnGrid = 20;
+
+        for (int i = 0; i < spawnGrid; i++)
         {
+            print("i: " + i);
             if (spawnedCount == gridX)
             {
-                y -= 2;
+                y -= 2.5f;
                 spawnedCount = 0;
             }
 
