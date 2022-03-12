@@ -10,9 +10,10 @@ public class SpawnController : MonoBehaviour
     public float spacing = 1f;
     public GameObject tube;
     public GameObject emptyTube;
+    public GameObject rewardedTube;
     public Vector3 origin;
     //private Color[] colors = { Color.red, Color.green, Color.blue, Color.yellow, Color.gray, Color.grey, Color.cyan };
-    private string[] colors = { "#FA8072", "#DC143C", "#FF0000", "#8B0000", "#FFC0CB", "#C71585", "#FF4500", "#FF8C00", "#FFD700", "#FFFF00", "#FFE4B5", "#F0E68C", "#BDB76B", "#DDA0DD", "#BA55D3", "#8B008B", "#4682B4", "#8B4513", "#808080", "#C0C0C0", "#00FF00", "#008000", "#008000", "#0000FF", "#000080" };
+    private string[] colors = { "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD", "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000" };
     private int numberOfEmptyTube = 2;
     private int usedColb;
     private List<UsedColor> usedColors = new List<UsedColor>();
@@ -31,7 +32,7 @@ public class SpawnController : MonoBehaviour
         usedColb = spawnCount - numberOfEmptyTube;
 
         if (usedColb > colors.Length)
-            usedColb = 20;
+            usedColb = colors.Length;
 
         while (usedColors.Count < usedColb)
         {
@@ -64,6 +65,7 @@ public class SpawnController : MonoBehaviour
 
         for (int i = 0; i < spawnGrid; i++)
         {
+            print("spawnGrid: " + spawnGrid);
             print("i: " + i);
             if (spawnedCount == gridX)
             {
@@ -74,6 +76,12 @@ public class SpawnController : MonoBehaviour
             Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
             PickAndSpawn(spawnPosition, Quaternion.identity);
             spawnedCount++;
+
+            if (i == spawnGrid - 1)
+            {
+                spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
+                rewardedTube.transform.position = spawnPosition;
+            }
         }
     }
 
