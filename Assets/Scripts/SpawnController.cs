@@ -60,8 +60,8 @@ public class SpawnController : MonoBehaviour
             origin = new Vector3(origin.x, 8f, origin.z);
 
         int spawnGrid = (usedColb + numberOfEmptyTube);
-        if (spawnGrid > 20)
-            spawnGrid = 20;
+        if (spawnGrid > 18)
+            spawnGrid = 18;
 
         for (int i = 0; i < spawnGrid; i++)
         {
@@ -122,12 +122,6 @@ public class SpawnController : MonoBehaviour
             GameObject clone = Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
             numberOfEmptyTube--;
         }
-    }
-
-    public void PrintDublicates_Count(int[] n)
-    {
-        int max = n.Max();
-        
     }
 }
 

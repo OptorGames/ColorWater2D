@@ -43,7 +43,7 @@ public class HudHandler : MonoBehaviour
         PlayerPrefs.SetInt("CurrentLevel", old_value);
 
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
-
+        
         for (int i = 0; i < tubes.Length; i++)
             Destroy(tubes[i].gameObject);
 

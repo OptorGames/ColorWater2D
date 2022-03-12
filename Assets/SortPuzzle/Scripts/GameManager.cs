@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button ButBackStep;
     [SerializeField] private Button AddTubeButton;
 
-    [SerializeField] private GameObject Tube;
+    [SerializeField] public GameObject Tube;
 
     [SerializeField] private LevelHandler levelHandler;
 
@@ -126,8 +126,6 @@ public class GameManager : MonoBehaviour
 
     public void AddTube()
     {
-        if (Tube == null)
-            Tube = GameObject.Find("TubeForBuy");
         Tube.SetActive(true);
         AddTubeButton.interactable = false;
     }
@@ -316,6 +314,7 @@ public class GameManager : MonoBehaviour
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
 
+            Tube.SetActive(false);
             HUD.WinGame();
         }
     }
