@@ -66,17 +66,15 @@ public class SpawnController : MonoBehaviour
 
         for (int i = 0; i < spawnGrid; i++)
         {
-            print("spawnGrid: " + spawnGrid);
-            print("i: " + i);
+            Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
+            PickAndSpawn(spawnPosition, Quaternion.identity);
+            spawnedCount++;
+
             if (spawnedCount == gridX)
             {
                 y -= 2.5f;
                 spawnedCount = 0;
             }
-
-            Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
-            PickAndSpawn(spawnPosition, Quaternion.identity);
-            spawnedCount++;
 
             if (i == spawnGrid - 1)
             {

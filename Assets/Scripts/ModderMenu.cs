@@ -29,7 +29,7 @@ public class ModderMenu : MonoBehaviour
     {
         if (ModMenu)
         {
-            GUILayout.BeginArea(new Rect(50, 10, 110, 110));
+            GUILayout.BeginArea(new Rect(50, 10, 110, 130));
             GUILayout.BeginVertical();
 
             GUILayout.Label("Enter Level");
@@ -48,6 +48,8 @@ public class ModderMenu : MonoBehaviour
                 PlayerPrefs.DeleteKey("CurrentLevel");
                 GM.HUD.Restart();
             }
+
+            GUILayout.Label("v0.1");
 
             GUILayout.EndVertical();
             GUILayout.EndArea();
