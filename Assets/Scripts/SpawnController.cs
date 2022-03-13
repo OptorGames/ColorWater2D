@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class SpawnController : MonoBehaviour
 {
+    public int gridX;
+    public float verticalOffset;
     public int level;
     public int spawnCount;
-    public int gridX;
     public float spacing = 1f;
     public GameObject tube;
     public GameObject emptyTube;
@@ -72,7 +73,7 @@ public class SpawnController : MonoBehaviour
 
             if (spawnedCount == gridX)
             {
-                y -= 2.5f;
+                y -= verticalOffset;
                 spawnedCount = 0;
             }
 
