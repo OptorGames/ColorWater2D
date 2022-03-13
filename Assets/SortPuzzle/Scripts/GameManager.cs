@@ -314,7 +314,6 @@ public class GameManager : MonoBehaviour
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
 
-            Tube.SetActive(false);
             HUD.WinGame();
         }
     }

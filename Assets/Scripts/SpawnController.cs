@@ -11,6 +11,7 @@ public class SpawnController : MonoBehaviour
     public GameObject tube;
     public GameObject emptyTube;
     public GameObject rewardedTube;
+    public GameManager GM;
     public Vector3 origin;
     //private Color[] colors = { Color.red, Color.green, Color.blue, Color.yellow, Color.gray, Color.grey, Color.cyan };
     private string[] colors = { "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD", "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000" };
@@ -80,7 +81,10 @@ public class SpawnController : MonoBehaviour
             if (i == spawnGrid - 1)
             {
                 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
-                rewardedTube.transform.position = spawnPosition;
+                GameObject spawnedRewTube = Instantiate(rewardedTube, spawnPosition, Quaternion.identity);
+                GM.Tube = spawnedRewTube;
+                spawnedRewTube.SetActive(false);
+
             }
         }
     }
