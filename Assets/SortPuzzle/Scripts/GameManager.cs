@@ -126,8 +126,13 @@ public class GameManager : MonoBehaviour
 
     public void AddTube()
     {
-        Tube.SetActive(true);
-        AddTubeButton.interactable = false;
+        if (Tube != null)
+        {
+            Tube.SetActive(true);
+            AddTubeButton.interactable = false;
+            Tube = null;
+        }
+        //else Debug.LogError("RewardedTube == NULL");
     }
 
     public void UpdateEF_Info()

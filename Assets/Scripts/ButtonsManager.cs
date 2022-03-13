@@ -31,6 +31,8 @@ public class ButtonsManager : MonoBehaviour
 
     private GameManager GM;
 
+    private readonly int price = 2; 
+
     private void Start()
     {
         Tubes_Window.SetActive(true);
@@ -76,7 +78,7 @@ public class ButtonsManager : MonoBehaviour
 
     public void BuyForCoins()
     {
-        if (PlayerPrefs.GetInt("Coins") < 5)
+        if (PlayerPrefs.GetInt("Coins") < price)
             return;
 
         if (Tubes_Window.activeSelf && PlayerPrefs.GetInt("UnlockedTubes") < 2)
@@ -84,7 +86,7 @@ public class ButtonsManager : MonoBehaviour
             int count = PlayerPrefs.GetInt("UnlockedTubes") + 1;
             PlayerPrefs.SetInt("UnlockedTubes", count);
             
-            int coins = PlayerPrefs.GetInt("Coins") - 5;
+            int coins = PlayerPrefs.GetInt("Coins") - price;
             PlayerPrefs.SetInt("Coins", coins);
             UpdateCountState();
         }
@@ -93,7 +95,7 @@ public class ButtonsManager : MonoBehaviour
             int count = PlayerPrefs.GetInt("UnlockedThemes") + 1;
             PlayerPrefs.SetInt("UnlockedThemes", count);
 
-            int coins = PlayerPrefs.GetInt("Coins") - 5;
+            int coins = PlayerPrefs.GetInt("Coins") - price;
             PlayerPrefs.SetInt("Coins", coins);
             UpdateCountState();
         }
