@@ -58,12 +58,12 @@ public class SpawnController : MonoBehaviour
     {
         int spawnedCount = 0;
         float y = 0;
-        if (level >= 8)
-            origin = new Vector3(origin.x, 8f, origin.z);
 
         int spawnGrid = (usedColb + numberOfEmptyTube);
-        if (spawnGrid > 18)
-            spawnGrid = 18;
+        if (spawnGrid > 17)
+            spawnGrid = 17;
+
+        SetVerticalOrigin(spawnGrid);
 
         for (int i = 0; i < spawnGrid; i++)
         {
@@ -86,6 +86,20 @@ public class SpawnController : MonoBehaviour
 
             }
         }
+    }
+
+    private void SetVerticalOrigin(int countNumber)
+    {
+        if (countNumber < 6)
+            origin = new Vector3(origin.x, -5f, origin.z);
+
+        else if (countNumber > 6 & countNumber < 12)
+            origin = new Vector3(origin.x, -1.5f, origin.z);
+
+        else if (countNumber > 12)
+            origin = new Vector3(origin.x, 9f, origin.z);
+
+        print("countNumber: " + countNumber);
     }
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)
