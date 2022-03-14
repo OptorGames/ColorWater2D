@@ -86,6 +86,8 @@ public class SpawnController : MonoBehaviour
 
             }
         }
+
+        SetHorizontalOrigin();
     }
 
     private void SetVerticalOrigin(int countNumber)
@@ -100,6 +102,35 @@ public class SpawnController : MonoBehaviour
             origin = new Vector3(origin.x, 9f, origin.z);
 
         print("countNumber: " + countNumber);
+    }
+
+    public  void SetHorizontalOrigin()
+    {
+        GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
+        print("Tubes: " + tubes.Length);
+
+        if (tubes.Length == 4)
+            origin = new Vector3(-2f, origin.y, origin.z);
+        else if (tubes.Length == 5)
+            origin = new Vector3(-4.5f, origin.y, origin.z);
+        else if (tubes.Length >= 6)
+            origin = new Vector3(-6.5f, origin.y, origin.z);
+
+        int spawnedCount = 0;
+        float y = 0;
+
+        for (int i = 0; i < tubes.Length; i++)
+        {
+            Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
+            tubes[i].transform.position = spawnPosition;
+            spawnedCount++;
+
+            if (spawnedCount == gridX)
+            {
+                y -= verticalOffset;
+                spawnedCount = 0;
+            }
+        }
     }
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)
