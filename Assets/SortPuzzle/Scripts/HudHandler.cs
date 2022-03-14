@@ -55,8 +55,8 @@ public class HudHandler : MonoBehaviour
 
     public void Restart()
     {
-        if (PlayerPrefs.GetInt("NoAds") != 1)
-            ads.ShowInterstitial();
+        //if (PlayerPrefs.GetInt("NoAds") != 1)
+        //    ads.ShowInterstitial();
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
