@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
             Tube = null;
         }
         //else Debug.LogError("RewardedTube == NULL");
-        spawnController.SetHorizontalOrigin();
+        spawnController.SetCenterPosition();
     }
 
     public void UpdateEF_Info()

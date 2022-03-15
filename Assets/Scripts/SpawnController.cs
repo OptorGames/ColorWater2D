@@ -93,8 +93,6 @@ public class SpawnController : MonoBehaviour
         if (spawnGrid > 17)
             spawnGrid = 17;
 
-        SetVerticalOrigin(spawnGrid);
-
         for (int i = 0; i < spawnGrid; i++)
         {
             Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
@@ -113,26 +111,13 @@ public class SpawnController : MonoBehaviour
                 GameObject spawnedRewTube = Instantiate(rewardedTube, spawnPosition, Quaternion.identity);
                 GM.Tube = spawnedRewTube;
                 spawnedRewTube.SetActive(false);
-
             }
         }
 
-        SetHorizontalOrigin();
+        SetCenterPosition();
     }
 
-    private void SetVerticalOrigin(int countNumber)
-    {
-        if (countNumber < 6)
-            origin = new Vector3(origin.x, -5f, origin.z);
-
-        else if (countNumber > 6 & countNumber < 12)
-            origin = new Vector3(origin.x, -1.5f, origin.z);
-
-        else if (countNumber > 12)
-            origin = new Vector3(origin.x, 9f, origin.z);
-    }
-
-    public  void SetHorizontalOrigin()
+    public void SetCenterPosition()
     {
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
 
@@ -149,7 +134,16 @@ public class SpawnController : MonoBehaviour
                 origin = new Vector3(-6.5f, origin.y, origin.z);
                 break;
         }
-        
+
+        if (tubes.Length < 6)
+            origin = new Vector3(origin.x, -5f, origin.z);
+
+        else if (tubes.Length > 6 & tubes.Length < 12)
+            origin = new Vector3(origin.x, -1.5f, origin.z);
+
+        else if (tubes.Length > 12)
+            origin = new Vector3(origin.x, 9f, origin.z);
+
         int spawnedCount = 0;
         float y = 0;
 
