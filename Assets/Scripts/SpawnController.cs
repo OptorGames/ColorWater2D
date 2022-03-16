@@ -19,11 +19,6 @@ public class SpawnController : MonoBehaviour
     private int usedColb;
     private List<UsedColor> usedColors = new List<UsedColor>();
 
-    private void Start()
-    {
-
-    }
-
     public void SpawnObject()
     {
         ChooseTubesNumber(level);
@@ -159,6 +154,8 @@ public class SpawnController : MonoBehaviour
                 spawnedCount = 0;
             }
         }
+
+        GM.SetNewDefaultPositions();
     }
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)

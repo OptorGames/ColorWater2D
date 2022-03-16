@@ -68,6 +68,9 @@ public class GameManager : MonoBehaviour
         spawnController.SpawnObject();
         LeveNumlText.text = "Level " + curr_level.ToString();
 
+        if (!PlayerPrefs.HasKey("Steps"))
+            PlayerPrefs.SetInt("Steps", 5);
+
         if (!PlayerPrefs.HasKey("Volume"))
             PlayerPrefs.SetFloat("Volume", 1f);
         else
@@ -116,7 +119,8 @@ public class GameManager : MonoBehaviour
 
     public void UpdateTextSteps()
     {
-        textCountSteps.text = PlayerPrefs.GetInt("Steps").ToString();
+        if(textCountSteps != null)
+            textCountSteps.text = PlayerPrefs.GetInt("Steps").ToString();
     }
 
     public void StepsPanelButton()
@@ -130,6 +134,7 @@ public class GameManager : MonoBehaviour
         {
             Tube.SetActive(true);
             AddTubeButton.interactable = false;
+            selectedTube = null;
             Tube = null;
         }
         //else Debug.LogError("RewardedTube == NULL");
@@ -228,6 +233,18 @@ public class GameManager : MonoBehaviour
         islevelStart = false;
     }
 
+    public void SetNewDefaultPositions()
+    {
+        for (int i = 0; i < tubeControllers.Count; i++)
+        {
+            if (Tube != null && Tube.activeSelf && i == tubeControllers.Count - 1)
+                return;
+
+            if (tubeControllers[i] != null)
+                tubeControllers[i].Pos = tubeControllers[i].transform.position;
+        }
+    }
+
     public void SaveTubes()
     {
         AllTubesInfo tubes_info = new AllTubesInfo();
@@ -264,7 +281,7 @@ public class GameManager : MonoBehaviour
             selectedTube = null;
             for (int i = 0; i < tubeControllers.Count; i++)
             {
-                tubeControllers[i].transform.position = tubeControllers[i].Pos;
+                tubeControllers[i].transform.position = new Vector3(tubeControllers[i].transform.position.x, tubeControllers[i].Pos.y, tubeControllers[i].transform.position.z);
             }
 
             for (int i = 0; i < tubeControllers.Count; i++)
@@ -276,7 +293,7 @@ public class GameManager : MonoBehaviour
                 tubeControllers[i].isEmpty = savedTubes[savedTubes.Count - 1].tubes[i].isEmpty;
                 tubeControllers[i].isFull = savedTubes[savedTubes.Count - 1].tubes[i].isFull;
 
-                tubeControllers[i].transform.position = tubeControllers[i].Pos;
+                tubeControllers[i].transform.position = new Vector3(tubeControllers[i].transform.position.x, tubeControllers[i].Pos.y, tubeControllers[i].transform.position.z);
                 tubeControllers[i].transform.localScale = savedTubes[savedTubes.Count - 1].tubes[i].scale;
 
                 tubeControllers[i].NextTube = null;
