@@ -345,11 +345,11 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
+        confetti.transform.position = pos;
+        confetti.Play();
+
         if (PlayerPrefs.GetInt("Vibrate") == 1 && !isGameOver)
         {
-            confetti.transform.position = pos;
-            confetti.Play();
-
             Handheld.Vibrate();
             Debug.Log("Vibrate");
         }
