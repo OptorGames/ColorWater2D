@@ -20,6 +20,7 @@ public class DTDInit : MonoBehaviour
 
 #if UNITY_ANDROID
         DTDAnalytics.Initialize("d6ee0cdf-cc5c-0764-a2a2-9f7ecbba7c0c", config);
+        DTDUserCard.Set("ad_tracker_id", "wwrTvr4uswcjnQGCFTawDT");
 #elif UNITY_IOS
         DTDAnalytics.Initialize("d6ee0cdf-cc5c-0764-a2a2-9f7ecbba7c0c", config);
 #elif UNITY_WEBGL

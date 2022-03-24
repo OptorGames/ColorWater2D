@@ -12,6 +12,11 @@ public class NoAds : MonoBehaviour
             PlayerPrefs.SetInt("NoAds", 1);
             ads.HideBanner();
         }
+        else if (product.definition.id == "unlock_all")
+        {
+            PlayerPrefs.SetInt("UnlockedThemes", 9);
+            PlayerPrefs.SetInt("UnlockedTubes", 2);
+        }
     }
 
     public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
