@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public SpawnController spawnController;
     private static bool isGameOver;
     private bool islevelStart;
-    private int difficulty;
+    private int difficulty = 0;
     private int curr_level;
 
     [Header("Links")]
@@ -63,9 +63,8 @@ public class GameManager : MonoBehaviour
         FullTubes = 0;
         selectedTube = null;
         isGameOver = false;
-        difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
+        difficulty = spawnController.GetDifficulty();
         SetTextDifficulty();
-
         SetSelectedBackground();
         UpdateTextSteps();
         LoadDifficultyLevel();
@@ -129,6 +128,7 @@ public class GameManager : MonoBehaviour
         if (difficulty > 4)
             difficulty = 0;
         PlayerPrefs.SetInt("Difficulty_", difficulty);
+        spawnController.NotFirstLoad();
         HUD.Restart();
     }
 

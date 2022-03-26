@@ -17,12 +17,42 @@ public class SpawnController : MonoBehaviour
     private string[] colors = { "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD", "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000" };
     private int numberOfEmptyTube = 2;
     private int usedColb;
-    private int diffuculty = 0;
+    private int difficulty = 0;
     private List<UsedColor> usedColors = new List<UsedColor>();
+    public static SpawnController spawnController = null;
+    public static bool firstStart = true;
+
+    private void Start()
+    {
+        if (spawnController == null)
+        {
+            spawnController = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            Destroy(gameObject);
+    }
+
+    public int GetDifficulty()
+    {
+        if (firstStart)
+        {
+            difficulty = 0;
+            PlayerPrefs.SetInt("Difficulty_", difficulty);
+            return difficulty;
+        }
+        else
+            return difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
+    }
+
+    public void NotFirstLoad()
+    {
+        firstStart = false;
+    }
 
     public void SpawnObject()
     {
-        diffuculty = PlayerPrefs.GetInt("Difficulty_", 0);
+        difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
         spawnCount = level + numberOfEmptyTube;
         usedColb = spawnCount - numberOfEmptyTube;
@@ -50,7 +80,7 @@ public class SpawnController : MonoBehaviour
 
     private void ChooseDifficulty()
     {
-        if (diffuculty == 0)
+        if (difficulty == 0)
             ChooseTubesNumber(level);
         else
             EndlessMode();
@@ -91,19 +121,19 @@ public class SpawnController : MonoBehaviour
 
     private void EndlessMode()
     {
-        switch (diffuculty)
+        switch (difficulty)
         {
             case 1:
-                level = Random.Range(3, 6);
+                level = Random.Range(3, 5);
                 break;
             case 2:
-                level = Random.Range(6, 9);
+                level = Random.Range(5, 9);
                 break;
             case 3:
                 level = Random.Range(9, 13);
                 break;
             case 4:
-                level = Random.Range(9, 16);
+                level = Random.Range(13, 16);
                 break;
         }
     }
