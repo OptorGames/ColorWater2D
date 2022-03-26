@@ -94,16 +94,16 @@ public class SpawnController : MonoBehaviour
         switch (diffuculty)
         {
             case 1:
-                level = Random.Range(5, 8);
+                level = Random.Range(3, 6);
                 break;
             case 2:
-                level = Random.Range(7, 11);
+                level = Random.Range(6, 9);
                 break;
             case 3:
-                level = Random.Range(11, 15);
+                level = Random.Range(9, 13);
                 break;
             case 4:
-                level = 15;
+                level = Random.Range(9, 16);
                 break;
         }
     }
@@ -166,7 +166,7 @@ public class SpawnController : MonoBehaviour
             origin = new Vector3(origin.x, -1.5f, origin.z);
 
         else if (tubes.Length > 12)
-            origin = new Vector3(origin.x, 9f, origin.z);
+            origin = new Vector3(origin.x, 7f, origin.z);
 
         int spawnedCount = 0;
         float y = 0;

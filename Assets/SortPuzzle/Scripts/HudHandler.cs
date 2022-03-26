@@ -32,9 +32,6 @@ public class HudHandler : MonoBehaviour
     {
         IsGamePaused = true;
 
-        //int old_value = PlayerPrefs.GetInt("CurrentLevel") + 1;
-        //PlayerPrefs.SetInt("CurrentLevel", old_value);
-
         UpdateDifficultyLevel();
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
 

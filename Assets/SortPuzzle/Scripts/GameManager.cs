@@ -137,7 +137,7 @@ public class GameManager : MonoBehaviour
         switch (difficulty)
         {
             case 0:
-                textDifficulty.text = "Off";
+                textDifficulty.text = "Level Off";
                 break;
             case 1:
                 textDifficulty.text = "Easy";
