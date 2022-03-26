@@ -38,21 +38,70 @@ public class ModderMenu : MonoBehaviour
             {
                 if (int.Parse(levelID) > 0)
                 {
-                    PlayerPrefs.SetInt("CurrentLevel", int.Parse(levelID) - 1);
+                    SetLevel(int.Parse(levelID));
                     GM.HUD.Restart();
                 }
             }
 
             if (GUILayout.Button("Clear Level"))
             {
-                PlayerPrefs.DeleteKey("CurrentLevel");
+
+                DeleteLevel();
                 GM.HUD.Restart();
             }
 
-            GUILayout.Label("v0.1");
+            GUILayout.Label("v0.2");
 
             GUILayout.EndVertical();
             GUILayout.EndArea();
+        }
+    }
+
+    private void SetLevel(int level)
+    {
+        int difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
+
+        switch (difficulty)
+        {
+            case 0:
+                PlayerPrefs.SetInt("CurrentLevel_OFF", level - 1);
+                break;
+            case 1:
+                PlayerPrefs.SetInt("CurrentLevel_Easy", level - 1);
+                break;
+            case 2:
+                PlayerPrefs.SetInt("CurrentLevel_Medium", level - 1);
+                break;
+            case 3:
+                PlayerPrefs.SetInt("CurrentLevel_Hard", level - 1);
+                break;
+            case 4:
+                PlayerPrefs.SetInt("CurrentLevel_Extreme", level - 1);
+                break;
+        }
+    }
+
+    private void DeleteLevel()
+    {
+        int difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
+
+        switch (difficulty)
+        {
+            case 0:
+                PlayerPrefs.DeleteKey("CurrentLevel_OFF");
+                break;
+            case 1:
+                PlayerPrefs.DeleteKey("CurrentLevel_Easy");
+                break;
+            case 2:
+                PlayerPrefs.DeleteKey("CurrentLevel_Medium");
+                break;
+            case 3:
+                PlayerPrefs.DeleteKey("CurrentLevel_Hard");
+                break;
+            case 4:
+                PlayerPrefs.DeleteKey("CurrentLevel_Extreme");
+                break;
         }
     }
 }

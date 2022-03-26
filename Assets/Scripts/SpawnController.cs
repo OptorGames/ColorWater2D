@@ -17,11 +17,13 @@ public class SpawnController : MonoBehaviour
     private string[] colors = { "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD", "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000" };
     private int numberOfEmptyTube = 2;
     private int usedColb;
+    private int diffuculty = 0;
     private List<UsedColor> usedColors = new List<UsedColor>();
 
     public void SpawnObject()
     {
-        ChooseTubesNumber(level);
+        diffuculty = PlayerPrefs.GetInt("Difficulty_", 0);
+        ChooseDifficulty();
         spawnCount = level + numberOfEmptyTube;
         usedColb = spawnCount - numberOfEmptyTube;
 
@@ -46,6 +48,14 @@ public class SpawnController : MonoBehaviour
             return true;
     }
 
+    private void ChooseDifficulty()
+    {
+        if (diffuculty == 0)
+            ChooseTubesNumber(level);
+        else
+            EndlessMode();
+    }
+
     private void ChooseTubesNumber(int level_ID)
     {
         if (level_ID == 1)
@@ -56,27 +66,46 @@ public class SpawnController : MonoBehaviour
             level = 4;
         else if (level_ID >= 8 & level_ID <= 10)
             level = 5;
-        else if (level_ID >= 11 & level_ID <= 15)
+        else if (level_ID >= 11 & level_ID <= 18)
             level = 6;
-        else if (level_ID >= 16 & level_ID <= 20)
+        else if (level_ID >= 19 & level_ID <= 30)
             level = 7;
-        else if (level_ID >= 21 & level_ID <= 30)
+        else if (level_ID >= 31 & level_ID <= 55)
             level = 8;
-        else if (level_ID >= 31 & level_ID <= 40)
+        else if (level_ID >= 56 & level_ID <= 80)
             level = 9;
-        else if (level_ID >= 41 & level_ID <= 50)
+        else if (level_ID >= 81 & level_ID <= 150)
             level = 10;
-        else if (level_ID >= 51 & level_ID <= 70)
+        else if (level_ID >= 151 & level_ID <= 250)
             level = 11;
-        else if (level_ID >= 71 & level_ID <= 100)
+        else if (level_ID >= 251 & level_ID <= 350)
             level = 12;
-        else if (level_ID >= 101 & level_ID <= 130)
+        else if (level_ID >= 351 & level_ID <= 450)
             level = 13;
-        else if (level_ID >= 131 & level_ID <= 200)
+        else if (level_ID >= 451 & level_ID <= 551)
             level = 14;
-        else if (level_ID >= 200)
+        else if (level_ID >= 552)
             level = 15;
 
+    }
+
+    private void EndlessMode()
+    {
+        switch (diffuculty)
+        {
+            case 1:
+                level = Random.Range(5, 8);
+                break;
+            case 2:
+                level = Random.Range(7, 11);
+                break;
+            case 3:
+                level = Random.Range(11, 15);
+                break;
+            case 4:
+                level = 15;
+                break;
+        }
     }
 
     private void SpawnGrid()

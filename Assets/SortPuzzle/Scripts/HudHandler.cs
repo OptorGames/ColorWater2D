@@ -9,6 +9,7 @@ public class HudHandler : MonoBehaviour
     public static bool IsGamePaused, isObserveMode;
 
     public Ads ads;
+    private int old_value;
 
     [Header("Links")]
     [SerializeField] private GameObject MainInterface;
@@ -31,9 +32,10 @@ public class HudHandler : MonoBehaviour
     {
         IsGamePaused = true;
 
-        int old_value = PlayerPrefs.GetInt("CurrentLevel") + 1;
-        PlayerPrefs.SetInt("CurrentLevel", old_value);
+        //int old_value = PlayerPrefs.GetInt("CurrentLevel") + 1;
+        //PlayerPrefs.SetInt("CurrentLevel", old_value);
 
+        UpdateDifficultyLevel();
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
 
         for (int i = 0; i < tubes.Length; i++)
@@ -50,6 +52,34 @@ public class HudHandler : MonoBehaviour
 
         if (PlayerPrefs.GetInt("NoAds") != 1)
             ads.ShowInterstitial();
+    }
+
+    private void UpdateDifficultyLevel()
+    {
+        int difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
+        switch (difficulty)
+        {
+            case 0:
+                old_value = PlayerPrefs.GetInt("CurrentLevel_OFF") + 1;
+                PlayerPrefs.SetInt("CurrentLevel_OFF", old_value);
+                break;
+            case 1:
+                old_value = PlayerPrefs.GetInt("CurrentLevel_Easy") + 1;
+                PlayerPrefs.SetInt("CurrentLevel_Easy", old_value);
+                break;
+            case 2:
+                old_value = PlayerPrefs.GetInt("CurrentLevel_Medium") + 1;
+                PlayerPrefs.SetInt("CurrentLevel_Medium", old_value);
+                break;
+            case 3:
+                old_value = PlayerPrefs.GetInt("CurrentLevel_Hard") + 1;
+                PlayerPrefs.SetInt("CurrentLevel_Hard", old_value);
+                break;
+            case 4:
+                old_value = PlayerPrefs.GetInt("CurrentLevel_Extreme") + 1;
+                PlayerPrefs.SetInt("CurrentLevel_Extreme", old_value);
+                break;
+        }
     }
 
     public void Restart()

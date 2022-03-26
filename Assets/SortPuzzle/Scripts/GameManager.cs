@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     public SpawnController spawnController;
     private static bool isGameOver;
     private bool islevelStart;
+    private int difficulty;
+    private int curr_level;
 
     [Header("Links")]
     [SerializeField] private GameObject BuyStepsPanel;
@@ -28,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Text LeveNumlText;
     [SerializeField] private Text textCountSteps;
+    [SerializeField] private Text textDifficulty;
 
     [SerializeField] public bool addingColor;
 
@@ -60,10 +63,12 @@ public class GameManager : MonoBehaviour
         FullTubes = 0;
         selectedTube = null;
         isGameOver = false;
+        difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
+        SetTextDifficulty();
 
         SetSelectedBackground();
         UpdateTextSteps();
-        int curr_level = PlayerPrefs.GetInt("CurrentLevel") + 1;
+        LoadDifficultyLevel();
         spawnController.level = curr_level;
         spawnController.SpawnObject();
         LeveNumlText.text = "Level " + curr_level.ToString();
@@ -116,6 +121,60 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    public void ChangeDifficulty()
+    {
+        difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
+        difficulty++;
+        if (difficulty > 4)
+            difficulty = 0;
+        PlayerPrefs.SetInt("Difficulty_", difficulty);
+        HUD.Restart();
+    }
+
+    private void SetTextDifficulty()
+    {
+        switch (difficulty)
+        {
+            case 0:
+                textDifficulty.text = "Off";
+                break;
+            case 1:
+                textDifficulty.text = "Easy";
+                break;
+            case 2:
+                textDifficulty.text = "Medium";
+                break;
+            case 3:
+                textDifficulty.text = "Hard";
+                break;
+            case 4:
+                textDifficulty.text = "Extreme";
+                break;
+        }
+    }
+
+    private void LoadDifficultyLevel()
+    {
+        switch (difficulty)
+        {
+            case 0:
+                curr_level = PlayerPrefs.GetInt("CurrentLevel_OFF") + 1;
+                break;
+            case 1:
+                curr_level = PlayerPrefs.GetInt("CurrentLevel_Easy") + 1;
+                break;
+            case 2:
+                curr_level = PlayerPrefs.GetInt("CurrentLevel_Medium") + 1;
+                break;
+            case 3:
+                curr_level = PlayerPrefs.GetInt("CurrentLevel_Hard") + 1;
+                break;
+            case 4:
+                curr_level = PlayerPrefs.GetInt("CurrentLevel_Extreme") + 1;
+                break;
+        }
+}
 
     public void UpdateTextSteps()
     {
