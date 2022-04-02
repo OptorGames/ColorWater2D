@@ -50,7 +50,7 @@ public class ModderMenu : MonoBehaviour
                 GM.HUD.Restart();
             }
 
-            GUILayout.Label("v0.2");
+            GUILayout.Label("v0.2.1");
 
             GUILayout.EndVertical();
             GUILayout.EndArea();

@@ -19,6 +19,7 @@ public class SpawnController : MonoBehaviour
     private int usedColb;
     private int difficulty = 0;
     private List<UsedColor> usedColors = new List<UsedColor>();
+    [SerializeField] private List<TubeController> coloredTubes = new List<TubeController>();
     public static SpawnController spawnController = null;
     public static bool firstStart = true;
 
@@ -168,6 +169,7 @@ public class SpawnController : MonoBehaviour
             }
         }
 
+        FillTube();
         SetCenterPosition();
     }
 
@@ -221,36 +223,40 @@ public class SpawnController : MonoBehaviour
     {
         if (numberOfEmptyTube == 0)
         {
-            GameObject clone = Instantiate(tube, positionToSpawn, rotationToSpawn);
-            TubeController tc = clone.GetComponent<TubeController>();
-
-            int i = 0;
-            int colorID = 0;
-            Color newColor = Color.white;
-            while (i < tc.ColorObjects_Renderers.Length)
-            {
-                colorID = Random.Range(0, usedColors.Count);
-
-                if (usedColors[colorID].colorCount <= 3)
-                {
-                    ColorUtility.TryParseHtmlString(colors[usedColors[colorID].colorID], out newColor);
-                    tc.ColorObjects_Renderers[i].color = newColor;
-                    usedColors[colorID].colorCount++;
-                    i++;
-                }
-
-                if (tc.ColorObjects_Renderers.All(x => x.color == newColor))
-                {
-                    usedColors[colorID].colorCount--;
-                    i--;
-                }
-            }
+            GameObject go = Instantiate(tube, positionToSpawn, rotationToSpawn);
+            coloredTubes.Add(go.GetComponent<TubeController>());
         }
         else
         {
-            GameObject clone = Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
+            Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
             numberOfEmptyTube--;
         }
+    }
+
+    private void FillTube()
+    {
+        int colorID;
+        Color newColor = Color.white;
+
+        for (int i = 0; i < coloredTubes.Count; i++)
+        {
+            for (int j = 0; j < coloredTubes[i].ColorObjects_Renderers.Length;)
+            {
+                colorID = Random.Range(0, usedColors.Count);
+
+                if(usedColors[colorID].colorCount < 4)
+                {
+                    ColorUtility.TryParseHtmlString(colors[usedColors[colorID].colorID], out newColor);
+                    coloredTubes[i].ColorObjects_Renderers[j].color = newColor;
+                    usedColors[colorID].colorCount++;
+                    j++;
+                }
+            }
+        }
+
+        foreach (TubeController tc in coloredTubes)
+            if (tc.ColorObjects_Renderers.All(x => x.color == newColor))
+                FillTube();
     }
 }
 
