@@ -256,7 +256,11 @@ public class SpawnController : MonoBehaviour
 
         foreach (TubeController tc in coloredTubes)
             if (tc.ColorObjects_Renderers.All(x => x.color == newColor))
+            {
+                foreach (UsedColor uc in usedColors)
+                    uc.colorCount = 0;
                 FillTube();
+            }
     }
 }
 
