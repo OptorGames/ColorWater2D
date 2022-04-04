@@ -47,7 +47,8 @@ public class HudHandler : MonoBehaviour
 
         PlayerPrefs.SetInt("Steps", 5);
 
-        if (PlayerPrefs.GetInt("NoAds") != 1)
+        
+        if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1)
             ads.ShowInterstitial();
     }
 
@@ -81,10 +82,15 @@ public class HudHandler : MonoBehaviour
 
     public void Restart()
     {
-        if (PlayerPrefs.GetInt("NoAds") != 1)
-            ads.ShowInterstitial();
-
+        if (PlayerPrefs.GetInt("RestartCount") > 5)
+        {
+            if (PlayerPrefs.GetInt("NoAds") != 1)
+                ads.ShowInterstitial();
+        }
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+        int new_count = PlayerPrefs.GetInt("RestartCount") + 1;
+        PlayerPrefs.SetInt("RestartCount", new_count);
     }
 
     public void LoseGame()

@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dependencies>
   <androidPackages>
-    <androidPackage spec="com.cleveradssolutions:cas:2.6.6" version="2.6.6"/>
+    <androidPackage spec="com.cleveradssolutions:cas:2.6.7" version="2.6.7"/>
     <androidPackage spec="com.google.android.gms:play-services-ads:20.6.0+" version="20.6.0+"/>
-    <androidPackage spec="com.unity3d.ads:unity-ads:4.0.1+" version="4.0.1+"/>
-    <androidPackage spec="com.ironsource.sdk:mediationsdk:7.2.1+" version="7.2.1+">
+    <androidPackage spec="com.unity3d.ads:unity-ads:4.1.0+" version="4.1.0+"/>
+    <androidPackage spec="com.ironsource.sdk:mediationsdk:7.2.1.1" version="7.2.1.1">
       <repositories>
         <repository>https://android-sdk.is.com/</repository>
       </repositories>
     </androidPackage>
-    <androidPackage spec="com.adcolony:sdk:4.6.5+" version="4.6.5+"/>
-    <androidPackage spec="com.vungle:publisher-sdk-android:6.10.4+" version="6.10.4+"/>
-    <androidPackage spec="com.applovin:applovin-sdk:11.2.2+" version="11.2.2+"/>
-    <androidPackage spec="com.inmobi.monetization:inmobi-ads:10.0.3+" version="10.0.3+"/>
+    <androidPackage spec="com.adcolony:sdk:4.7.0+" version="4.7.0+"/>
+    <androidPackage spec="com.vungle:publisher-sdk-android:6.10.5+" version="6.10.5+"/>
+    <androidPackage spec="com.applovin:applovin-sdk:11.3.1+" version="11.3.1+"/>
+    <androidPackage spec="com.inmobi.monetization:inmobi-ads:10.0.5+" version="10.0.5+"/>
     <androidPackage spec="com.facebook.android:audience-network-sdk:6.8.0+" version="6.8.0+"/>
-    <androidPackage spec="com.cleveradssolutions:mintegral:16.0.21.0" version="16.0.21.0">
+    <androidPackage spec="com.cleveradssolutions:mintegral:16.0.31.0" version="16.0.31.0">
       <repositories>
         <repository>https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea</repository>
       </repositories>
     </androidPackage>
-    <androidPackage spec="com.pangle.global:ads-sdk:4.2.5.2" version="4.2.5.2">
+    <androidPackage spec="com.pangle.global:ads-sdk:4.3.0.6" version="4.3.0.6">
       <repositories>
         <repository>https://artifact.bytedance.com/repository/pangle</repository>
       </repositories>
