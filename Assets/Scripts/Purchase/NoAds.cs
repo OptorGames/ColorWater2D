@@ -4,6 +4,7 @@ using UnityEngine.Purchasing;
 public class NoAds : MonoBehaviour
 {
     [SerializeField] private Ads ads;
+    [SerializeField] private GameManager GameManager;
 
     public void OnPurchaseCompltete(Product product)
     {
@@ -17,6 +18,8 @@ public class NoAds : MonoBehaviour
             PlayerPrefs.SetInt("UnlockedThemes", 9);
             PlayerPrefs.SetInt("UnlockedTubes", 2);
         }
+
+        GameManager.DisablePurchaseButtons();
     }
 
     public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)

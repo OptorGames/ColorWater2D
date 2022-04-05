@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(BuySteps), typeof(ButtonsManager))]
@@ -23,6 +22,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject BuyStepsPanel;
     [SerializeField] private Button ButBackStep;
     [SerializeField] private Button AddTubeButton;
+
+    [SerializeField] private GameObject NoAdsButton;
+    [SerializeField] private Button NoAdsButtonInPauseMenu;
+    [SerializeField] private Button UnlockAllButton;
 
     [SerializeField] public GameObject Tube;
 
@@ -83,6 +86,7 @@ public class GameManager : MonoBehaviour
         if (!PlayerPrefs.HasKey("Vibrate"))
             PlayerPrefs.SetInt("Vibrate", 1);
 
+        DisablePurchaseButtons();
         buttonsManager.LoadSettings();
     }
 
@@ -99,7 +103,7 @@ public class GameManager : MonoBehaviour
 
         if (Time.timeScale <= 0.1f)
         {
-            if(confetti.gameObject.activeSelf)
+            if (confetti.gameObject.activeSelf)
                 confetti.gameObject.SetActive(false);
 
             if (audioSource.isPlaying)
@@ -110,7 +114,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if(!confetti.gameObject.activeSelf)
+            if (!confetti.gameObject.activeSelf)
                 confetti.gameObject.SetActive(true);
 
             if (needUnPause)
@@ -119,6 +123,18 @@ public class GameManager : MonoBehaviour
                 needUnPause = false;
             }
         }
+    }
+
+    public void DisablePurchaseButtons()
+    {
+        if (PlayerPrefs.GetInt("NoAds") == 1)
+        {
+            NoAdsButton.SetActive(false);
+            NoAdsButtonInPauseMenu.interactable = false;
+        }
+
+        if (PlayerPrefs.GetInt("UnlockedThemes") == 9 && PlayerPrefs.GetInt("UnlockedTubes") == 2)
+            UnlockAllButton.interactable = false;
     }
 
     public void ChangeDifficulty()
@@ -174,11 +190,11 @@ public class GameManager : MonoBehaviour
                 curr_level = PlayerPrefs.GetInt("CurrentLevel_Extreme") + 1;
                 break;
         }
-}
+    }
 
     public void UpdateTextSteps()
     {
-        if(textCountSteps != null)
+        if (textCountSteps != null)
             textCountSteps.text = PlayerPrefs.GetInt("Steps").ToString();
     }
 
