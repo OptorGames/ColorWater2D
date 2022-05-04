@@ -1,0 +1,36 @@
+{
+  "project_info": {
+    "project_number": "495709420116",
+    "project_id": "optor-group",
+    "storage_bucket": "optor-group.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495709420116:ios:4c017c9c285a76ece40bc1",
+        "android_client_info": {
+          "package_name": "com.OptorGroup.WaterColorSortPuzzle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495709420116-2h7tu9j1nfci3oo05groo5p4fljfksgm.apps.googleusercontent.com"
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWp5g5Vb81pwycvjvvM_Ut0c8jl162Ixo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 0
+        },
+        "appinvite_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

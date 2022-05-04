@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>495709420116-2h7tu9j1nfci3oo05groo5p4fljfksgm.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.495709420116-2h7tu9j1nfci3oo05groo5p4fljfksgm</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDWp5g5Vb81pwycvjvvM_Ut0c8jl162Ixo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>495709420116</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.OptorGroup.WaterColorSortPuzzle</string>
+	<key>PROJECT_ID</key>
+	<string>optor-group</string>
+	<key>STORAGE_BUCKET</key>
+	<string>optor-group.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:495709420116:ios:4c017c9c285a76ece40bc1</string>
+</dict>
+</plist>

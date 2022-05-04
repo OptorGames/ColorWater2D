@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Google.Play.Review;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -55,6 +56,9 @@ public class GameManager : MonoBehaviour
 
     private bool needUnPause = false;
 
+    // Create instance of ReviewManager
+    private ReviewManager _reviewManager;
+
     private void Start()
     {
         buttonsManager = GetComponent<ButtonsManager>();
@@ -88,6 +92,11 @@ public class GameManager : MonoBehaviour
 
         DisablePurchaseButtons();
         buttonsManager.LoadSettings();
+
+        _reviewManager = new ReviewManager();
+
+        if (curr_level == 10)
+            StartCoroutine(nameof(ReviewInfo));
     }
 
     private void Update()
@@ -145,7 +154,7 @@ public class GameManager : MonoBehaviour
             difficulty = 0;
         PlayerPrefs.SetInt("Difficulty_", difficulty);
         spawnController.NotFirstLoad();
-        HUD.Restart();
+        HUD.RestartWithoutAds();
     }
 
     private void SetTextDifficulty()
@@ -412,6 +421,11 @@ public class GameManager : MonoBehaviour
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
 
+            if (currGameLevel == 10)
+            {
+                StartCoroutine(ReviewInfo());
+            }
+
             HUD.WinGame();
         }
     }
@@ -458,6 +472,11 @@ public class GameManager : MonoBehaviour
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
 
+            if (currGameLevel == 10)
+            {
+                StartCoroutine(ReviewInfo());
+            }
+
             HUD.WinGame();
         }
     }
@@ -465,6 +484,37 @@ public class GameManager : MonoBehaviour
     public void RemoveFull()
     {
         FullTubes--;
+    }
+
+    private IEnumerator ReviewInfo()
+    {
+        var requestFlowOperation = _reviewManager.RequestReviewFlow();
+        yield return requestFlowOperation;
+        if (requestFlowOperation.Error != ReviewErrorCode.NoError)
+        {
+            // Log error. For example, using requestFlowOperation.Error.ToString().
+            Debug.Log(requestFlowOperation.Error.ToString());
+            yield break;
+        }
+        PlayReviewInfo _playReviewInfo = requestFlowOperation.GetResult();
+
+        StartCoroutine(StartReview(_playReviewInfo));
+    }
+
+    private IEnumerator StartReview(PlayReviewInfo _playReviewInfo)
+    {
+        var launchFlowOperation = _reviewManager.LaunchReviewFlow(_playReviewInfo);
+        yield return launchFlowOperation;
+        _playReviewInfo = null; // Reset the object
+        if (launchFlowOperation.Error != ReviewErrorCode.NoError)
+        {
+            // Log error. For example, using requestFlowOperation.Error.ToString().
+            Debug.Log(launchFlowOperation.Error.ToString());
+            yield break;
+        }
+        // The flow has finished. The API does not indicate whether the user
+        // reviewed or not, or even whether the review dialog was shown. Thus, no
+        // matter the result, we continue our app flow.
     }
 }
 

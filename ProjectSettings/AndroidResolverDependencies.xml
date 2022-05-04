@@ -2,17 +2,26 @@
   <packages>
     <package>androidx.appcompat:appcompat:1.3.0</package>
     <package>androidx.core:core-ktx:1.6.0</package>
-    <package>com.adcolony:sdk:4.7.0+</package>
-    <package>com.applovin:applovin-sdk:11.3.1+</package>
-    <package>com.cleveradssolutions:cas:2.6.7</package>
+    <package>com.adcolony:sdk:4.7.1+</package>
+    <package>com.android.installreferrer:installreferrer:2.1</package>
+    <package>com.applovin:applovin-sdk:11.3.2+</package>
+    <package>com.appsflyer:af-android-sdk:6.5.2</package>
+    <package>com.appsflyer:unity-wrapper:6.5.2</package>
+    <package>com.cleveradssolutions:cas:2.7.0</package>
     <package>com.cleveradssolutions:mintegral:16.0.31.0</package>
     <package>com.facebook.android:audience-network-sdk:6.8.0+</package>
+    <package>com.google.android.exoplayer:exoplayer:2.13.3</package>
     <package>com.google.android.gms:play-services-ads:20.6.0+</package>
     <package>com.google.android.gms:play-services-ads-identifier:17.0.1</package>
     <package>com.google.android.gms:play-services-base:17.6.0</package>
+    <package>com.google.android.play:core:1.10.3</package>
     <package>com.google.code.gson:gson:2.8.6</package>
+    <package>com.google.firebase:firebase-analytics:19.0.0</package>
+    <package>com.google.firebase:firebase-analytics-unity:8.6.2</package>
+    <package>com.google.firebase:firebase-app-unity:8.6.2</package>
+    <package>com.google.firebase:firebase-common:20.0.0</package>
     <package>com.inmobi.monetization:inmobi-ads:10.0.5+</package>
-    <package>com.ironsource.sdk:mediationsdk:7.2.1.1</package>
+    <package>com.ironsource.sdk:mediationsdk:7.2.1.1+</package>
     <package>com.my.target:mytarget-sdk:5.15.0+</package>
     <package>com.pangle.global:ads-sdk:4.3.0.6</package>
     <package>com.tapjoy:tapjoy-android-sdk:12.9.1</package>
@@ -22,7 +31,12 @@
     <package>org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9</package>
     <package>org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9</package>
   </packages>
-  <files />
+  <files>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/8.6.2/firebase-analytics-unity-8.6.2.aar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-analytics-unity/8.6.2/firebase-analytics-unity-8.6.2.pom</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/8.6.2/firebase-app-unity-8.6.2.aar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/8.6.2/firebase-app-unity-8.6.2.pom</file>
+  </files>
   <settings>
     <setting name="androidAbis" value="arm64-v8a,armeabi-v7a" />
     <setting name="bundleId" value="com.OptorGroup.ColorTheDrawingGame" />
