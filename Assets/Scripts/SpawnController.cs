@@ -95,28 +95,18 @@ public class SpawnController : MonoBehaviour
             level = 3;
         else if (level_ID >= 5 & level_ID <= 7)
             level = 4;
-        else if (level_ID >= 8 & level_ID <= 10)
+        else if (level_ID >= 8 & level_ID <= 11)
             level = 5;
-        else if (level_ID >= 11 & level_ID <= 18)
-            level = 6;
-        else if (level_ID >= 19 & level_ID <= 30)
-            level = 7;
-        else if (level_ID >= 31 & level_ID <= 55)
-            level = 8;
-        else if (level_ID >= 56 & level_ID <= 80)
-            level = 9;
-        else if (level_ID >= 81 & level_ID <= 150)
-            level = 10;
-        else if (level_ID >= 151 & level_ID <= 250)
-            level = 11;
-        else if (level_ID >= 251 & level_ID <= 350)
-            level = 12;
-        else if (level_ID >= 351 & level_ID <= 450)
-            level = 13;
-        else if (level_ID >= 451 & level_ID <= 551)
-            level = 14;
-        else if (level_ID >= 552)
-            level = 15;
+        else if (level_ID >= 12 & level_ID <= 21)
+            level = Random.Range(4, 7);
+        else if (level_ID >= 22 & level_ID <= 50)
+            level = Random.Range(4, 8);
+        else if (level_ID >= 51 & level_ID <= 100)
+            level = Random.Range(5, 8);
+        else if (level_ID >= 101 & level_ID <= 300)
+            level = Random.Range(5, 9);
+        else if (level_ID >= 301)
+            level = Random.Range(5, 10);
 
     }
 
@@ -125,13 +115,13 @@ public class SpawnController : MonoBehaviour
         switch (difficulty)
         {
             case 1:
-                level = Random.Range(3, 5);
+                level = Random.Range(3, 6);
                 break;
             case 2:
-                level = Random.Range(5, 9);
+                level = Random.Range(5, 8);
                 break;
             case 3:
-                level = Random.Range(9, 13);
+                level = Random.Range(9, 12);
                 break;
             case 4:
                 level = Random.Range(13, 16);

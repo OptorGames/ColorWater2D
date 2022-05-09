@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour
     {
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         difficulty++;
-        if (difficulty > 4)
+        if (difficulty > 3)
             difficulty = 0;
         PlayerPrefs.SetInt("Difficulty_", difficulty);
         spawnController.NotFirstLoad();
