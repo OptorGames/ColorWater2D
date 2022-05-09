@@ -1,5 +1,6 @@
 ﻿using DevToDev.Analytics;
 using Firebase.Analytics;
+using ForTutorial;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,8 +13,8 @@ public class HudHandler : MonoBehaviour
     public Ads ads;
     private int old_value;
 
-    [Header("Links")]
-    [SerializeField] private GameObject MainInterface;
+    [Header("Links")] [SerializeField] private GameObject MainInterface;
+    [SerializeField] private TutorialController _tutorialController;
 
     private void Start()
     {
@@ -41,6 +42,15 @@ public class HudHandler : MonoBehaviour
 
         WinMenu.SetActive(true);
         MainInterface.SetActive(false);
+        if (!PlayerPrefs.HasKey("FirstStart"))
+        {
+            foreach (var tutorialArrow in _tutorialController.TutorialArrows)
+            {
+                tutorialArrow.SetActive(false);
+            }
+
+            PlayerPrefs.SetInt("FirstStart", 1);
+        }
 
         if (old_value == 1) FirebaseAnalytics.LogEvent("level_1");
         if (old_value == 1 || old_value == 3 || old_value == 5 || old_value == 7 || old_value == 10 ||
@@ -48,7 +58,7 @@ public class HudHandler : MonoBehaviour
             DTDAnalytics.CustomEvent(eventName: "Level_" + old_value.ToString());
 
         PlayerPrefs.SetInt("Steps", 5);
-        
+
         if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1 && old_value != 10)
             ads.ShowInterstitial();
     }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ForTutorial;
 using UnityEngine;
 
 public class SpawnController : MonoBehaviour
@@ -14,12 +15,19 @@ public class SpawnController : MonoBehaviour
     public GameObject rewardedTube;
     public GameManager GM;
     public Vector3 origin;
-    private string[] colors = { "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD", "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000" };
-    private int numberOfEmptyTube = 2;
+
+    private string[] colors =
+    {
+        "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD",
+        "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000"
+    };
+
+    public int numberOfEmptyTube = 2;
     private int usedColb;
     private int difficulty = 0;
     private List<UsedColor> usedColors = new List<UsedColor>();
     [SerializeField] private List<TubeController> coloredTubes = new List<TubeController>();
+    [SerializeField] private TutorialController _tutorialController;
     public static SpawnController spawnController = null;
     public static bool firstStart = true;
 
@@ -56,6 +64,7 @@ public class SpawnController : MonoBehaviour
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
         spawnCount = level + numberOfEmptyTube;
+        Debug.LogError("spawnCount :"+spawnCount);
         usedColb = spawnCount - numberOfEmptyTube;
 
         if (usedColb > colors.Length)
@@ -65,7 +74,7 @@ public class SpawnController : MonoBehaviour
         {
             int colorID = Random.Range(0, colors.Length);
             if (CheckOnExist(colorID))
-                usedColors.Add(new UsedColor { colorID = colorID, colorCount = 0 });
+                usedColors.Add(new UsedColor {colorID = colorID, colorCount = 0});
         }
 
         SpawnGrid();
@@ -107,7 +116,6 @@ public class SpawnController : MonoBehaviour
             level = Random.Range(5, 9);
         else if (level_ID >= 301)
             level = Random.Range(5, 10);
-
     }
 
     private void EndlessMode()
@@ -121,10 +129,10 @@ public class SpawnController : MonoBehaviour
                 level = Random.Range(5, 8);
                 break;
             case 3:
-                level = Random.Range(7, 10);
+                level = Random.Range(9, 11);
                 break;
             case 4:
-                level = Random.Range(13, 16);
+                level = Random.Range(10,10);
                 break;
         }
     }
@@ -133,11 +141,9 @@ public class SpawnController : MonoBehaviour
     {
         int spawnedCount = 0;
         float y = 0;
-
         int spawnGrid = (usedColb + numberOfEmptyTube);
         if (spawnGrid > 17)
             spawnGrid = 17;
-
         for (int i = 0; i < spawnGrid; i++)
         {
             Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
@@ -167,7 +173,7 @@ public class SpawnController : MonoBehaviour
     {
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
 
-        switch (tubes.Length)
+        /*switch (tubes.Length)
         {
             case 4:
                 origin = new Vector3(-2f, origin.y, origin.z);
@@ -179,13 +185,13 @@ public class SpawnController : MonoBehaviour
             default:
                 origin = new Vector3(-6.5f, origin.y, origin.z);
                 break;
-        }
+        }*/
 
-        if (tubes.Length < 6)
-            origin = new Vector3(origin.x, -5f, origin.z);
+        if (tubes.Length < 9)
+            origin = new Vector3(origin.x, 0f, origin.z);
 
-        else if (tubes.Length > 6 & tubes.Length < 12)
-            origin = new Vector3(origin.x, 8f, origin.z);
+        else if (tubes.Length >= 9 & tubes.Length <= 12)
+            origin = new Vector3(origin.x, 6f, origin.z);
 
         else if (tubes.Length > 12)
             origin = new Vector3(origin.x, 7f, origin.z);
@@ -211,15 +217,25 @@ public class SpawnController : MonoBehaviour
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)
     {
-        if (numberOfEmptyTube == 0)
+        if (PlayerPrefs.HasKey("FirstStart"))
         {
-            GameObject go = Instantiate(tube, positionToSpawn, rotationToSpawn);
-            coloredTubes.Add(go.GetComponent<TubeController>());
+            if (numberOfEmptyTube == 0)
+            {
+                GameObject go = Instantiate(tube, positionToSpawn, rotationToSpawn);
+                coloredTubes.Add(go.GetComponent<TubeController>());
+            }
+            else
+            {
+                Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
+                numberOfEmptyTube--;
+            }
         }
         else
         {
-            Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
-            numberOfEmptyTube--;
+            _tutorialController.TutorialTubes.Add(Instantiate(_tutorialController.TubeForTutorial, positionToSpawn, rotationToSpawn));
+            positionToSpawn.x += 1.2f;
+            positionToSpawn.y -= 20;
+            _tutorialController.TutorialArrows.Add(Instantiate(_tutorialController.ArrowPoint, positionToSpawn, rotationToSpawn));
         }
     }
 
@@ -234,7 +250,7 @@ public class SpawnController : MonoBehaviour
             {
                 colorID = Random.Range(0, usedColors.Count);
 
-                if(usedColors[colorID].colorCount < 4)
+                if (usedColors[colorID].colorCount < 4)
                 {
                     ColorUtility.TryParseHtmlString(colors[usedColors[colorID].colorID], out newColor);
                     coloredTubes[i].ColorObjects_Renderers[j].color = newColor;

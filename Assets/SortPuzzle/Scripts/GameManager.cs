@@ -1,6 +1,7 @@
 ﻿using Google.Play.Review;
 using System.Collections;
 using System.Collections.Generic;
+using ForTutorial;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,8 +20,9 @@ public class GameManager : MonoBehaviour
     private int difficulty = 0;
     private int curr_level;
 
-    [Header("Links")]
-    [SerializeField] private GameObject BuyStepsPanel;
+    [SerializeField] private TutorialController _tutorialController;
+
+    [Header("Links")] [SerializeField] private GameObject BuyStepsPanel;
     [SerializeField] private Button ButBackStep;
     [SerializeField] private Button AddTubeButton;
 
@@ -44,8 +46,7 @@ public class GameManager : MonoBehaviour
     public AudioSource audioSource;
     [HideInInspector] public ButtonsManager buttonsManager;
 
-    [Header("FromShop")]
-    public Sprite[] tubes;
+    [Header("FromShop")] public Sprite[] tubes;
     public Sprite[] tubesMasks;
 
     [SerializeField] private Sprite[] themes;
@@ -53,7 +54,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image background;
 
     [SerializeField] private ParticleSystem confetti;
-
     private bool needUnPause = false;
 
     // Create instance of ReviewManager
@@ -71,11 +71,24 @@ public class GameManager : MonoBehaviour
         selectedTube = null;
         isGameOver = false;
         difficulty = spawnController.GetDifficulty();
-        SetTextDifficulty();
+        SetTextDifficulty(); 
+        //PlayerPrefs.DeleteKey("FirstStart");
+       // PlayerPrefs.SetInt("FirstStart", 1);
+
+        if (PlayerPrefs.HasKey("FirstStart"))
+        {
+            _tutorialController.enabled = false;
+            LoadDifficultyLevel();
+        }
+        else
+        {
+            _tutorialController.enabled = true;
+        }
         SetSelectedBackground();
         UpdateTextSteps();
-        LoadDifficultyLevel();
         spawnController.level = curr_level;
+        
+
         spawnController.SpawnObject();
         LeveNumlText.text = "Level " + curr_level.ToString();
 
@@ -185,6 +198,8 @@ public class GameManager : MonoBehaviour
         {
             case 0:
                 curr_level = PlayerPrefs.GetInt("CurrentLevel_OFF") + 1;
+                print(difficulty);
+
                 break;
             case 1:
                 curr_level = PlayerPrefs.GetInt("CurrentLevel_Easy") + 1;
@@ -221,6 +236,7 @@ public class GameManager : MonoBehaviour
             selectedTube = null;
             Tube = null;
         }
+
         //else Debug.LogError("RewardedTube == NULL");
         spawnController.SetCenterPosition();
     }
@@ -309,6 +325,11 @@ public class GameManager : MonoBehaviour
             tube.sorting.sortingOrder = 0;
             selectedTube = null;
         }
+
+        if (!PlayerPrefs.HasKey("FirstStart"))
+        {
+            _tutorialController.ProgressControl(0);
+        }
     }
 
     private IEnumerator LevelInitialized()
@@ -365,19 +386,22 @@ public class GameManager : MonoBehaviour
             selectedTube = null;
             for (int i = 0; i < tubeControllers.Count; i++)
             {
-                tubeControllers[i].transform.position = new Vector3(tubeControllers[i].transform.position.x, tubeControllers[i].Pos.y, tubeControllers[i].transform.position.z);
+                tubeControllers[i].transform.position = new Vector3(tubeControllers[i].transform.position.x,
+                    tubeControllers[i].Pos.y, tubeControllers[i].transform.position.z);
             }
 
             for (int i = 0; i < tubeControllers.Count; i++)
             {
-                if (tubeControllers.Count > savedTubes[savedTubes.Count - 1].tubes.Count && i == tubeControllers.Count - 1)
+                if (tubeControllers.Count > savedTubes[savedTubes.Count - 1].tubes.Count &&
+                    i == tubeControllers.Count - 1)
                     break;
 
                 tubeControllers[i].currColors = savedTubes[savedTubes.Count - 1].tubes[i].currColors;
                 tubeControllers[i].isEmpty = savedTubes[savedTubes.Count - 1].tubes[i].isEmpty;
                 tubeControllers[i].isFull = savedTubes[savedTubes.Count - 1].tubes[i].isFull;
 
-                tubeControllers[i].transform.position = new Vector3(tubeControllers[i].transform.position.x, tubeControllers[i].Pos.y, tubeControllers[i].transform.position.z);
+                tubeControllers[i].transform.position = new Vector3(tubeControllers[i].transform.position.x,
+                    tubeControllers[i].Pos.y, tubeControllers[i].transform.position.z);
                 tubeControllers[i].transform.localScale = savedTubes[savedTubes.Count - 1].tubes[i].scale;
 
                 tubeControllers[i].NextTube = null;
@@ -389,7 +413,8 @@ public class GameManager : MonoBehaviour
                     else tubeControllers[i].ColorObjects[a].SetActive(false);
 
                     tubeControllers[i].ColorObjects[a].transform.localScale = new Vector2(1.8375f, 0.25f);
-                    tubeControllers[i].ColorObjects_Renderers[a].color = savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
+                    tubeControllers[i].ColorObjects_Renderers[a].color =
+                        savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
                     tubeControllers[i].colorsInTube[a] = savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
                 }
             }
@@ -496,6 +521,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(requestFlowOperation.Error.ToString());
             yield break;
         }
+
         PlayReviewInfo _playReviewInfo = requestFlowOperation.GetResult();
 
         StartCoroutine(StartReview(_playReviewInfo));
@@ -512,6 +538,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(launchFlowOperation.Error.ToString());
             yield break;
         }
+
         // The flow has finished. The API does not indicate whether the user
         // reviewed or not, or even whether the review dialog was shown. Thus, no
         // matter the result, we continue our app flow.
