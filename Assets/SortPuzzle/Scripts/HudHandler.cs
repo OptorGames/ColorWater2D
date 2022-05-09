@@ -1,5 +1,5 @@
 ﻿using DevToDev.Analytics;
-//using Firebase.Analytics;
+using Firebase.Analytics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -42,14 +42,14 @@ public class HudHandler : MonoBehaviour
         WinMenu.SetActive(true);
         MainInterface.SetActive(false);
 
-        //if (old_value == 1) FirebaseAnalytics.LogEvent("level_1");
+        if (old_value == 1) FirebaseAnalytics.LogEvent("level_1");
         if (old_value == 1 || old_value == 3 || old_value == 5 || old_value == 7 || old_value == 10 ||
             old_value == 15 || old_value == 20 || old_value == 50 || old_value == 100 || old_value == 150)
             DTDAnalytics.CustomEvent(eventName: "Level_" + old_value.ToString());
 
         PlayerPrefs.SetInt("Steps", 5);
         
-        if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1)
+        if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1 && old_value != 10)
             ads.ShowInterstitial();
     }
 
@@ -95,6 +95,8 @@ public class HudHandler : MonoBehaviour
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public void RestartWithoutAds() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
     public void LoseGame()
     {
