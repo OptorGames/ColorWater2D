@@ -121,7 +121,7 @@ public class SpawnController : MonoBehaviour
                 level = Random.Range(5, 8);
                 break;
             case 3:
-                level = Random.Range(9, 12);
+                level = Random.Range(7, 10);
                 break;
             case 4:
                 level = Random.Range(13, 16);
@@ -185,7 +185,7 @@ public class SpawnController : MonoBehaviour
             origin = new Vector3(origin.x, -5f, origin.z);
 
         else if (tubes.Length > 6 & tubes.Length < 12)
-            origin = new Vector3(origin.x, -1.5f, origin.z);
+            origin = new Vector3(origin.x, 8f, origin.z);
 
         else if (tubes.Length > 12)
             origin = new Vector3(origin.x, 7f, origin.z);
