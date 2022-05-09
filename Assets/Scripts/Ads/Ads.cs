@@ -10,7 +10,7 @@ public class Ads : MonoBehaviour
 
     private bool isAppReturnEnable = false;
 
-    private IAdView bannerView;
+    //private IAdView bannerView;
 
     private int rew_id;
     public GameManager GM;
@@ -28,32 +28,32 @@ public class Ads : MonoBehaviour
 
         InvokeRepeating("OnRefreshStatus", 1.0f, 1.0f);
 
-        bannerView = manager.GetAdView(AdSize.Banner);
-        ShowBanner();
+        //bannerView = manager.GetAdView(AdSize.Banner);
+        //ShowBanner();
         rew_id = 10;
     }
 
-    public void ShowBanner()
-    {
-        if (PlayerPrefs.GetInt("NoAds") != 1)
-            bannerView.SetActive(true);
-    }
+    //public void ShowBanner()
+    //{
+    //    if (PlayerPrefs.GetInt("NoAds") != 1)
+    //        bannerView.SetActive(true);
+    //}
 
-    public void HideBanner()
-    {
-        bannerView.SetActive(false);
-    }
+    //public void HideBanner()
+    //{
+    //    bannerView.SetActive(false);
+    //}
 
-    public void SetBannerPosition(int positionEnum)
-    {
-        bannerView.position = (AdPosition)positionEnum;
-    }
+    //public void SetBannerPosition(int positionEnum)
+    //{
+    //    bannerView.position = (AdPosition)positionEnum;
+    //}
 
-    public void SetBannerSize(int sizeID)
-    {
-        bannerView = manager.GetAdView((AdSize)sizeID);
-        ShowBanner();
-    }
+    //public void SetBannerSize(int sizeID)
+    //{
+    //    bannerView = manager.GetAdView((AdSize)sizeID);
+    //    ShowBanner();
+    //}
 
     public void ShowInterstitial()
     {

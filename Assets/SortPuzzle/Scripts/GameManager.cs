@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
             audioSource.volume = PlayerPrefs.GetFloat("Volume");
 
         if (!PlayerPrefs.HasKey("Vibrate"))
-            PlayerPrefs.SetInt("Vibrate", 1);
+            PlayerPrefs.SetInt("Vibrate", 0);
 
         DisablePurchaseButtons();
         buttonsManager.LoadSettings();

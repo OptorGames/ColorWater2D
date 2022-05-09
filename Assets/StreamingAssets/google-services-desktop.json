@@ -7,27 +7,37 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:495709420116:ios:4c017c9c285a76ece40bc1",
+        "mobilesdk_app_id": "1:495709420116:android:cbb501c43f3b0c20e40bc1",
         "android_client_info": {
-          "package_name": "com.OptorGroup.WaterColorSortPuzzle"
+          "package_name": "com.OptorGroup.ColorTheDrawingGame"
         }
       },
       "oauth_client": [
         {
-          "client_id": "495709420116-2h7tu9j1nfci3oo05groo5p4fljfksgm.apps.googleusercontent.com"
+          "client_id": "495709420116-12ecmq0hi4k14qk11jrke68u7j65r32k.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDWp5g5Vb81pwycvjvvM_Ut0c8jl162Ixo"
+          "current_key": "AIzaSyAp8_m5yp5CRoEWvJYe6n4lmqJz4JWGByk"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 0
-        },
         "appinvite_service": {
-          "status": 1
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495709420116-12ecmq0hi4k14qk11jrke68u7j65r32k.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "495709420116-2h7tu9j1nfci3oo05groo5p4fljfksgm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.OptorGroup.WaterColorSortPuzzle"
+              }
+            }
+          ]
         }
       }
     }

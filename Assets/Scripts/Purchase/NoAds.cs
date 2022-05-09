@@ -11,7 +11,7 @@ public class NoAds : MonoBehaviour
         if (product.definition.id == "no_ads")
         {
             PlayerPrefs.SetInt("NoAds", 1);
-            ads.HideBanner();
+            //ads.HideBanner();
         }
         else if (product.definition.id == "unlock_all")
         {
