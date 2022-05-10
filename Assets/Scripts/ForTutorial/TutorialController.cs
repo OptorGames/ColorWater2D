@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -28,6 +29,13 @@ namespace ForTutorial
                 ProgressControl(1);
                 _difficultyButton.enabled = false;
             }
+        }
+
+        public void RestartTutorial()
+        {
+            PlayerPrefs.DeleteKey("FirstStart");
+            PlayerPrefs.DeleteKey("CurrentLevel_OFF");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         public void ProgressControl(int numberForTurnOn)

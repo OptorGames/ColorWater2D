@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 public class TubeController : MonoBehaviour
@@ -22,13 +23,14 @@ public class TubeController : MonoBehaviour
     [HideInInspector] public SortingGroup sorting;
 
     private bool IsAddColor;
-    [Space(15)]
-    public bool isFull, isEmpty, isBusy;
+    [Space(15)] public bool isFull, isEmpty, isBusy;
     private bool isAddingColor;
 
     private float ColorLerp;
 
     private AudioSource audioSource;
+    private float _returnSpeed = 30;
+    private bool _canMouseDown = true;
 
     private void Start()
     {
@@ -70,11 +72,11 @@ public class TubeController : MonoBehaviour
             GM.AddEmpty();
         }
 
-        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] && colorsInTube[0] == colorsInTube[3])
+        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
+            colorsInTube[0] == colorsInTube[3])
         {
             GM.AddFull(transform.position, false);
             isFull = true;
-
         }
     }
 
@@ -88,8 +90,8 @@ public class TubeController : MonoBehaviour
                 isAddingColor = false;
                 ColorLerp = 1;
             }
-            ColorObjects[currColors - 1].transform.localScale = new Vector3(1.8375f, 0.25f * ColorLerp, 1);
 
+            ColorObjects[currColors - 1].transform.localScale = new Vector3(1.8375f, 0.25f * ColorLerp, 1);
         }
 
         if (isrotating)
@@ -98,11 +100,11 @@ public class TubeController : MonoBehaviour
             if (rotationLerp >= 1)
             {
                 rotationLerp = 1;
-
                 float tempAngle1 = Mathf.Lerp(0, RotEnd, rotationLerp);
                 transform.eulerAngles = new Vector3(0, 0, tempAngle1);
                 ColorsPivot.transform.eulerAngles = Vector3.zero;
                 ColorsPivot.transform.localScale = new Vector3(10, 1 - (tempAngle1 / 180), 1);
+
 
                 if (currColors > 1 && colorsInTube[currColors - 1] == colorsInTube[currColors - 2])
                 {
@@ -121,13 +123,9 @@ public class TubeController : MonoBehaviour
                     NextTube.isBusy = false;
                     PourSprite.SetActive(false);
                     RemoveColor();
-                    transform.position = Pos;
 
+                    StartCoroutine(ReturnToStartingPosition(_returnSpeed));
                     GM.addingColor = false;
-
-                    transform.eulerAngles = Vector3.zero;
-                    ColorsPivot.transform.eulerAngles = Vector3.zero;
-                    ColorsPivot.transform.localScale = Vector3.one;
 
                     if (currColors == 0)
                     {
@@ -143,6 +141,7 @@ public class TubeController : MonoBehaviour
                     IsAddColor = false;
                     NextTube.AddColor(colorsInTube[currColors - 1]);
                 }
+
                 float tempAngle = Mathf.Lerp(RotStart, RotEnd, rotationLerp);
                 transform.eulerAngles = new Vector3(0, 0, tempAngle);
                 ColorsPivot.transform.eulerAngles = Vector3.zero;
@@ -151,7 +150,8 @@ public class TubeController : MonoBehaviour
 
                 if (tempAngle > RotStart)
                 {
-                    ColorObjects[currColors - 1].transform.localScale = new Vector3(1, Mathf.Lerp(0, 0.25f, (RotEnd - tempAngle) / (RotEnd - RotStart)), 1);
+                    ColorObjects[currColors - 1].transform.localScale = new Vector3(1,
+                        Mathf.Lerp(0, 0.25f, (RotEnd - tempAngle) / (RotEnd - RotStart)), 1);
                 }
             }
         }
@@ -169,9 +169,9 @@ public class TubeController : MonoBehaviour
         return true;
     }
 
-    public void PourColor(GameObject OtherTube)
+    public void PourColor(GameObject otherTube)
     {
-        NextTube = OtherTube.GetComponent<TubeController>();
+        NextTube = otherTube.GetComponent<TubeController>();
 
         int MatchCount;
         MatchCount = 1;
@@ -187,6 +187,7 @@ public class TubeController : MonoBehaviour
         if (currColors > 0 && NextTube.CheckCapacity(MatchCount, currColors, colorsInTube[currColors - 1]))
         {
             GM.SaveTubes();
+
             float y = 0;
 
             if (PlayerPrefs.GetInt("Tube") > 0)
@@ -211,15 +212,11 @@ public class TubeController : MonoBehaviour
                 else if (NextTube.currColors == 3)
                     y = 0.7f;
             }
-                
 
             PourSprite.transform.localScale = new Vector3(1f, y, 1f);
-
-            transform.position = OtherTube.transform.position + new Vector3(1.5f, 7f, 0f);
-            RotateTube();
+            StartCoroutine(MoveToEndingPosition(_returnSpeed, otherTube));
         }
-        else transform.position = Pos;
-
+        else StartCoroutine(ReturnToStartingPosition(_returnSpeed));
     }
 
     public void RemoveColor()
@@ -246,7 +243,8 @@ public class TubeController : MonoBehaviour
             GM.RemoveEmpty();
         }
 
-        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] && colorsInTube[0] == colorsInTube[3])
+        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
+            colorsInTube[0] == colorsInTube[3])
         {
             GM.AddFull(transform.position, true);
             isFull = true;
@@ -255,13 +253,12 @@ public class TubeController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!isFull && !isrotating)
+        if (!isFull && !isrotating && _canMouseDown)
         {
             GM.TubeClicked(this.gameObject);
         }
     }
- 
-    
+
 
     private void RotateTube()
     {
@@ -274,17 +271,54 @@ public class TubeController : MonoBehaviour
             RotEnd = RotationData.EAngle4[currColors - 1];
         }
 
-        if(PlayerPrefs.GetInt("Tube") > 0)
+        if (PlayerPrefs.GetInt("Tube") > 0)
             PourSprite.transform.localPosition = new Vector3(0.3f, 0f, 0f);
         else
             PourSprite.transform.localPosition = new Vector3(-0.15f, 0f, 0f);
 
-        PourSprite.SetActive(true);
         PourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
-
+        PourSprite.SetActive(true);
         audioSource.Play();
-
         isrotating = true;
         GM.addingColor = true;
+    }
+
+    public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
+    {
+        RotStart = RotationData.SAngle4[currColors - 1];
+        _canMouseDown = false;
+        while (transform.position != otherTube.transform.position + new Vector3(1.5f, 7f, 0f))
+        {
+            transform.position = Vector3.MoveTowards(transform.position,
+                otherTube.transform.position + new Vector3(1.5f, 7f, 0f), moveSpeed * Time.deltaTime);
+            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(0, 0, RotStart),
+                moveSpeed / 4 * Time.deltaTime);
+            ColorsPivot.transform.eulerAngles = Vector3.zero;
+            ColorsPivot.transform.localScale = Vector3.Lerp(ColorsPivot.transform.localScale,
+                new Vector3(10, 1 - (RotStart / 180), 1),
+                moveSpeed / 4 * Time.deltaTime);
+            yield return new WaitForEndOfFrame();
+        }
+
+        RotateTube();
+    }
+
+    private IEnumerator ReturnToStartingPosition(float returnSpeed)
+    {
+        _canMouseDown = false;
+        while (transform.position != Pos)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, Pos, returnSpeed * Time.deltaTime);
+            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, Vector3.zero, returnSpeed / 2 * Time.deltaTime);
+            ColorsPivot.transform.eulerAngles = Vector3.zero;
+            ColorsPivot.transform.localScale = Vector3.Lerp(ColorsPivot.transform.localScale, Vector3.one,
+                returnSpeed / 2 * Time.deltaTime);
+            yield return new WaitForEndOfFrame();
+        }
+        transform.position = Pos;
+        transform.eulerAngles = Vector3.zero;
+        ColorsPivot.transform.eulerAngles = Vector3.zero;
+        ColorsPivot.transform.localScale = Vector3.one;
+        _canMouseDown = true;
     }
 }

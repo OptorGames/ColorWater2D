@@ -48,7 +48,7 @@ public class HudHandler : MonoBehaviour
             {
                 tutorialArrow.SetActive(false);
             }
-
+            PlayerPrefs.SetInt("CurrentLevel_OFF",0);
             PlayerPrefs.SetInt("FirstStart", 1);
         }
 

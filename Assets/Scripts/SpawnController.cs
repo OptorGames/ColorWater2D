@@ -64,7 +64,6 @@ public class SpawnController : MonoBehaviour
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
         spawnCount = level + numberOfEmptyTube;
-        Debug.LogError("spawnCount :"+spawnCount);
         usedColb = spawnCount - numberOfEmptyTube;
 
         if (usedColb > colors.Length)
@@ -129,10 +128,7 @@ public class SpawnController : MonoBehaviour
                 level = Random.Range(5, 8);
                 break;
             case 3:
-                level = Random.Range(9, 11);
-                break;
-            case 4:
-                level = Random.Range(10,10);
+                level = Random.Range(7, 10);
                 break;
         }
     }
@@ -173,28 +169,11 @@ public class SpawnController : MonoBehaviour
     {
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
 
-        /*switch (tubes.Length)
-        {
-            case 4:
-                origin = new Vector3(-2f, origin.y, origin.z);
-                break;
-            case 5:
-                origin = new Vector3(-4.5f, origin.y, origin.z);
-                break;
-
-            default:
-                origin = new Vector3(-6.5f, origin.y, origin.z);
-                break;
-        }*/
-
         if (tubes.Length < 9)
             origin = new Vector3(origin.x, 0f, origin.z);
 
         else if (tubes.Length >= 9 & tubes.Length <= 12)
-            origin = new Vector3(origin.x, 6f, origin.z);
-
-        else if (tubes.Length > 12)
-            origin = new Vector3(origin.x, 7f, origin.z);
+            origin = new Vector3(origin.x, 4.4f, origin.z);
 
         int spawnedCount = 0;
         float y = 0;

@@ -71,10 +71,7 @@ public class GameManager : MonoBehaviour
         selectedTube = null;
         isGameOver = false;
         difficulty = spawnController.GetDifficulty();
-        SetTextDifficulty(); 
-        //PlayerPrefs.DeleteKey("FirstStart");
-       // PlayerPrefs.SetInt("FirstStart", 1);
-
+        SetTextDifficulty();
         if (PlayerPrefs.HasKey("FirstStart"))
         {
             _tutorialController.enabled = false;
@@ -84,10 +81,11 @@ public class GameManager : MonoBehaviour
         {
             _tutorialController.enabled = true;
         }
+
         SetSelectedBackground();
         UpdateTextSteps();
         spawnController.level = curr_level;
-        
+
 
         spawnController.SpawnObject();
         LeveNumlText.text = "Level " + curr_level.ToString();
@@ -198,8 +196,6 @@ public class GameManager : MonoBehaviour
         {
             case 0:
                 curr_level = PlayerPrefs.GetInt("CurrentLevel_OFF") + 1;
-                print(difficulty);
-
                 break;
             case 1:
                 curr_level = PlayerPrefs.GetInt("CurrentLevel_Easy") + 1;
@@ -313,7 +309,6 @@ public class GameManager : MonoBehaviour
         else if (!addingColor)
         {
             TubeController tubeSelected = selectedTube.GetComponent<TubeController>();
-
             tubeSelected.PourColor(TubeObj);
 
             for (int i = 0; i < tubeSelected.ColorObjects_Renderers.Length; i++)
