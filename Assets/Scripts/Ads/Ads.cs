@@ -125,14 +125,15 @@ public class Ads : MonoBehaviour
         }
         else if (rew_id == 2)
         {
-            int count = PlayerPrefs.GetInt("Coins") + 1;
-
-            PlayerPrefs.SetInt("Coins", count);
-            GM.buttonsManager.UpdateCountState();
+            GM.SetSelectedTubes();
+        }
+        else if(rew_id == 3)
+        {
+            GM.SetSelectedBackground();
         }
         else
         {
-            Debug.LogError("Реклама з'явилась зашвидко, на телефоні такої проблеми немає.");
+            Debug.LogError("Р РµРєР»Р°РјР° Р·'СЏРІРёР»Р°СЃСЊ Р·Р°С€РІРёРґРєРѕ, РЅР° С‚РµР»РµС„РѕРЅС– С‚Р°РєРѕС— РїСЂРѕР±Р»РµРјРё РЅРµРјР°С”.");
         }
     }
 }

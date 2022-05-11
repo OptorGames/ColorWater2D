@@ -59,8 +59,10 @@ public class HudHandler : MonoBehaviour
 
         PlayerPrefs.SetInt("Steps", 5);
 
-        if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1 && old_value != 10)
+        if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1 && old_value != 9&&old_value !=10)
+        {
             ads.ShowInterstitial();
+        }
     }
 
     private void UpdateDifficultyLevel()
@@ -84,10 +86,7 @@ public class HudHandler : MonoBehaviour
                 old_value = PlayerPrefs.GetInt("CurrentLevel_Hard") + 1;
                 PlayerPrefs.SetInt("CurrentLevel_Hard", old_value);
                 break;
-            case 4:
-                old_value = PlayerPrefs.GetInt("CurrentLevel_Extreme") + 1;
-                PlayerPrefs.SetInt("CurrentLevel_Extreme", old_value);
-                break;
+
         }
     }
 

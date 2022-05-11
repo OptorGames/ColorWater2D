@@ -58,6 +58,13 @@ public class GameManager : MonoBehaviour
 
     // Create instance of ReviewManager
     private ReviewManager _reviewManager;
+    private PlayReviewInfo _playReviewInfo;
+
+    public void SetLvl(int numberOffLvl)
+    {
+        PlayerPrefs.SetInt("CurrentLevel_OFF", numberOffLvl);
+        PlayerPrefs.DeleteKey("NoAds");
+    }
 
     private void Start()
     {
@@ -104,10 +111,10 @@ public class GameManager : MonoBehaviour
         DisablePurchaseButtons();
         buttonsManager.LoadSettings();
 
-        _reviewManager = new ReviewManager();
-
-        if (curr_level == 10)
-            StartCoroutine(nameof(ReviewInfo));
+        if (curr_level == 11)
+        {
+            StartCoroutine(ReviewInfo());
+        }
     }
 
     private void Update()
@@ -184,9 +191,6 @@ public class GameManager : MonoBehaviour
             case 3:
                 textDifficulty.text = "Hard";
                 break;
-            case 4:
-                textDifficulty.text = "Extreme";
-                break;
         }
     }
 
@@ -205,9 +209,6 @@ public class GameManager : MonoBehaviour
                 break;
             case 3:
                 curr_level = PlayerPrefs.GetInt("CurrentLevel_Hard") + 1;
-                break;
-            case 4:
-                curr_level = PlayerPrefs.GetInt("CurrentLevel_Extreme") + 1;
                 break;
         }
     }
@@ -440,12 +441,6 @@ public class GameManager : MonoBehaviour
                 currGameLevel = 40;
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
-
-            if (currGameLevel == 10)
-            {
-                StartCoroutine(ReviewInfo());
-            }
-
             HUD.WinGame();
         }
     }
@@ -491,12 +486,6 @@ public class GameManager : MonoBehaviour
                 currGameLevel = 40;
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
-
-            if (currGameLevel == 10)
-            {
-                StartCoroutine(ReviewInfo());
-            }
-
             HUD.WinGame();
         }
     }
@@ -508,35 +497,26 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ReviewInfo()
     {
+        _reviewManager = new ReviewManager();
+
         var requestFlowOperation = _reviewManager.RequestReviewFlow();
         yield return requestFlowOperation;
         if (requestFlowOperation.Error != ReviewErrorCode.NoError)
         {
             // Log error. For example, using requestFlowOperation.Error.ToString().
-            Debug.Log(requestFlowOperation.Error.ToString());
             yield break;
         }
 
-        PlayReviewInfo _playReviewInfo = requestFlowOperation.GetResult();
+        _playReviewInfo = requestFlowOperation.GetResult();
 
-        StartCoroutine(StartReview(_playReviewInfo));
-    }
-
-    private IEnumerator StartReview(PlayReviewInfo _playReviewInfo)
-    {
         var launchFlowOperation = _reviewManager.LaunchReviewFlow(_playReviewInfo);
         yield return launchFlowOperation;
         _playReviewInfo = null; // Reset the object
         if (launchFlowOperation.Error != ReviewErrorCode.NoError)
         {
             // Log error. For example, using requestFlowOperation.Error.ToString().
-            Debug.Log(launchFlowOperation.Error.ToString());
             yield break;
         }
-
-        // The flow has finished. The API does not indicate whether the user
-        // reviewed or not, or even whether the review dialog was shown. Thus, no
-        // matter the result, we continue our app flow.
     }
 }
 

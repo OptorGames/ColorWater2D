@@ -4,20 +4,19 @@ using UnityEngine.UI;
 [RequireComponent(typeof(GameManager))]
 public class ButtonsManager : MonoBehaviour
 {
+    public HudHandler HUD;
+
     [SerializeField] private string feedback_url;
 
     [SerializeField] private Sprite checkTrue;
     [SerializeField] private Sprite checkFalse;
 
-    [Header("Sound")]
-    [SerializeField] private AudioSource audioSource;
+    [Header("Sound")] [SerializeField] private AudioSource audioSource;
     [SerializeField] private Image soundImg;
 
-    [Header("Vibrate")]
-    [SerializeField] private Image vibrateImg;
+    [Header("Vibrate")] [SerializeField] private Image vibrateImg;
 
-    [Header("Links")]
-    [SerializeField] GameObject Main_Window;
+    [Header("Links")] [SerializeField] GameObject Main_Window;
     [SerializeField] GameObject Shop_Window;
     [SerializeField] GameObject Tubes_Window;
     [SerializeField] GameObject Backgrounds_Window;
@@ -28,11 +27,6 @@ public class ButtonsManager : MonoBehaviour
 
     [SerializeField] Button[] buttons_tubes;
     [SerializeField] Button[] buttons_themes;
-
-    private GameManager GM;
-
-    private readonly int price = 2; 
-
     private void Start()
     {
         Tubes_Window.SetActive(true);
@@ -41,7 +35,18 @@ public class ButtonsManager : MonoBehaviour
 
         UpdateCountState();
 
-        GM = GetComponent<GameManager>();
+        foreach (var buttonsTube in buttons_tubes)
+        {
+            buttonsTube.interactable = true;
+        }
+
+        buttons_tubes[PlayerPrefs.GetInt("Tube")].interactable = false;
+        foreach (var buttonsTheme in buttons_themes)
+        {
+            buttonsTheme.interactable = true;
+        }
+
+        buttons_themes[PlayerPrefs.GetInt("Theme")].interactable = false;
     }
 
     public void UpdateCountState()
@@ -49,59 +54,27 @@ public class ButtonsManager : MonoBehaviour
         CountText.text = PlayerPrefs.GetInt("Coins").ToString();
     }
 
-    public void SelectTube(int num)
+    public void TrySelectTube(int num)
     {
         PlayerPrefs.SetInt("Tube", num);
-        GM.SetSelectedTubes();
+        foreach (var buttonsTube in buttons_tubes)
+        {
+            buttonsTube.interactable = true;
+        }
+
+        HUD.ads.ShowRewarded(2);
     }
 
-    public void SelectTheme(int num)
+    public void TrySelectTheme(int num)
     {
         PlayerPrefs.SetInt("Theme", num);
-        GM.SetSelectedBackground();
+        foreach (var buttonsTheme in buttons_themes)
+        {
+            buttonsTheme.interactable = true;
+        }
+
+        HUD.ads.ShowRewarded(3);
     }
-
-    public void UnlockButtons()
-    {
-        for (int i = 0; i <= PlayerPrefs.GetInt("UnlockedTubes"); i++)
-        {
-            buttons_tubes[i].interactable = true;
-        }
-
-        for (int i = 0; i <= PlayerPrefs.GetInt("UnlockedThemes"); i++)
-        {
-            buttons_themes[i].interactable = true;
-        }
-
-        UpdateCountState();
-    }
-
-    public void BuyForCoins()
-    {
-        if (PlayerPrefs.GetInt("Coins") < price)
-            return;
-
-        if (Tubes_Window.activeSelf && PlayerPrefs.GetInt("UnlockedTubes") < 2)
-        {
-            int count = PlayerPrefs.GetInt("UnlockedTubes") + 1;
-            PlayerPrefs.SetInt("UnlockedTubes", count);
-            
-            int coins = PlayerPrefs.GetInt("Coins") - price;
-            PlayerPrefs.SetInt("Coins", coins);
-            UpdateCountState();
-        }
-        else if (Backgrounds_Window.activeSelf && PlayerPrefs.GetInt("UnlockedThemes") < 9)
-        {
-            int count = PlayerPrefs.GetInt("UnlockedThemes") + 1;
-            PlayerPrefs.SetInt("UnlockedThemes", count);
-
-            int coins = PlayerPrefs.GetInt("Coins") - price;
-            PlayerPrefs.SetInt("Coins", coins);
-            UpdateCountState();
-        }
-        UnlockButtons();
-    }
-
     public void ClearAllKeys()
     {
         PlayerPrefs.DeleteAll();
@@ -116,8 +89,6 @@ public class ButtonsManager : MonoBehaviour
     {
         Shop_Window.SetActive(!Shop_Window.activeSelf);
         Main_Window.SetActive(!Main_Window.activeSelf);
-
-        UnlockButtons();
     }
 
     public void ShowTubesButton()
@@ -176,6 +147,4 @@ public class ButtonsManager : MonoBehaviour
             vibrateImg.sprite = checkFalse;
         }
     }
-
-
 }
