@@ -62,6 +62,8 @@ public class GameManager : MonoBehaviour
 
     public void SetLvl(int numberOffLvl)
     {
+        PlayerPrefs.DeleteKey("UnlockedThemes");
+        PlayerPrefs.DeleteKey("UnlockedTubes");
         PlayerPrefs.SetInt("CurrentLevel_OFF", numberOffLvl);
         PlayerPrefs.DeleteKey("NoAds");
     }
@@ -69,6 +71,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         buttonsManager = GetComponent<ButtonsManager>();
+        PlayerPrefs.DeleteKey("UnlockedAll");
 
         Time.timeScale = 1;
         islevelStart = true;
@@ -161,7 +164,9 @@ public class GameManager : MonoBehaviour
         }
 
         if (PlayerPrefs.GetInt("UnlockedThemes") == 9 && PlayerPrefs.GetInt("UnlockedTubes") == 2)
+        {
             UnlockAllButton.interactable = false;
+        }
     }
 
     public void ChangeDifficulty()
@@ -250,11 +255,6 @@ public class GameManager : MonoBehaviour
             else if (tubeControllers[i].isFull)
                 AddFull(tubeControllers[i].transform.position, false);
         }
-    }
-
-    public void PlusCoins()
-    {
-        HUD.ads.ShowRewarded(2);
     }
 
     public void SetSelectedBackground()

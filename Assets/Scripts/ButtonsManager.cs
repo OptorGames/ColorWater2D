@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class ButtonsManager : MonoBehaviour
 {
     public HudHandler HUD;
+    private GameManager _gameManager;
 
     [SerializeField] private string feedback_url;
 
@@ -27,6 +28,7 @@ public class ButtonsManager : MonoBehaviour
 
     [SerializeField] Button[] buttons_tubes;
     [SerializeField] Button[] buttons_themes;
+
     private void Start()
     {
         Tubes_Window.SetActive(true);
@@ -34,7 +36,7 @@ public class ButtonsManager : MonoBehaviour
         TextTT.text = "Tube";
 
         UpdateCountState();
-
+        _gameManager = GetComponent<GameManager>();
         foreach (var buttonsTube in buttons_tubes)
         {
             buttonsTube.interactable = true;
@@ -56,25 +58,40 @@ public class ButtonsManager : MonoBehaviour
 
     public void TrySelectTube(int num)
     {
-        PlayerPrefs.SetInt("Tube", num);
         foreach (var buttonsTube in buttons_tubes)
         {
             buttonsTube.interactable = true;
         }
 
-        HUD.ads.ShowRewarded(2);
+        if (PlayerPrefs.GetInt("UnlockedTubes") != 2)
+        {
+            HUD.ads.ShowRewarded(2, num);
+        }
+        else if (PlayerPrefs.GetInt("UnlockedTubes") == 2)
+        {
+            PlayerPrefs.SetInt("Tube", num);
+            _gameManager.SetSelectedTubes();
+        }
     }
 
     public void TrySelectTheme(int num)
     {
-        PlayerPrefs.SetInt("Theme", num);
         foreach (var buttonsTheme in buttons_themes)
         {
             buttonsTheme.interactable = true;
         }
 
-        HUD.ads.ShowRewarded(3);
+        if (PlayerPrefs.GetInt("UnlockedThemes") != 9)
+        {
+            HUD.ads.ShowRewarded(3, num);
+        }
+        else if (PlayerPrefs.GetInt("UnlockedThemes") == 9)
+        {
+            PlayerPrefs.SetInt("Theme", num);
+            _gameManager.SetSelectedBackground();
+        }
     }
+
     public void ClearAllKeys()
     {
         PlayerPrefs.DeleteAll();

@@ -13,6 +13,8 @@ public class Ads : MonoBehaviour
     //private IAdView bannerView;
 
     private int rew_id;
+    private int rev_VisualNumber;
+
     public GameManager GM;
 
     public void Start()
@@ -66,9 +68,10 @@ public class Ads : MonoBehaviour
         }   
     }
 
-    public void ShowRewarded(int id)
+    public void ShowRewarded(int id, int visualNumber)
     {
         rew_id = id;
+        rev_VisualNumber = visualNumber;
         if (manager.IsReadyAd(AdType.Rewarded))
         {
             manager.ShowAd(AdType.Rewarded);
@@ -125,10 +128,12 @@ public class Ads : MonoBehaviour
         }
         else if (rew_id == 2)
         {
+            PlayerPrefs.SetInt("Tube", rev_VisualNumber);
             GM.SetSelectedTubes();
         }
         else if(rew_id == 3)
         {
+            PlayerPrefs.SetInt("Theme", rev_VisualNumber);
             GM.SetSelectedBackground();
         }
         else

@@ -17,6 +17,7 @@ public class NoAds : MonoBehaviour
         {
             PlayerPrefs.SetInt("UnlockedThemes", 9);
             PlayerPrefs.SetInt("UnlockedTubes", 2);
+            PlayerPrefs.SetInt("NoAds", 1);
         }
 
         GameManager.DisablePurchaseButtons();
