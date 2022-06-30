@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ForTutorial;
+using LiquidVolumeFX;
 using UnityEngine;
 
 public class SpawnController : MonoBehaviour
@@ -15,6 +16,7 @@ public class SpawnController : MonoBehaviour
     public GameObject rewardedTube;
     public GameManager GM;
     public Vector3 origin;
+    public List<Flask> Flasks = new List<Flask>();
 
     private string[] colors =
     {
@@ -151,14 +153,6 @@ public class SpawnController : MonoBehaviour
                 y -= verticalOffset;
                 spawnedCount = 0;
             }
-
-            if (i == spawnGrid - 1)
-            {
-                spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
-                GameObject spawnedRewTube = Instantiate(rewardedTube, spawnPosition, Quaternion.identity);
-                GM.Tube = spawnedRewTube;
-                spawnedRewTube.SetActive(false);
-            }
         }
 
         FillTube();
@@ -196,26 +190,29 @@ public class SpawnController : MonoBehaviour
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)
     {
-        if (PlayerPrefs.HasKey("FirstStart"))
-        {
+        //if (PlayerPrefs.HasKey("FirstStart"))
+        //{
+            var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+            flask?.GameObject.SetActive(true);
+
             if (numberOfEmptyTube == 0)
             {
-                GameObject go = Instantiate(tube, positionToSpawn, rotationToSpawn);
-                coloredTubes.Add(go.GetComponent<TubeController>());
+                coloredTubes.Add(flask?.GameObject.GetComponent<TubeController>());
             }
             else
             {
                 Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
                 numberOfEmptyTube--;
             }
-        }
-        else
-        {
-            _tutorialController.TutorialTubes.Add(Instantiate(_tutorialController.TubeForTutorial, positionToSpawn, rotationToSpawn));
-            positionToSpawn.x += 1.2f;
-            positionToSpawn.y -= 20;
-            _tutorialController.TutorialArrows.Add(Instantiate(_tutorialController.ArrowPoint, positionToSpawn, rotationToSpawn));
-        }
+        //}
+        //else
+        //{
+        //    ////TODO: fix tutorial
+        //    _tutorialController.TutorialTubes.Add(Instantiate(_tutorialController.TubeForTutorial, positionToSpawn, rotationToSpawn));
+        //    positionToSpawn.x += 1.2f;
+        //    positionToSpawn.y -= 20;
+        //    _tutorialController.TutorialArrows.Add(Instantiate(_tutorialController.ArrowPoint, positionToSpawn, rotationToSpawn));
+        //}
     }
 
     private void FillTube()
@@ -225,27 +222,19 @@ public class SpawnController : MonoBehaviour
 
         for (int i = 0; i < coloredTubes.Count; i++)
         {
-            for (int j = 0; j < coloredTubes[i].ColorObjects_Renderers.Length;)
+            for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
             {
-                colorID = Random.Range(0, usedColors.Count);
+                var freeColors = usedColors.FindAll(x => x.colorCount < 4);
+                colorID = Random.Range(0, freeColors.Count);
 
-                if (usedColors[colorID].colorCount < 4)
-                {
-                    ColorUtility.TryParseHtmlString(colors[usedColors[colorID].colorID], out newColor);
-                    coloredTubes[i].ColorObjects_Renderers[j].color = newColor;
-                    usedColors[colorID].colorCount++;
-                    j++;
-                }
+                ColorUtility.TryParseHtmlString(colors[freeColors[colorID].colorID], out newColor);
+                coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
+                coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+                freeColors[colorID].colorCount++;
             }
+
+            coloredTubes[i].LiquidVolume.UpdateLayers();
         }
-
-        foreach (TubeController tc in coloredTubes)
-            if (tc.ColorObjects_Renderers.All(x => x.color == newColor))
-            {
-                foreach (UsedColor uc in usedColors)
-                    uc.colorCount = 0;
-                FillTube();
-            }
     }
 }
 
@@ -253,4 +242,11 @@ public class UsedColor
 {
     public int colorID { get; set; }
     public int colorCount { get; set; }
+}
+
+[System.Serializable]
+public class Flask
+{
+    public GameObject GameObject;
+    public LiquidVolume LiquidVolume;
 }

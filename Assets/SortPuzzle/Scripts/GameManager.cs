@@ -239,7 +239,6 @@ public class GameManager : MonoBehaviour
             Tube = null;
         }
 
-        //else Debug.LogError("RewardedTube == NULL");
         spawnController.SetCenterPosition();
     }
 
@@ -285,26 +284,12 @@ public class GameManager : MonoBehaviour
             if (tube.currColors == 0)
                 UpdateEF_Info();
 
-            for (int i = 0; i < tube.ColorObjects_Renderers.Length; i++)
-            {
-                tube.ColorObjects_Renderers[i].sortingOrder = 1;
-            }
-
-            tube.tubeSR.sortingOrder = 1;
-            tube.sorting.sortingOrder = 1;
-            TubeObj.transform.position += new Vector3(0, 2, 0);
+            TubeObj.transform.position += new Vector3(0, 0.3f, 0);
         }
         else if (selectedTube == TubeObj)
         {
-            TubeObj.transform.position -= new Vector3(0, 2, 0);
+            TubeObj.transform.position -= new Vector3(0, 0.3f, 0);
 
-            for (int i = 0; i < tube.ColorObjects_Renderers.Length; i++)
-            {
-                tube.ColorObjects_Renderers[i].sortingOrder = 0;
-            }
-
-            tube.tubeSR.sortingOrder = 0;
-            tube.sorting.sortingOrder = 0;
             selectedTube = null;
         }
         else if (!addingColor)
@@ -312,13 +297,6 @@ public class GameManager : MonoBehaviour
             TubeController tubeSelected = selectedTube.GetComponent<TubeController>();
             tubeSelected.PourColor(TubeObj);
 
-            for (int i = 0; i < tubeSelected.ColorObjects_Renderers.Length; i++)
-            {
-                tubeSelected.ColorObjects_Renderers[i].sortingOrder = 0;
-            }
-
-            tubeSelected.tubeSR.sortingOrder = 0;
-            tube.sorting.sortingOrder = 0;
             selectedTube = null;
         }
 
@@ -356,10 +334,10 @@ public class GameManager : MonoBehaviour
             tubeInfo.isEmpty = tubeControllers[i].isEmpty;
             tubeInfo.isFull = tubeControllers[i].isFull;
 
-            tubeInfo.colors[0] = tubeControllers[i].ColorObjects_Renderers[0].color;
-            tubeInfo.colors[1] = tubeControllers[i].ColorObjects_Renderers[1].color;
-            tubeInfo.colors[2] = tubeControllers[i].ColorObjects_Renderers[2].color;
-            tubeInfo.colors[3] = tubeControllers[i].ColorObjects_Renderers[3].color;
+            tubeInfo.colors[0] = tubeControllers[i].LiquidVolume.liquidLayers[0].color;
+            tubeInfo.colors[1] = tubeControllers[i].LiquidVolume.liquidLayers[1].color;
+            tubeInfo.colors[2] = tubeControllers[i].LiquidVolume.liquidLayers[2].color;
+            tubeInfo.colors[3] = tubeControllers[i].LiquidVolume.liquidLayers[3].color;
 
             tubeInfo.scale = tubeControllers[i].transform.localScale;
 
@@ -402,14 +380,9 @@ public class GameManager : MonoBehaviour
 
                 tubeControllers[i].NextTube = null;
 
-                for (int a = 0; a < tubeControllers[i].ColorObjects.Length; a++)
+                for (int a = 0; a < tubeControllers[i].LiquidVolume.liquidLayers.Length; a++)
                 {
-                    if (a <= savedTubes[savedTubes.Count - 1].tubes[i].currColors - 1)
-                        tubeControllers[i].ColorObjects[a].SetActive(true);
-                    else tubeControllers[i].ColorObjects[a].SetActive(false);
-
-                    tubeControllers[i].ColorObjects[a].transform.localScale = new Vector2(1.8375f, 0.25f);
-                    tubeControllers[i].ColorObjects_Renderers[a].color =
+                    tubeControllers[i].LiquidVolume.liquidLayers[a].color =
                         savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
                     tubeControllers[i].colorsInTube[a] = savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
                 }
