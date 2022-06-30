@@ -162,7 +162,7 @@ PlayerSettings:
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 17
   AndroidMinSdkVersion: 22
-  AndroidTargetSdkVersion: 31
+  AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
   aotOptions: 
   stripEngineCode: 1
@@ -850,7 +850,8 @@ PlayerSettings:
     Build: 0
     Collab: 0
     Game Performance: 0
-    Purchasing: 1
+    Legacy Analytics: 0
+    Purchasing: 0
     UDP: 0
     Unity Ads: 0
   luminIcon:
@@ -866,11 +867,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 0
-  cloudProjectId: 5f485587-64eb-45e4-bddc-f2553ac0035d
+  cloudProjectId: 359fde8c-aaaf-44d7-9013-bb150e6880c6
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: ColorTheDrawingGame
-  organizationId: maximmikh
+  projectName: 'Water sort puzzle: color tube'
+  organizationId: unity_5wgoadzhz7pyva
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 

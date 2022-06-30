@@ -8,7 +8,7 @@
             url "https://maven.google.com"
         }
         maven {
-            url "https://android-sdk.is.com/" // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:11
+            url "https://android-sdk.is.com/" // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:11, Assets/IronSource/Editor/IronSourceSDKDependencies.xml:8
         }
         maven {
             url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:22
@@ -21,6 +21,9 @@
         }
         maven {
             url (unityProjectPath + "/Assets/GeneratedLocalRepo/Firebase/m2repository") // Assets/Firebase/Editor/AnalyticsDependencies.xml:18, Assets/Firebase/Editor/AppDependencies.xml:22
+        }
+        maven {
+            url "https://maven.google.com/" // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:16, Assets/IronSource/Editor/IronSourceSDKDependencies.xml:24, Assets/IronSource/Editor/IronSourceSDKDependencies.xml:32
         }
         mavenLocal()
         mavenCentral()
@@ -45,8 +48,11 @@ dependencies {
     implementation 'com.facebook.android:audience-network-sdk:6.8.0+' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:17
     implementation 'com.google.android.exoplayer:exoplayer:2.13.3' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:15
     implementation 'com.google.android.gms:play-services-ads:20.6.0+' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:5
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1' // Assets/DevToDev/Analytics/Editor/AppDependencies.xml:6
+    // implementation 'com.google.android.gms:play-services-ads-identifier:17.0.1' // Assets/DevToDev/Analytics/Editor/AppDependencies.xml:6
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.0.1' // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:16
+    implementation 'com.google.android.gms:play-services-appset:16.0.2' // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:24
     implementation 'com.google.android.gms:play-services-base:17.6.0' // Assets/Firebase/Editor/AppDependencies.xml:17
+    implementation 'com.google.android.gms:play-services-basement:18.0.0' // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:32
     implementation 'com.google.android.play:core:1.10.3' // Assets/GooglePlayPlugins/com.google.play.core/Editor/PlayCoreDependencies.xml:3
     implementation 'com.google.code.gson:gson:2.8.6' // Assets/DevToDev/Analytics/Editor/AppDependencies.xml:8
     implementation 'com.google.firebase:firebase-analytics:19.0.0' // Assets/Firebase/Editor/AppDependencies.xml:15
@@ -54,7 +60,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-app-unity:8.6.2' // Assets/Firebase/Editor/AppDependencies.xml:22
     implementation 'com.google.firebase:firebase-common:20.0.0' // Assets/Firebase/Editor/AppDependencies.xml:13
     implementation 'com.inmobi.monetization:inmobi-ads:10.0.5+' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:16
-    implementation 'com.ironsource.sdk:mediationsdk:7.2.1.1+' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:11
+    // implementation 'com.ironsource.sdk:mediationsdk:7.2.1.1+' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:11
+    implementation 'com.ironsource.sdk:mediationsdk:7.2.2.1' // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:8
     implementation 'com.my.target:mytarget-sdk:5.15.0+' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:33
     implementation 'com.pangle.global:ads-sdk:4.3.0.6' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:27
     implementation 'com.tapjoy:tapjoy-android-sdk:12.9.1' // Assets/CleverAdsSolutions/Editor/CASAndroidOptimalAdsDependencies.xml:32
