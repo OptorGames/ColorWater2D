@@ -231,6 +231,8 @@ public class SpawnController : MonoBehaviour
                 coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
                 coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
                 freeColors[colorID].colorCount++;
+
+                coloredTubes[i].LiquidVolume.foamColor = newColor;
             }
 
             coloredTubes[i].LiquidVolume.UpdateLayers();
