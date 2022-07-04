@@ -210,7 +210,7 @@ MonoBehaviour:
   _sparklingIntensity: 0.1
   _sparklingAmount: 0.2
   _deepObscurance: 2
-  _foamColor: {r: 0, g: 0.23137255, b: 1, a: 0.65}
+  _foamColor: {r: 0, g: 0.23137255, b: 1, a: 0}
   _foamScale: 0.2
   _foamThickness: 0.0052
   _foamDensity: 0.28
@@ -396,7 +396,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5593291060191545654}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.2, z: 0}
+  m_LocalPosition: {x: 0.0131, y: -0.21, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -481,7 +481,7 @@ Transform:
   m_GameObject: {fileID: 5593291060883314851}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.9, y: -0.6974939, z: 1}
-  m_LocalScale: {x: 12, y: 5, z: 8}
+  m_LocalScale: {x: 12, y: 5, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5593291060191545653}
@@ -526,7 +526,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.013714042
+  m_Radius: 0.013244827
   m_Height: 0.23544982
   m_Direction: 1
-  m_Center: {x: -0.0001902245, y: -0.094480954, z: 0.00007414073}
+  m_Center: {x: 0.013532997, y: -0.094480954, z: 0.00007414023}
