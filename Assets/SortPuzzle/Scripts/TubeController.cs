@@ -25,7 +25,7 @@ public class TubeController : MonoBehaviour
     public bool isrotating = false;
     private float rotationLerp;
 
-    private GameManager GM;
+    private IGameManager GM;
     [HideInInspector] public TubeController NextTube;
     public SpriteRenderer tubeSR;
     [HideInInspector] public SortingGroup sorting;
@@ -54,7 +54,7 @@ public class TubeController : MonoBehaviour
         IsAddColor = false;
         currColors = 0;
         Pos = transform.position;
-        GM = FindObjectOfType<GameManager>();
+        GM = FindObjectOfType<IGameManager>();
         GM.tubesInGame.Add(this.gameObject);
         GM.tubeControllers.Add(this);
         audioSource = GM.audioSource;
@@ -312,4 +312,9 @@ public class TubeController : MonoBehaviour
         transform.eulerAngles = Vector3.zero;
         _canMouseDown = true;
     }
+}
+
+public interface ITubeController
+{
+
 }

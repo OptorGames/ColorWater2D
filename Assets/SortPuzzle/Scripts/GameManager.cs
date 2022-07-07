@@ -5,62 +5,62 @@ using ForTutorial;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(BuySteps), typeof(ButtonsManager))]
-public class GameManager : MonoBehaviour
+//[RequireComponent(typeof(BuySteps), typeof(ButtonsManager))]
+public class GameManager : IGameManager
 {
     public int EmptyTubes = 0;
     public int FullTubes = 0;
 
-    public List<GameObject> tubesInGame;
-    private GameObject selectedTube;
+    //public List<GameObject> tubesInGame;
+    protected GameObject selectedTube;
     public HudHandler HUD;
-    public SpawnController spawnController;
-    private static bool isGameOver;
-    private bool islevelStart;
-    private int difficulty = 0;
-    private int curr_level;
+    public ISpawnController spawnController;
+    protected static bool isGameOver;
+    protected bool islevelStart;
+    protected int difficulty = 0;
+    protected int curr_level;
 
-    [SerializeField] private TutorialController _tutorialController;
+    [SerializeField] protected TutorialController _tutorialController;
 
-    [Header("Links")] [SerializeField] private GameObject BuyStepsPanel;
-    [SerializeField] private Button ButBackStep;
-    [SerializeField] private Button AddTubeButton;
+    [Header("Links")] [SerializeField] protected GameObject BuyStepsPanel;
+    [SerializeField] protected Button ButBackStep;
+    [SerializeField] protected Button AddTubeButton;
 
-    [SerializeField] private GameObject NoAdsButton;
-    [SerializeField] private Button NoAdsButtonInPauseMenu;
-    [SerializeField] private Button UnlockAllButton;
+    [SerializeField] protected GameObject NoAdsButton;
+    [SerializeField] protected Button NoAdsButtonInPauseMenu;
+    [SerializeField] protected Button UnlockAllButton;
 
     [SerializeField] public GameObject Tube;
 
-    [SerializeField] private LevelHandler levelHandler;
+    [SerializeField] protected LevelHandler levelHandler;
 
-    [SerializeField] private Text LeveNumlText;
-    [SerializeField] private Text textCountSteps;
-    [SerializeField] private Text textDifficulty;
+    [SerializeField] protected Text LeveNumlText;
+    [SerializeField] protected Text textCountSteps;
+    [SerializeField] protected Text textDifficulty;
 
-    [SerializeField] public bool addingColor;
+    //[SerializeField] public bool addingColor;
 
-    public List<TubeController> tubeControllers = new List<TubeController>();
-    private List<AllTubesInfo> savedTubes = new List<AllTubesInfo>();
+    //public List<TubeController> tubeControllers = new List<TubeController>();
+    protected List<AllTubesInfo> savedTubes = new List<AllTubesInfo>();
 
-    public AudioSource audioSource;
+    //public AudioSource audioSource;
     [HideInInspector] public ButtonsManager buttonsManager;
 
     [Header("FromShop")] public Sprite[] tubes;
     public Sprite[] tubesMasks;
 
-    [SerializeField] private Sprite[] themes;
+    [SerializeField] protected Sprite[] themes;
 
-    [SerializeField] private Image background;
+    [SerializeField] protected Image background;
 
-    [SerializeField] private ParticleSystem confetti;
-    private bool needUnPause = false;
+    [SerializeField] protected ParticleSystem confetti;
+    protected bool needUnPause = false;
 
     // Create instance of ReviewManager
-    private ReviewManager _reviewManager;
-    private PlayReviewInfo _playReviewInfo;
+    protected ReviewManager _reviewManager;
+    protected PlayReviewInfo _playReviewInfo;
 
-    public void SetLvl(int numberOffLvl)
+    public override void SetLvl(int numberOffLvl)
     {
         PlayerPrefs.DeleteKey("UnlockedThemes");
         PlayerPrefs.DeleteKey("UnlockedTubes");
@@ -155,7 +155,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void DisablePurchaseButtons()
+    public override void DisablePurchaseButtons()
     {
         if (PlayerPrefs.GetInt("NoAds") == 1)
         {
@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ChangeDifficulty()
+    public override void ChangeDifficulty()
     {
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         difficulty++;
@@ -218,18 +218,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateTextSteps()
+    public override void UpdateTextSteps()
     {
         if (textCountSteps != null)
             textCountSteps.text = PlayerPrefs.GetInt("Steps").ToString();
     }
 
-    public void StepsPanelButton()
+    public override void StepsPanelButton()
     {
         BuyStepsPanel.SetActive(!BuyStepsPanel.activeSelf);
     }
 
-    public void AddTube()
+    public override void AddTube()
     {
         if (Tube != null)
         {
@@ -242,7 +242,7 @@ public class GameManager : MonoBehaviour
         spawnController.SetCenterPosition();
     }
 
-    public void UpdateEF_Info()
+    public override void UpdateEF_Info()
     {
         EmptyTubes = 0;
         FullTubes = 0;
@@ -256,21 +256,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SetSelectedBackground()
+    public override void SetSelectedBackground()
     {
         background.sprite = themes[PlayerPrefs.GetInt("Theme")];
     }
 
-    public void SetSelectedTubes()
+    public override void SetSelectedTubes()
     {
-        for (int i = 0; i < tubeControllers.Count; i++)
-        {
-            tubeControllers[i].tubeSR.sprite = tubes[PlayerPrefs.GetInt("Tube")];
-            tubeControllers[i].GetComponentInChildren<SpriteMask>().sprite = tubesMasks[PlayerPrefs.GetInt("Tube")];
-        }
+        //for (int i = 0; i < tubeControllers.Count; i++)
+        //{
+        //    tubeControllers[i].tubeSR.sprite = tubes[PlayerPrefs.GetInt("Tube")];
+        //    tubeControllers[i].GetComponentInChildren<SpriteMask>().sprite = tubesMasks[PlayerPrefs.GetInt("Tube")];
+        //}
     }
 
-    public void TubeClicked(GameObject TubeObj)
+    public override void TubeClicked(GameObject TubeObj)
     {
         if (Time.timeScale == 0)
             return;
@@ -312,7 +312,7 @@ public class GameManager : MonoBehaviour
         islevelStart = false;
     }
 
-    public void SetNewDefaultPositions()
+    public override void SetNewDefaultPositions()
     {
         for (int i = 0; i < tubeControllers.Count; i++)
         {
@@ -324,7 +324,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SaveTubes()
+    public override void SaveTubes()
     {
         AllTubesInfo tubes_info = new AllTubesInfo();
         for (int i = 0; i < tubesInGame.Count; i++)
@@ -334,10 +334,11 @@ public class GameManager : MonoBehaviour
             tubeInfo.isEmpty = tubeControllers[i].isEmpty;
             tubeInfo.isFull = tubeControllers[i].isFull;
 
-            tubeInfo.colors[0] = tubeControllers[i].LiquidVolume.liquidLayers[0].color;
-            tubeInfo.colors[1] = tubeControllers[i].LiquidVolume.liquidLayers[1].color;
-            tubeInfo.colors[2] = tubeControllers[i].LiquidVolume.liquidLayers[2].color;
-            tubeInfo.colors[3] = tubeControllers[i].LiquidVolume.liquidLayers[3].color;
+            for (int j = 0; j < tubeInfo.colors.Length; ++j)
+            {
+                tubeInfo.colors[j] = tubeControllers[i].LiquidVolume.liquidLayers[j].color;
+                tubeInfo.capacities[j] = tubeControllers[i].LiquidVolume.liquidLayers[j].currentAmount;
+            }
 
             tubeInfo.scale = tubeControllers[i].transform.localScale;
 
@@ -349,7 +350,7 @@ public class GameManager : MonoBehaviour
         savedTubes.Add(tubes_info);
     }
 
-    public void StepBackForTubes()
+    public override void StepBackForTubes()
     {
         int count = PlayerPrefs.GetInt("Steps");
         if (count <= 0)
@@ -384,8 +385,25 @@ public class GameManager : MonoBehaviour
                 {
                     tubeControllers[i].LiquidVolume.liquidLayers[a].color =
                         savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
+                    tubeControllers[i].LiquidVolume.liquidLayers[a].amount =
+                        savedTubes[savedTubes.Count - 1].tubes[i].capacities[a];
+                    
+                    
                     tubeControllers[i].colorsInTube[a] = savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
                 }
+
+                for (int j = tubeControllers[i].LiquidVolume.liquidLayers.Length - 1; j >= 0 ; j--)
+                {
+                    if (savedTubes[savedTubes.Count - 1].tubes[i].capacities[j] > 0.001f)
+                    {
+                        tubeControllers[i].LiquidVolume.foamColor =
+                        savedTubes[savedTubes.Count - 1].tubes[i].colors[j];
+                        break;
+                    }
+                }
+
+                tubeControllers[i].LiquidVolume.UpdateLayers(true);
+
             }
 
             EmptyTubes = savedTubes[savedTubes.Count - 1].empty;
@@ -399,7 +417,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddEmpty()
+    public override void AddEmpty()
     {
         EmptyTubes++;
         if (!islevelStart && FullTubes + EmptyTubes == tubesInGame.Count && !isGameOver)
@@ -435,12 +453,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RemoveEmpty()
+    public override void RemoveEmpty()
     {
         EmptyTubes--;
     }
 
-    public void AddFull(Vector3 pos, bool isPlay)
+    public override void AddFull(Vector3 pos, bool isPlay)
     {
         FullTubes++;
 
@@ -463,7 +481,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RemoveFull()
+    public override void RemoveFull()
     {
         FullTubes--;
     }
@@ -509,4 +527,32 @@ public class TubeInfo
     public Vector3 scale;
 
     public Color[] colors = new Color[4];
+    public float[] capacities = new float[4];
+}
+
+public abstract class IGameManager : MonoBehaviour
+{
+    public List<GameObject> tubesInGame;
+    public List<TubeController> tubeControllers = new List<TubeController>();
+    public AudioSource audioSource;
+    [SerializeField] public bool addingColor;
+
+
+    public abstract void SetLvl(int numberOffLvl);
+    public abstract void DisablePurchaseButtons();
+    public abstract void ChangeDifficulty();
+    public abstract void UpdateTextSteps();
+    public abstract void StepsPanelButton();
+    public abstract void AddTube();
+    public abstract void UpdateEF_Info();
+    public abstract void SetSelectedBackground();
+    public abstract void SetSelectedTubes();
+    public abstract void TubeClicked(GameObject TubeObj);
+    public abstract void SetNewDefaultPositions();
+    public abstract void SaveTubes();
+    public abstract void StepBackForTubes();
+    public abstract void AddEmpty();
+    public abstract void RemoveEmpty();
+    public abstract void AddFull(Vector3 pos, bool isPlay);
+    public abstract void RemoveFull();
 }

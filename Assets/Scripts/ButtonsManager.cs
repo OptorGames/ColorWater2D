@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(GameManager))]
+//[RequireComponent(typeof(GameManager))]
 public class ButtonsManager : MonoBehaviour
 {
     public HudHandler HUD;

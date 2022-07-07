@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Purchasing;
 
-[RequireComponent(typeof(GameManager))]
+//[RequireComponent(typeof(GameManager))]
 public class BuySteps : MonoBehaviour
 {
     public void OnPurchaseCompltete(Product product)

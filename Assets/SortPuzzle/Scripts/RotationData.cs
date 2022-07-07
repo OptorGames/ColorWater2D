@@ -2,6 +2,6 @@
 
 public class RotationData : MonoBehaviour
 {
-    public static float[] SAngle4 = new float[] { 88, 82, 70, 35 };
-    public static float[] EAngle4 = new float[] { 90, 88, 82, 70 };
+    public static float[] SAngle4 = new float[] { 86, 82, 79, 26 };
+    public static float[] EAngle4 = new float[] { 90, 86, 82, 64 };
 }

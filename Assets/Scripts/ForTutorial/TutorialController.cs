@@ -56,11 +56,11 @@ namespace ForTutorial
             {
                 if (i == numberForTurnOn)
                 {
-                    TutorialTubes[i].GetComponent<Collider2D>().enabled = true;
+                    TutorialTubes[i].GetComponent<Collider>().enabled = true;
                 }
                 else
                 {
-                    TutorialTubes[i].GetComponent<Collider2D>().enabled = false;
+                    TutorialTubes[i].GetComponent<Collider>().enabled = false;
                 }
             }
         }
