@@ -236,6 +236,7 @@ public class SpawnController : ISpawnController
                     freeColors[colorID].colorCount++;
 
                     coloredTubes[i].LiquidVolume.foamColor = newColor;
+                    coloredTubes[i].LiquidVolume.foamThickness = coloredTubes[i].FoamThickness;
                 }
 
                 coloredTubes[i].LiquidVolume.UpdateLayers(true);

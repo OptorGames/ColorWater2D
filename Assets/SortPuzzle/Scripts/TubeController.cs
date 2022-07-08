@@ -20,6 +20,7 @@ public class TubeController : MonoBehaviour
 
     public LiquidVolume LiquidVolume;
     public float ColorLayerAmount = 0.22f;
+    public float FoamThickness = 0.0052f;
 
     private float RotStart, RotEnd;
     public bool isrotating = false;
@@ -37,13 +38,14 @@ public class TubeController : MonoBehaviour
     private float ColorLerp;
 
     private AudioSource audioSource;
-    private float _returnSpeed = 5;
+    private float _returnSpeed = 8;
     private bool _canMouseDown = true;
 
     private Vector3 _pourAngle = new Vector3(0, 0, 0f);
     private Vector3 _flaskDistance = new Vector3(0.1f, 0.6f, 0f);
     private Quaternion _pourRotation = Quaternion.identity;
     private GameObject _pourSprite;
+    private float _timeCoef = 1.5f;
 
     private void Start()
     {
@@ -88,7 +90,7 @@ public class TubeController : MonoBehaviour
         if (isAddingColor)
         {
 
-            ColorLerp += Time.deltaTime;
+            ColorLerp += Time.deltaTime * _timeCoef;
             if (ColorLerp > 1)
             {
                 isAddingColor = false;
@@ -103,7 +105,7 @@ public class TubeController : MonoBehaviour
         {
             //PourSpriteObject.transform.rotation = Quaternion.identity;
 
-            rotationLerp += Time.deltaTime;
+            rotationLerp += Time.deltaTime * _timeCoef;
             if (rotationLerp >= 1)
             {
                 rotationLerp = 1;
@@ -150,7 +152,7 @@ public class TubeController : MonoBehaviour
                 transform.localRotation = Quaternion.Euler(new Vector3(0, 0, tempAngle));
 
                 LiquidVolume.liquidLayers[currColors - 1].amount =
-                Mathf.Clamp01(LiquidVolume.liquidLayers[currColors - 1].amount - Time.deltaTime * 0.22f);
+                Mathf.Clamp01(LiquidVolume.liquidLayers[currColors - 1].amount - Time.deltaTime * _timeCoef * ColorLayerAmount);
                 LiquidVolume.UpdateLayers(true);
             }
         }
@@ -224,10 +226,22 @@ public class TubeController : MonoBehaviour
         currColors--;
         LiquidVolume.liquidLayers[currColors].amount = 0f;
 
+        SetFoam();
+    }
+
+    private void SetFoam()
+    {
         if (currColors > 0)
         {
             LiquidVolume.foamColor = LiquidVolume.liquidLayers[currColors - 1].color;
+            LiquidVolume.foamThickness = FoamThickness;
         }
+        else
+        {
+            LiquidVolume.foamThickness = 0;
+        }
+
+        LiquidVolume.UpdateLayers(true);
     }
 
     public void AddColor(Color colr)
@@ -237,9 +251,10 @@ public class TubeController : MonoBehaviour
         ColorLerp = 0;
 
         LiquidVolume.liquidLayers[currColors].color = colr;
-        LiquidVolume.foamColor = colr;
         colorsInTube[currColors] = colr;
         currColors++;
+
+        SetFoam();
 
         if (isEmpty)
         {
