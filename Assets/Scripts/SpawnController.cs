@@ -4,11 +4,11 @@ using ForTutorial;
 using LiquidVolumeFX;
 using UnityEngine;
 
-public class SpawnController : MonoBehaviour
+public class SpawnController : ISpawnController
 {
     public int gridX;
     public float verticalOffset;
-    public int level;
+    //public int level { get; set; }
     public int spawnCount;
     public float spacing = 1f;
     public GameObject tube;
@@ -18,20 +18,22 @@ public class SpawnController : MonoBehaviour
     public Vector3 origin;
     public List<Flask> Flasks = new List<Flask>();
 
-    private string[] colors =
+    protected string[] colors =
     {
         "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD",
         "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000"
     };
 
     public int numberOfEmptyTube = 2;
-    private int usedColb;
-    private int difficulty = 0;
-    private List<UsedColor> usedColors = new List<UsedColor>();
-    [SerializeField] private List<TubeController> coloredTubes = new List<TubeController>();
-    [SerializeField] private TutorialController _tutorialController;
-    public static SpawnController spawnController = null;
+    protected int usedColb;
+    protected int difficulty = 0;
+    protected List<UsedColor> usedColors = new List<UsedColor>();
+    [SerializeField] protected List<TubeController> coloredTubes = new List<TubeController>();
+    [SerializeField] protected TutorialController _tutorialController;
+    public static ISpawnController spawnController = null;
     public static bool firstStart = true;
+    
+    [SerializeField] protected Color tutorialColor = new Color(0.9176471f, 0.2235294f, 0.7463644f);
 
     private void Start()
     {
@@ -44,7 +46,7 @@ public class SpawnController : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public int GetDifficulty()
+    public override int GetDifficulty()
     {
         if (firstStart)
         {
@@ -56,12 +58,12 @@ public class SpawnController : MonoBehaviour
             return difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
     }
 
-    public void NotFirstLoad()
+    public override void NotFirstLoad()
     {
         firstStart = false;
     }
 
-    public void SpawnObject()
+    public override void SpawnObject()
     {
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
@@ -159,7 +161,7 @@ public class SpawnController : MonoBehaviour
         SetCenterPosition();
     }
 
-    public void SetCenterPosition()
+    public override void SetCenterPosition()
     {
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
 
@@ -190,50 +192,69 @@ public class SpawnController : MonoBehaviour
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)
     {
-        //if (PlayerPrefs.HasKey("FirstStart"))
-        //{
-            var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
-            flask?.GameObject.SetActive(true);
+        var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+        flask?.GameObject.SetActive(true);
 
+        if (PlayerPrefs.HasKey("FirstStart"))
+        {
             if (numberOfEmptyTube == 0)
             {
                 coloredTubes.Add(flask?.GameObject.GetComponent<TubeController>());
             }
             else
             {
-                Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
+                //Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
                 numberOfEmptyTube--;
             }
-        //}
-        //else
-        //{
-        //    ////TODO: fix tutorial
-        //    _tutorialController.TutorialTubes.Add(Instantiate(_tutorialController.TubeForTutorial, positionToSpawn, rotationToSpawn));
-        //    positionToSpawn.x += 1.2f;
-        //    positionToSpawn.y -= 20;
-        //    _tutorialController.TutorialArrows.Add(Instantiate(_tutorialController.ArrowPoint, positionToSpawn, rotationToSpawn));
-        //}
+        }
+        else
+        {
+            _tutorialController.TutorialTubes.Add(flask.GameObject);
+            coloredTubes.Add(flask?.GameObject.GetComponent<TubeController>());
+            _tutorialController.TutorialArrows.Add(Instantiate(_tutorialController.ArrowPoint, flask.GameObject.transform.GetChild(1).position, Quaternion.identity));
+        }
     }
 
     private void FillTube()
     {
-        int colorID;
-        Color newColor = Color.white;
 
-        for (int i = 0; i < coloredTubes.Count; i++)
+        if (PlayerPrefs.HasKey("FirstStart"))
         {
-            for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
+            int colorID;
+            Color newColor = Color.white;
+
+            for (int i = 0; i < coloredTubes.Count; i++)
             {
-                var freeColors = usedColors.FindAll(x => x.colorCount < 4);
-                colorID = Random.Range(0, freeColors.Count);
+                for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
+                {
+                    var freeColors = usedColors.FindAll(x => x.colorCount < 4);
+                    colorID = Random.Range(0, freeColors.Count);
 
-                ColorUtility.TryParseHtmlString(colors[freeColors[colorID].colorID], out newColor);
-                coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
-                coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
-                freeColors[colorID].colorCount++;
+                    ColorUtility.TryParseHtmlString(colors[freeColors[colorID].colorID], out newColor);
+                    coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
+                    coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+                    freeColors[colorID].colorCount++;
+
+                    coloredTubes[i].LiquidVolume.foamColor = newColor;
+                    coloredTubes[i].LiquidVolume.foamThickness = coloredTubes[i].FoamThickness;
+                }
+
+                coloredTubes[i].LiquidVolume.UpdateLayers(true);
             }
+        }
+        else
+        {
+            for (int i = 0; i < coloredTubes.Count; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    coloredTubes[i].LiquidVolume.liquidLayers[j].color = tutorialColor;
+                    coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+                    coloredTubes[i].LiquidVolume.foamColor = tutorialColor;
+                }
 
-            coloredTubes[i].LiquidVolume.UpdateLayers();
+                coloredTubes[i].LiquidVolume.UpdateLayers(true);
+            }
         }
     }
 }
@@ -249,4 +270,13 @@ public class Flask
 {
     public GameObject GameObject;
     public LiquidVolume LiquidVolume;
+}
+
+public abstract class ISpawnController : MonoBehaviour
+{
+    public int level { get; set; }
+    public abstract int GetDifficulty();
+    public abstract void NotFirstLoad();
+    public abstract void SpawnObject();
+    public abstract void SetCenterPosition();
 }

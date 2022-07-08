@@ -8,7 +8,7 @@ public class TubeController : MonoBehaviour
 {
     public Vector3 Pos;
     public GameObject ColorsPivot;
-    public GameObject PourSprite;
+    public GameObject PourSpriteObject;
 
     public int currColors;
 
@@ -20,12 +20,13 @@ public class TubeController : MonoBehaviour
 
     public LiquidVolume LiquidVolume;
     public float ColorLayerAmount = 0.22f;
+    public float FoamThickness = 0.0052f;
 
     private float RotStart, RotEnd;
     public bool isrotating = false;
     private float rotationLerp;
 
-    private GameManager GM;
+    private IGameManager GM;
     [HideInInspector] public TubeController NextTube;
     public SpriteRenderer tubeSR;
     [HideInInspector] public SortingGroup sorting;
@@ -37,12 +38,14 @@ public class TubeController : MonoBehaviour
     private float ColorLerp;
 
     private AudioSource audioSource;
-    private float _returnSpeed = 10;
+    private float _returnSpeed = 8;
     private bool _canMouseDown = true;
 
     private Vector3 _pourAngle = new Vector3(0, 0, 0f);
-    private Vector3 _flaskDistance = new Vector3(0.1f, 1.3f, 0f);
+    private Vector3 _flaskDistance = new Vector3(0.1f, 0.6f, 0f);
     private Quaternion _pourRotation = Quaternion.identity;
+    private GameObject _pourSprite;
+    private float _timeCoef = 1.5f;
 
     private void Start()
     {
@@ -53,7 +56,7 @@ public class TubeController : MonoBehaviour
         IsAddColor = false;
         currColors = 0;
         Pos = transform.position;
-        GM = FindObjectOfType<GameManager>();
+        GM = FindObjectOfType<IGameManager>();
         GM.tubesInGame.Add(this.gameObject);
         GM.tubeControllers.Add(this);
         audioSource = GM.audioSource;
@@ -87,7 +90,7 @@ public class TubeController : MonoBehaviour
         if (isAddingColor)
         {
 
-            ColorLerp += Time.deltaTime;
+            ColorLerp += Time.deltaTime * _timeCoef;
             if (ColorLerp > 1)
             {
                 isAddingColor = false;
@@ -100,9 +103,9 @@ public class TubeController : MonoBehaviour
 
         if (isrotating)
         {
-            PourSprite.transform.rotation = Quaternion.identity;
+            //PourSpriteObject.transform.rotation = Quaternion.identity;
 
-            rotationLerp += Time.deltaTime;
+            rotationLerp += Time.deltaTime * _timeCoef;
             if (rotationLerp >= 1)
             {
                 rotationLerp = 1;
@@ -124,7 +127,7 @@ public class TubeController : MonoBehaviour
                     audioSource.Stop();
 
                     NextTube.isBusy = false;
-                    PourSprite.SetActive(false);
+                    Destroy(_pourSprite);
                     RemoveColor();
 
                     StartCoroutine(ReturnToStartingPosition(_returnSpeed));
@@ -146,10 +149,10 @@ public class TubeController : MonoBehaviour
                 }
 
                 float tempAngle = Mathf.Lerp(RotStart, RotEnd, rotationLerp);
-                transform.eulerAngles = new Vector3(0, 0, tempAngle);
+                transform.localRotation = Quaternion.Euler(new Vector3(0, 0, tempAngle));
 
                 LiquidVolume.liquidLayers[currColors - 1].amount =
-                Mathf.Clamp01(LiquidVolume.liquidLayers[currColors - 1].amount - Time.deltaTime * 0.22f);
+                Mathf.Clamp01(LiquidVolume.liquidLayers[currColors - 1].amount - Time.deltaTime * _timeCoef * ColorLayerAmount);
                 LiquidVolume.UpdateLayers(true);
             }
         }
@@ -222,6 +225,23 @@ public class TubeController : MonoBehaviour
     {
         currColors--;
         LiquidVolume.liquidLayers[currColors].amount = 0f;
+
+        SetFoam();
+    }
+
+    private void SetFoam()
+    {
+        if (currColors > 0)
+        {
+            LiquidVolume.foamColor = LiquidVolume.liquidLayers[currColors - 1].color;
+            LiquidVolume.foamThickness = FoamThickness;
+        }
+        else
+        {
+            LiquidVolume.foamThickness = 0;
+        }
+
+        LiquidVolume.UpdateLayers(true);
     }
 
     public void AddColor(Color colr)
@@ -233,6 +253,8 @@ public class TubeController : MonoBehaviour
         LiquidVolume.liquidLayers[currColors].color = colr;
         colorsInTube[currColors] = colr;
         currColors++;
+
+        SetFoam();
 
         if (isEmpty)
         {
@@ -256,7 +278,6 @@ public class TubeController : MonoBehaviour
         }
     }
 
-
     private void RotateTube()
     {
         NextTube.isBusy = true;
@@ -267,9 +288,9 @@ public class TubeController : MonoBehaviour
             RotStart = RotationData.SAngle4[currColors - 1];
             RotEnd = RotationData.EAngle4[currColors - 1];
         }
-
-        PourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
-        PourSprite.SetActive(true);
+        _pourSprite = Instantiate(PourSpriteObject);
+        _pourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
+        _pourSprite.transform.position += transform.position;
         audioSource.Play();
         isrotating = true;
         GM.addingColor = true;
@@ -306,4 +327,9 @@ public class TubeController : MonoBehaviour
         transform.eulerAngles = Vector3.zero;
         _canMouseDown = true;
     }
+}
+
+public interface ITubeController
+{
+
 }

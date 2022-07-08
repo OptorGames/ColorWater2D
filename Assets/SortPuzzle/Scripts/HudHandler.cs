@@ -15,6 +15,8 @@ public class HudHandler : MonoBehaviour
 
     [Header("Links")] [SerializeField] private GameObject MainInterface;
     [SerializeField] private TutorialController _tutorialController;
+    [SerializeField] protected GameObject _stand;
+    [SerializeField] protected GameObject _flasks;
 
     private void Start()
     {
@@ -35,10 +37,9 @@ public class HudHandler : MonoBehaviour
         IsGamePaused = true;
 
         UpdateDifficultyLevel();
-        GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
 
-        for (int i = 0; i < tubes.Length; i++)
-            tubes[i].gameObject.SetActive(false);
+        _flasks.SetActive(false);
+        _stand.SetActive(false);
 
         WinMenu.SetActive(true);
         MainInterface.SetActive(false);
