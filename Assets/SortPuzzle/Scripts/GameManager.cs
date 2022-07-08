@@ -392,12 +392,15 @@ public class GameManager : IGameManager
                     tubeControllers[i].colorsInTube[a] = savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
                 }
 
+                tubeControllers[i].LiquidVolume.foamThickness = 0;
                 for (int j = tubeControllers[i].LiquidVolume.liquidLayers.Length - 1; j >= 0 ; j--)
                 {
                     if (savedTubes[savedTubes.Count - 1].tubes[i].capacities[j] > 0.001f)
                     {
                         tubeControllers[i].LiquidVolume.foamColor =
-                        savedTubes[savedTubes.Count - 1].tubes[i].colors[j];
+                            savedTubes[savedTubes.Count - 1].tubes[i].colors[j];
+                        tubeControllers[i].LiquidVolume.foamThickness =
+                            tubeControllers[i].FoamThickness;
                         break;
                     }
                 }

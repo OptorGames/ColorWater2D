@@ -56,6 +56,8 @@ public class VideoGameManager : IGameManager
     [SerializeField] private ParticleSystem confetti;
 
     [SerializeField] private Animator _professor;
+
+    [SerializeField] private AudioManager _audioManager;
     private bool needUnPause = false;
 
     // Create instance of ReviewManager
@@ -417,10 +419,12 @@ public class VideoGameManager : IGameManager
         if (_wasGladness)
         {
             _professor.SetTrigger("Delight");
+            _audioManager.LongLaugh();
         }
         else
         {
             _professor.SetTrigger("Gladness");
+            _audioManager.ShortLaugh();
             _wasGladness = true;
         }
 
