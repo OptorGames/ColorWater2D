@@ -32,7 +32,7 @@ public class SpawnController : ISpawnController
     [SerializeField] protected TutorialController _tutorialController;
     public static ISpawnController spawnController = null;
     public static bool firstStart = true;
-    
+
     [SerializeField] protected Color tutorialColor = new Color(0.9176471f, 0.2235294f, 0.7463644f);
 
     private void Start()
@@ -77,7 +77,7 @@ public class SpawnController : ISpawnController
         {
             int colorID = Random.Range(0, colors.Length);
             if (CheckOnExist(colorID))
-                usedColors.Add(new UsedColor {colorID = colorID, colorCount = 0});
+                usedColors.Add(new UsedColor { colorID = colorID, colorCount = 0 });
         }
 
         SpawnGrid();
@@ -157,7 +157,16 @@ public class SpawnController : ISpawnController
             }
         }
 
-        FillTube();
+        if (PlayerPrefs.HasKey("FirstStart"))
+        {
+            FillTubes();
+        }
+        else
+        {
+            FillTutorialTubes();
+        }
+
+
         SetCenterPosition();
     }
 
@@ -215,45 +224,79 @@ public class SpawnController : ISpawnController
         }
     }
 
-    private void FillTube()
+    private void FillTubes()
     {
-
-        if (PlayerPrefs.HasKey("FirstStart"))
+        foreach (UsedColor usedColor in usedColors)
         {
-            int colorID;
-            Color newColor = Color.white;
-
-            for (int i = 0; i < coloredTubes.Count; i++)
-            {
-                for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
-                {
-                    var freeColors = usedColors.FindAll(x => x.colorCount < 4);
-                    colorID = Random.Range(0, freeColors.Count);
-
-                    ColorUtility.TryParseHtmlString(colors[freeColors[colorID].colorID], out newColor);
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
-                    freeColors[colorID].colorCount++;
-
-                    coloredTubes[i].LiquidVolume.foamColor = newColor;
-                    coloredTubes[i].LiquidVolume.foamThickness = coloredTubes[i].FoamThickness;
-                }
-
-                coloredTubes[i].LiquidVolume.UpdateLayers(true);
-            }
+            usedColor.colorCount = 0;
         }
-        else
-        {
-            for (int i = 0; i < coloredTubes.Count; i++)
-            {
-                for (int j = 0; j < 2; j++)
-                {
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].color = tutorialColor;
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
-                    coloredTubes[i].LiquidVolume.foamColor = tutorialColor;
-                }
 
-                coloredTubes[i].LiquidVolume.UpdateLayers(true);
+        int colorIndex;
+        Color newColor = Color.white;
+
+        for (int i = 0; i < coloredTubes.Count; i++)
+        {
+            for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
+            {
+                var freeColors = usedColors.FindAll(x => x.colorCount < 4);
+                colorIndex = Random.Range(0, freeColors.Count);
+
+                ColorUtility.TryParseHtmlString(colors[freeColors[colorIndex].colorID], out newColor);
+                coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
+                coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+                usedColors.First(x => x.colorID == freeColors[colorIndex].colorID).colorCount++;
+
+                coloredTubes[i].LiquidVolume.foamColor = newColor;
+                coloredTubes[i].LiquidVolume.foamThickness = coloredTubes[i].FoamThickness;
+            }
+
+            coloredTubes[i].LiquidVolume.UpdateLayers(true);
+        }
+
+        CheckFilledTubes();
+    }
+
+    private void FillTutorialTubes()
+    {
+        for (int i = 0; i < coloredTubes.Count; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                coloredTubes[i].LiquidVolume.liquidLayers[j].color = tutorialColor;
+                coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+                coloredTubes[i].LiquidVolume.foamColor = tutorialColor;
+            }
+
+            coloredTubes[i].LiquidVolume.UpdateLayers(true);
+        }
+    }
+
+    private void CheckFilledTubes()
+    {
+        for (int i = 0; i < coloredTubes.Count; i++)
+        {
+            if (coloredTubes[i].LiquidVolume.liquidLayers.Length <= 0)
+            {
+                continue;
+            }
+
+            int sameColorsCount = 0;
+
+            for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
+            {
+                if (j > 0 && coloredTubes[i].LiquidVolume.liquidLayers[j].currentAmount > 0.01f
+                    && coloredTubes[i].LiquidVolume.liquidLayers[j - 1].currentAmount > 0.01f
+                    && coloredTubes[i].LiquidVolume.liquidLayers[j - 1].color ==
+                       coloredTubes[i].LiquidVolume.liquidLayers[j].color)
+                {
+                    ++sameColorsCount;
+                }
+            }
+
+            if (sameColorsCount == coloredTubes[i].LiquidVolume.liquidLayers.Length - 1)
+            {
+                FillTubes();
+                return;
             }
         }
     }

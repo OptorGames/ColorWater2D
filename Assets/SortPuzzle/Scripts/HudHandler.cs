@@ -59,11 +59,7 @@ public class HudHandler : MonoBehaviour
             DTDAnalytics.CustomEvent(eventName: "Level_" + old_value.ToString());
 
         PlayerPrefs.SetInt("Steps", 5);
-
-        if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1 && old_value != 9&&old_value !=10)
-        {
-            ads.ShowInterstitial();
-        }
+        ads.OnLevelComplete(old_value);
     }
 
     private void UpdateDifficultyLevel()
@@ -93,12 +89,6 @@ public class HudHandler : MonoBehaviour
 
     public void Restart()
     {
-        if (PlayerPrefs.GetInt("RestartCount") > 5)
-        {
-            if (PlayerPrefs.GetInt("NoAds") != 1)
-                ads.ShowInterstitial();
-        }
-
         int new_count = PlayerPrefs.GetInt("RestartCount") + 1;
         PlayerPrefs.SetInt("RestartCount", new_count);
         PlayerPrefs.SetInt("Steps", 5);
