@@ -23,7 +23,7 @@ public class GameManager : IGameManager
     [SerializeField] protected TutorialController _tutorialController;
 
     [Header("Links")] [SerializeField] protected GameObject BuyStepsPanel;
-    [SerializeField] protected Button ButBackStep;
+    [SerializeField] protected Button BackStepButton;
     [SerializeField] protected Button AddTubeButton;
 
     [SerializeField] protected GameObject NoAdsButton;
@@ -122,13 +122,13 @@ public class GameManager : IGameManager
 
     private void Update()
     {
-        if (addingColor && ButBackStep.interactable)
+        if (addingColor && BackStepButton.interactable)
         {
-            ButBackStep.interactable = false;
+            BackStepButton.interactable = false;
         }
-        else if (!addingColor && !ButBackStep.interactable)
+        else if (!addingColor && !BackStepButton.interactable)
         {
-            ButBackStep.interactable = true;
+            BackStepButton.interactable = true;
         }
 
         if (Time.timeScale <= 0.1f)

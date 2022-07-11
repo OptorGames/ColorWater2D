@@ -268,7 +268,7 @@ MonoBehaviour:
   _noiseVariation: 1
   _allowViewFromInside: 0
   _debugSpillPoint: 0
-  _renderQueue: 3001
+  _renderQueue: 3000
   _reflectionTexture: {fileID: 0}
   _physicsMass: 1
   _physicsAngularDamp: 0.02
@@ -510,6 +510,7 @@ MonoBehaviour:
   ColorObjects: []
   LiquidVolume: {fileID: 5593291059401371998}
   ColorLayerAmount: 0.22
+  FoamThickness: 0.0052
   isrotating: 0
   NextTube: {fileID: 0}
   tubeSR: {fileID: 0}

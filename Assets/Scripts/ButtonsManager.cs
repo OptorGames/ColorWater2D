@@ -65,7 +65,7 @@ public class ButtonsManager : MonoBehaviour
 
         if (PlayerPrefs.GetInt("UnlockedTubes") != 2)
         {
-            HUD.ads.ShowRewarded(2, num);
+            HUD.ads.OnChangeTubeTheme(num);
         }
         else if (PlayerPrefs.GetInt("UnlockedTubes") == 2)
         {
@@ -83,7 +83,7 @@ public class ButtonsManager : MonoBehaviour
 
         if (PlayerPrefs.GetInt("UnlockedThemes") != 9)
         {
-            HUD.ads.ShowRewarded(3, num);
+            HUD.ads.OnChangeBackgroundTheme(num);
         }
         else if (PlayerPrefs.GetInt("UnlockedThemes") == 9)
         {
@@ -163,5 +163,13 @@ public class ButtonsManager : MonoBehaviour
             PlayerPrefs.SetInt("Vibrate", 0);
             vibrateImg.sprite = checkFalse;
         }
+    }
+
+    public void AddBackStepsButton()
+    {
+        int count = PlayerPrefs.GetInt("Steps");
+        count += 5;
+        PlayerPrefs.SetInt("Steps", count);
+        _gameManager.UpdateTextSteps();
     }
 }

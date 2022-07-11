@@ -1,4 +1,5 @@
 using CAS;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,6 +18,12 @@ public class Ads : MonoBehaviour
 
     public GameManager GM;
 
+    private DateTime _lastInterstitialTime;
+    private int _interstitialPause = 60;
+
+    private DateTime _lastRewardTime;
+    private int _rewardPause = 300;
+
     public void Start()
     {
         MobileAds.settings.userConsent = userConsent;
@@ -33,6 +40,51 @@ public class Ads : MonoBehaviour
         //bannerView = manager.GetAdView(AdSize.Banner);
         //ShowBanner();
         rew_id = 10;
+    }
+
+    public void OnLevelComplete(int level)
+    {
+        if (PlayerPrefs.GetInt("NoAds") != 1 && 
+            (level == 6 || level == 8 ||
+            (level >= 11 && (DateTime.Now - _lastInterstitialTime).Seconds > _interstitialPause)))
+        {
+            _lastInterstitialTime = DateTime.Now;
+            ShowInterstitial();
+        }
+    }
+
+    public void OnChangeTubeTheme(int visualNumber)
+    {
+        int id = 2;
+
+        if ((DateTime.Now - _lastRewardTime).Seconds > _rewardPause)
+        {
+            _lastRewardTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+        else
+        {
+            rew_id = id;
+            rev_VisualNumber = visualNumber;
+            RewardedSuccessful();
+        }
+    }
+
+    public void OnChangeBackgroundTheme(int visualNumber)
+    {
+        int id = 3;
+
+        if ((DateTime.Now - _lastRewardTime).Seconds > _rewardPause)
+        {
+            _lastRewardTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+        else
+        {
+            rew_id = id;
+            rev_VisualNumber = visualNumber;
+            RewardedSuccessful();
+        }
     }
 
     //public void ShowBanner()
