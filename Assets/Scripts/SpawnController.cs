@@ -25,6 +25,7 @@ public class SpawnController : ISpawnController
     };
 
     public int numberOfEmptyTube = 2;
+    private int defaultNumberOfEmptyTube = 2;
     protected int usedColb;
     protected int difficulty = 0;
     protected List<UsedColor> usedColors = new List<UsedColor>();
@@ -65,6 +66,7 @@ public class SpawnController : ISpawnController
 
     public override void SpawnObject()
     {
+        numberOfEmptyTube = defaultNumberOfEmptyTube;
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
         spawnCount = level + numberOfEmptyTube;
@@ -139,6 +141,7 @@ public class SpawnController : ISpawnController
 
     private void SpawnGrid()
     {
+        coloredTubes = new List<TubeController>();
         int spawnedCount = 0;
         float y = 0;
         int spawnGrid = (usedColb + numberOfEmptyTube);
@@ -298,6 +301,33 @@ public class SpawnController : ISpawnController
                 FillTubes();
                 return;
             }
+        }
+    }
+
+    public void RefillTubes(List<TubeInfo> tubes)
+    {
+        foreach(TubeInfo info in tubes)
+        {
+            var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+            flask?.GameObject.SetActive(true);
+
+            var controller = flask.GameObject.GetComponent<TubeController>();
+            controller.isEmpty = info.isEmpty;
+            controller.isFull = info.isFull;
+            controller.currColors = info.currColors;
+
+            for (int i = 0; i < info.colors.Length; ++i)
+            {
+                flask.LiquidVolume.liquidLayers[i].color = info.colors[i];
+                flask.LiquidVolume.liquidLayers[i].amount = info.capacities[i];
+                
+                if (info.capacities[i] > 0.01)
+                {
+                    flask.LiquidVolume.foamColor = info.colors[i];
+                }
+            }
+
+            flask.LiquidVolume.UpdateLayers(true);
         }
     }
 }

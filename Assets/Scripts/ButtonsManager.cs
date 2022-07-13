@@ -7,6 +7,8 @@ public class ButtonsManager : MonoBehaviour
     public HudHandler HUD;
     private GameManager _gameManager;
 
+    [SerializeField] private TubesThemesController _tubesThemesController;
+
     [SerializeField] private string feedback_url;
 
     [SerializeField] private Sprite checkTrue;
@@ -63,15 +65,10 @@ public class ButtonsManager : MonoBehaviour
             buttonsTube.interactable = true;
         }
 
-        if (PlayerPrefs.GetInt("UnlockedTubes") != 2)
-        {
-            HUD.ads.OnChangeTubeTheme(num);
-        }
-        else if (PlayerPrefs.GetInt("UnlockedTubes") == 2)
-        {
-            PlayerPrefs.SetInt("Tube", num);
-            _gameManager.SetSelectedTubes();
-        }
+        HUD.ads.OnChangeTubeTheme(num);
+
+        PlayerPrefs.SetInt("Tube", num);
+        _tubesThemesController.SetTheme();
     }
 
     public void TrySelectTheme(int num)

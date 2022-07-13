@@ -16,7 +16,7 @@ public class HudHandler : MonoBehaviour
     [Header("Links")] [SerializeField] private GameObject MainInterface;
     [SerializeField] private TutorialController _tutorialController;
     [SerializeField] protected GameObject _stand;
-    [SerializeField] protected GameObject _flasks;
+    [HideInInspector] public GameObject Flasks;
 
     private void Start()
     {
@@ -38,7 +38,7 @@ public class HudHandler : MonoBehaviour
 
         UpdateDifficultyLevel();
 
-        _flasks.SetActive(false);
+        Flasks.SetActive(false);
         _stand.SetActive(false);
 
         WinMenu.SetActive(true);

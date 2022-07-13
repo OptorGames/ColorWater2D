@@ -77,12 +77,12 @@ public class TubeController : MonoBehaviour
             GM.AddEmpty();
         }
 
-        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
-            colorsInTube[0] == colorsInTube[3])
-        {
-            GM.AddFull(transform.position, false);
-            isFull = true;
-        }
+        //if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
+        //    colorsInTube[0] == colorsInTube[3])
+        //{
+        //    GM.AddFull(transform.position, false);
+        //    isFull = true;
+        //}
     }
 
     private void Update()
@@ -118,8 +118,8 @@ public class TubeController : MonoBehaviour
                     IsAddColor = true;
                     rotationLerp = 0;
                     RemoveColor();
-                    RotStart = RotationData.SAngle4[currColors - 1];
-                    RotEnd = RotationData.EAngle4[currColors - 1];
+                    RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].StartAngle[currColors - 1];
+                    RotEnd = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].EndAngle[currColors - 1];
                 }
                 else
                 {
@@ -285,8 +285,8 @@ public class TubeController : MonoBehaviour
         IsAddColor = true;
         rotationLerp = 0;
         {
-            RotStart = RotationData.SAngle4[currColors - 1];
-            RotEnd = RotationData.EAngle4[currColors - 1];
+            RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].StartAngle[currColors - 1];
+            RotEnd = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].EndAngle[currColors - 1];
         }
         _pourSprite = Instantiate(PourSpriteObject);
         _pourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
@@ -298,7 +298,7 @@ public class TubeController : MonoBehaviour
 
     public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
     {
-        RotStart = RotationData.SAngle4[currColors - 1];
+        RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].StartAngle[currColors - 1];
         _canMouseDown = false;
         while (transform.position != otherTube.transform.position + _flaskDistance)
         {
