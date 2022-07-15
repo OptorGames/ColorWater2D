@@ -13,14 +13,13 @@ public class GameManager : IGameManager
 
     //public List<GameObject> tubesInGame;
     protected GameObject selectedTube;
-    public HudHandler HUD;
     public ISpawnController spawnController;
     protected static bool isGameOver;
     [HideInInspector] public bool islevelStart;
     protected int difficulty = 0;
     [HideInInspector] public int curr_level;
 
-    [SerializeField] protected TutorialController _tutorialController;
+    public TutorialController TutorialController;
 
     [Header("Links")] [SerializeField] protected GameObject BuyStepsPanel;
     [SerializeField] protected Button BackStepButton;
@@ -44,7 +43,6 @@ public class GameManager : IGameManager
     [HideInInspector] public List<AllTubesInfo> SavedTubes = new List<AllTubesInfo>();
 
     //public AudioSource audioSource;
-    [HideInInspector] public ButtonsManager buttonsManager;
 
     [Header("FromShop")] public Sprite[] tubes;
     public Sprite[] tubesMasks;
@@ -78,12 +76,13 @@ public class GameManager : IGameManager
         SetTextDifficulty();
         if (PlayerPrefs.HasKey("FirstStart"))
         {
-            _tutorialController.enabled = false;
+            TutorialController.enabled = false;
             LoadDifficultyLevel();
         }
         else
         {
-            _tutorialController.enabled = true;
+            TutorialController.enabled = true;
+            buttonsManager.DisableAdditionalTubeButton();
         }
 
         SetSelectedBackground();
@@ -309,7 +308,7 @@ public class GameManager : IGameManager
 
         if (!PlayerPrefs.HasKey("FirstStart"))
         {
-            _tutorialController.ProgressControl(0);
+            TutorialController.ProgressControl(0);
         }
     }
 
@@ -456,11 +455,11 @@ public class GameManager : IGameManager
     {
         yield return new WaitForSeconds(0.5f);
 
-        if (!isGameOver)
-        {
+        //if (!isGameOver)
+        //{
             confetti.transform.position = pos;
             confetti.Play();
-        }
+        //}
 
         if (PlayerPrefs.GetInt("Vibrate") == 1 && !isGameOver)
         {
@@ -551,6 +550,10 @@ public abstract class IGameManager : MonoBehaviour
     public List<GameObject> tubesInGame;
     public List<TubeController> tubeControllers = new List<TubeController>();
     public AudioSource audioSource;
+    public HudHandler HUD;
+
+    [HideInInspector] public ButtonsManager buttonsManager;
+
     [SerializeField] public bool addingColor;
 
 

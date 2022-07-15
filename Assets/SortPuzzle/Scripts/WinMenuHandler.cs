@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class WinMenuHandler : MonoBehaviour
 {
+    [SerializeField] private Sprite _background;
     public void Next()
     {
         Time.timeScale = 1;

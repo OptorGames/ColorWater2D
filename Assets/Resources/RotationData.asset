@@ -33,3 +33,13 @@ MonoBehaviour:
     - 90
     - 84
     - 62
+  - StartAngle:
+    - 87
+    - 82
+    - 71
+    - 36
+    EndAngle:
+    - 90
+    - 87
+    - 82
+    - 71

@@ -19,24 +19,12 @@ public class TubesThemesController : MonoBehaviour
     {
 
         SelectTheme();
-        if (_gameManager.SavedTubes.Count > 0)
-        {
-            var lastCombination = _gameManager.GetLastTubesCombination();
-            _gameManager.tubeControllers = new List<TubeController>();
-            _gameManager.tubesInGame = new List<GameObject>();
-            _gameManager.FullTubes = lastCombination.full;
-            _gameManager.EmptyTubes = lastCombination.empty;
 
+        var lastCombination = _gameManager.GetLastTubesCombination();
+        _gameManager.tubeControllers = new List<TubeController>();
+        _gameManager.tubesInGame = new List<GameObject>();
 
-            _spawnController.RefillTubes(lastCombination.tubes);
-        }
-        else
-        {
-            _gameManager.StartLevel();
-
-            _spawnController.level = _gameManager.curr_level;
-            _spawnController.SpawnObject();
-        }
+        _spawnController.RefillTubes(lastCombination.tubes);
     }
 
     private void SelectTheme()
@@ -47,6 +35,6 @@ public class TubesThemesController : MonoBehaviour
         }
         var theme = Instantiate(_themes[PlayerPrefs.GetInt("Tube", 0)], _themesParent.transform);
         _spawnController.Flasks = theme.GetComponent<Flasks>().FlasksList;
-        _hudHandler.Flasks = theme;
+        _hudHandler.Flasks = theme;        
     }
 }

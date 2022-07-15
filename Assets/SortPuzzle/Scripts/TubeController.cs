@@ -291,8 +291,10 @@ public class TubeController : MonoBehaviour
         _pourSprite = Instantiate(PourSpriteObject);
         _pourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
         _pourSprite.transform.position += transform.position;
+        GM.HUD.Pour = _pourSprite;
         audioSource.Play();
         isrotating = true;
+        GM.buttonsManager.DisableMenuButton();
         GM.addingColor = true;
     }
 
@@ -326,6 +328,20 @@ public class TubeController : MonoBehaviour
         transform.position = Pos;
         transform.eulerAngles = Vector3.zero;
         _canMouseDown = true;
+        GM.buttonsManager.EnableMenuButton();
+    }
+
+    private void OnDestroy()
+    {
+        if (_pourSprite != null)
+        {
+            Destroy(_pourSprite);
+        }
+    }
+
+    private void OnBecameInvisible()
+    {
+        OnDestroy();
     }
 }
 

@@ -31,6 +31,9 @@ public class ButtonsManager : MonoBehaviour
     [SerializeField] Button[] buttons_tubes;
     [SerializeField] Button[] buttons_themes;
 
+    [SerializeField] private Button _menu;
+    [SerializeField] private Button _additionalTube;
+
     private void Start()
     {
         Tubes_Window.SetActive(true);
@@ -51,6 +54,16 @@ public class ButtonsManager : MonoBehaviour
         }
 
         buttons_themes[PlayerPrefs.GetInt("Theme")].interactable = false;
+    }
+
+    public void DisableMenuButton()
+    {
+        _menu.interactable = false;
+    }
+
+    public void EnableMenuButton()
+    {
+        _menu.interactable = true;
     }
 
     public void UpdateCountState()
@@ -168,5 +181,10 @@ public class ButtonsManager : MonoBehaviour
         count += 5;
         PlayerPrefs.SetInt("Steps", count);
         _gameManager.UpdateTextSteps();
+    }
+
+    public void DisableAdditionalTubeButton()
+    {
+        _additionalTube.interactable = false;
     }
 }

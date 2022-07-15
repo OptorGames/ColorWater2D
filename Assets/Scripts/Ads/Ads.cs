@@ -195,7 +195,8 @@ public class Ads : MonoBehaviour
     {
         if(rew_id == 0)
         {
-            GM.AddTube();
+            //GM.AddTube();
+            GM.spawnController.AddAdditionalTube();
         }
         else if(rew_id == 1)
         {

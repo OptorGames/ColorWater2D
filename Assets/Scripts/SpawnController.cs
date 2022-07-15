@@ -309,12 +309,13 @@ public class SpawnController : ISpawnController
         foreach(TubeInfo info in tubes)
         {
             var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
-            flask?.GameObject.SetActive(true);
 
             var controller = flask.GameObject.GetComponent<TubeController>();
             controller.isEmpty = info.isEmpty;
             controller.isFull = info.isFull;
             controller.currColors = info.currColors;
+
+            flask?.GameObject.SetActive(true);
 
             for (int i = 0; i < info.colors.Length; ++i)
             {
@@ -328,6 +329,22 @@ public class SpawnController : ISpawnController
             }
 
             flask.LiquidVolume.UpdateLayers(true);
+        }
+    }
+
+    public override void AddAdditionalTube()
+    {
+        var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+        var controller = flask.GameObject.GetComponent<TubeController>();
+        controller.isEmpty = true;
+        flask?.GameObject.SetActive(true);
+        flask.LiquidVolume.foamThickness = 0f;
+
+        flask.LiquidVolume.UpdateLayers(true);
+
+        if (!Flasks.Exists(x => !x.GameObject.activeInHierarchy))
+        {
+            GM.buttonsManager.DisableAdditionalTubeButton();
         }
     }
 }
@@ -352,4 +369,5 @@ public abstract class ISpawnController : MonoBehaviour
     public abstract void NotFirstLoad();
     public abstract void SpawnObject();
     public abstract void SetCenterPosition();
+    public abstract void AddAdditionalTube();
 }

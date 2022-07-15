@@ -24,6 +24,7 @@ namespace ForTutorial
         {
             if (!PlayerPrefs.HasKey("FirstStart"))
             {
+                _gameManager.buttonsManager.DisableMenuButton();
                 _spawnController.level = 1;
                 _spawnController.numberOfEmptyTube = 0;
                 ProgressControl(1);

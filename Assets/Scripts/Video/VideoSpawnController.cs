@@ -253,6 +253,11 @@ public class VideoSpawnController : ISpawnController
         coloredTubes[2].LiquidVolume.UpdateLayers(true);
 
     }
+
+    public override void AddAdditionalTube()
+    {
+        throw new System.NotImplementedException();
+    }
 }
 
 //public class UsedColor
