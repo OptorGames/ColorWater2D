@@ -11,6 +11,8 @@ public class GameManager : IGameManager
     public int EmptyTubes = 0;
     public int FullTubes = 0;
 
+    public static float tubeReturnSpeedModifier = 1;
+    public static float defaultTubeReturnSpeed = 8;
     //public List<GameObject> tubesInGame;
     protected GameObject selectedTube;
     public ISpawnController spawnController;
@@ -486,6 +488,7 @@ public class GameManager : IGameManager
             confetti.gameObject.SetActive(false);
 
             isGameOver = true;
+            
             int currGameLevel = PlayerPrefs.GetInt("CurrentGameLevel") + 1;
 
             if (currGameLevel >= levelHandler.Levels.Length)
@@ -493,6 +496,7 @@ public class GameManager : IGameManager
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
             HUD.WinGame();
+            
         }
     }
 

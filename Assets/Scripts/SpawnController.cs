@@ -17,7 +17,13 @@ public class SpawnController : ISpawnController
     public GameManager GM;
     public Vector3 origin;
     public List<Flask> Flasks = new List<Flask>();
+    public int activatedFlasks;
 
+    public override int ActivatedFlasks
+    {
+        get => activatedFlasks;
+        set => activatedFlasks = value; 
+    }
     protected string[] colors =
     {
         "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD",
@@ -82,6 +88,7 @@ public class SpawnController : ISpawnController
                 usedColors.Add(new UsedColor { colorID = colorID, colorCount = 0 });
         }
 
+        
         SpawnGrid();
     }
 
@@ -147,12 +154,13 @@ public class SpawnController : ISpawnController
         int spawnGrid = (usedColb + numberOfEmptyTube);
         if (spawnGrid > 17)
             spawnGrid = 17;
+        activatedFlasks = 0;
         for (int i = 0; i < spawnGrid; i++)
         {
             Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
             PickAndSpawn(spawnPosition, Quaternion.identity);
             spawnedCount++;
-
+            
             if (spawnedCount == gridX)
             {
                 y -= verticalOffset;
@@ -206,7 +214,15 @@ public class SpawnController : ISpawnController
     {
         var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
         flask?.GameObject.SetActive(true);
-
+        activatedFlasks++;
+        if (activatedFlasks >= 5)
+        {
+            GameManager.tubeReturnSpeedModifier = activatedFlasks;
+        }
+        else
+        {
+            GameManager.tubeReturnSpeedModifier = 1;
+        }
         if (PlayerPrefs.HasKey("FirstStart"))
         {
             if (numberOfEmptyTube == 0)
@@ -347,6 +363,8 @@ public class SpawnController : ISpawnController
             GM.buttonsManager.DisableAdditionalTubeButton();
         }
     }
+
+    
 }
 
 public class UsedColor
@@ -370,4 +388,5 @@ public abstract class ISpawnController : MonoBehaviour
     public abstract void SpawnObject();
     public abstract void SetCenterPosition();
     public abstract void AddAdditionalTube();
+    public abstract int ActivatedFlasks { get; set; }
 }

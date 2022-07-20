@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -47,6 +48,8 @@ public class TubeController : MonoBehaviour
     private GameObject _pourSprite;
     private float _timeCoef = 1.5f;
 
+   
+
     private void Start()
     {
 
@@ -60,7 +63,7 @@ public class TubeController : MonoBehaviour
         GM.tubesInGame.Add(this.gameObject);
         GM.tubeControllers.Add(this);
         audioSource = GM.audioSource;
-
+        
         colorsInTube = new Color[LiquidVolume.liquidLayers.Length];
         for (int i = 0; i < 4; i++)
         {
@@ -300,12 +303,13 @@ public class TubeController : MonoBehaviour
 
     public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
     {
+        moveSpeed = moveSpeed + GameManager.tubeReturnSpeedModifier * 1.5f;
         RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].StartAngle[currColors - 1];
         _canMouseDown = false;
         while (transform.position != otherTube.transform.position + _flaskDistance)
         {
             transform.position = Vector3.MoveTowards(transform.position,
-                otherTube.transform.position + _flaskDistance, moveSpeed * Time.deltaTime);
+                otherTube.transform.position + _flaskDistance, moveSpeed  * Time.deltaTime);
             transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(0, 0, RotStart),
                 moveSpeed / 4 * Time.deltaTime);
 
@@ -317,6 +321,7 @@ public class TubeController : MonoBehaviour
 
     private IEnumerator ReturnToStartingPosition(float returnSpeed)
     {
+        returnSpeed = returnSpeed + GameManager.tubeReturnSpeedModifier * 1.5f;
         _canMouseDown = false;
         while (transform.position != Pos)
         {

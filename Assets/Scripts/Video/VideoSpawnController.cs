@@ -258,6 +258,8 @@ public class VideoSpawnController : ISpawnController
     {
         throw new System.NotImplementedException();
     }
+
+    public override int ActivatedFlasks { get; set; }
 }
 
 //public class UsedColor
