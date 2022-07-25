@@ -314,7 +314,7 @@ public class GameManager : IGameManager
         }
     }
 
-    private IEnumerator LevelInitialized()
+    public IEnumerator LevelInitialized()
     {
         yield return new WaitForSeconds(2);
         islevelStart = false;

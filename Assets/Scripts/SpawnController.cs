@@ -325,13 +325,13 @@ public class SpawnController : ISpawnController
         foreach(TubeInfo info in tubes)
         {
             var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+            flask?.GameObject.SetActive(true);
 
             var controller = flask.GameObject.GetComponent<TubeController>();
             controller.isEmpty = info.isEmpty;
             controller.isFull = info.isFull;
             controller.currColors = info.currColors;
 
-            flask?.GameObject.SetActive(true);
 
             for (int i = 0; i < info.colors.Length; ++i)
             {

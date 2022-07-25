@@ -80,12 +80,12 @@ public class TubeController : MonoBehaviour
             GM.AddEmpty();
         }
 
-        //if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
-        //    colorsInTube[0] == colorsInTube[3])
-        //{
-        //    GM.AddFull(transform.position, false);
-        //    isFull = true;
-        //}
+        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
+            colorsInTube[0] == colorsInTube[3])
+        {
+            GM.AddFull(transform.position, false);
+            isFull = true;
+        }
     }
 
     private void Update()

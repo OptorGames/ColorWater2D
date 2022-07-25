@@ -72,7 +72,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6936326721890020768}
-  m_Mesh: {fileID: 4300000, guid: 3553266a1b5631d4cbfa823a801ec1b5, type: 3}
+  m_Mesh: {fileID: -2812548863572536077, guid: e0e2f4135e2ccd14185f4fb2ae64470f, type: 3}
 --- !u!23 &6936326721892217696
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -166,7 +166,7 @@ MonoBehaviour:
   ColorsPivot: {fileID: 0}
   PourSpriteObject: {fileID: 8044496643208948664, guid: f9b35b6df224c9a4bbcda7e543e6bf70,
     type: 3}
-  currColors: 4
+  currColors: 0
   colorsInTube: []
   ColorObjects: []
   LiquidVolume: {fileID: 6936326721889921798}
@@ -234,7 +234,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6936326721890020774}
-  m_Mesh: {fileID: 4300002, guid: 3553266a1b5631d4cbfa823a801ec1b5, type: 3}
+  m_Mesh: {fileID: -1277100919538409895, guid: e0e2f4135e2ccd14185f4fb2ae64470f, type: 3}
 --- !u!23 &6936326721892217700
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -446,7 +446,7 @@ MonoBehaviour:
   _noiseVariation: 1
   _allowViewFromInside: 0
   _debugSpillPoint: 0
-  _renderQueue: 3000
+  _renderQueue: 3001
   _reflectionTexture: {fileID: 0}
   _physicsMass: 1
   _physicsAngularDamp: 0.02

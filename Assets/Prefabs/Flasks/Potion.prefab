@@ -406,7 +406,7 @@ MonoBehaviour:
   ColorsPivot: {fileID: 0}
   PourSpriteObject: {fileID: 8044496643208948664, guid: f9b35b6df224c9a4bbcda7e543e6bf70,
     type: 3}
-  currColors: 4
+  currColors: 0
   colorsInTube: []
   ColorObjects: []
   LiquidVolume: {fileID: 0}

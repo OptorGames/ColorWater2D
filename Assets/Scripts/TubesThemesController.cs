@@ -17,14 +17,21 @@ public class TubesThemesController : MonoBehaviour
 
     public void SetTheme()
     {
-
-        SelectTheme();
-
         var lastCombination = _gameManager.GetLastTubesCombination();
         _gameManager.tubeControllers = new List<TubeController>();
         _gameManager.tubesInGame = new List<GameObject>();
+        _gameManager.EmptyTubes = 0;
+        _gameManager.FullTubes = 0;
+        _gameManager.islevelStart = true;
+
+        SelectTheme();
 
         _spawnController.RefillTubes(lastCombination.tubes);
+
+        StartCoroutine(_gameManager.LevelInitialized());
+
+        //_gameManager.EmptyTubes = lastCombination.empty;
+        //_gameManager.FullTubes = lastCombination.full;
     }
 
     private void SelectTheme()
