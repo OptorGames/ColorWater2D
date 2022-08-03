@@ -81,9 +81,14 @@ public class SpawnController : ISpawnController
         if (usedColb > colors.Length)
             usedColb = colors.Length;
 
+
+        var random = new System.Random();
+        //Random.InitState((int)System.DateTime.Now.Subtract(System.DateTime.MinValue).TotalMilliseconds);
+
         while (usedColors.Count < usedColb)
         {
-            int colorID = Random.Range(0, colors.Length);
+            //int colorID = Random.Range(0, colors.Length);
+            int colorID = random.Next(colors.Length);
             if (CheckOnExist(colorID))
                 usedColors.Add(new UsedColor { colorID = colorID, colorCount = 0 });
         }
@@ -113,21 +118,15 @@ public class SpawnController : ISpawnController
         if (level_ID == 1)
             level = 2;
         else if (level_ID >= 2 & level_ID <= 4)
-            level = 3;
+            level = Random.Range(3, 5);
         else if (level_ID >= 5 & level_ID <= 7)
-            level = 4;
-        else if (level_ID >= 8 & level_ID <= 11)
-            level = 5;
-        else if (level_ID >= 12 & level_ID <= 21)
+            level = Random.Range(4, 6);
+        else if (level_ID >= 8 & level_ID <= 31)
             level = Random.Range(4, 7);
-        else if (level_ID >= 22 & level_ID <= 50)
+        else if (level_ID >= 32 & level_ID <= 50)
             level = Random.Range(4, 8);
-        else if (level_ID >= 51 & level_ID <= 100)
+        else if (level_ID >= 51)
             level = Random.Range(5, 8);
-        else if (level_ID >= 101 & level_ID <= 300)
-            level = Random.Range(5, 9);
-        else if (level_ID >= 301)
-            level = Random.Range(5, 10);
     }
 
     private void EndlessMode()
