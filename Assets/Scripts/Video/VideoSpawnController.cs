@@ -204,20 +204,20 @@ public class VideoSpawnController : ISpawnController
 
         //for (int i = 0; i < coloredTubes.Count; i++)
         //{
-        //    for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
+        //    for (int j = 0; j < coloredTubes[i].LiquidVolume1.liquidLayers.Length; j++)
         //    {
         //        var freeColors = usedColors.FindAll(x => x.colorCount < 4);
         //        colorID = Random.Range(0, freeColors.Count);
 
         //        ColorUtility.TryParseHtmlString(colors[freeColors[colorID].colorID], out newColor);
-        //        coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
-        //        coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+        //        coloredTubes[i].LiquidVolume1.liquidLayers[j].color = newColor;
+        //        coloredTubes[i].LiquidVolume1.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount1;
         //        freeColors[colorID].colorCount++;
 
-        //        coloredTubes[i].LiquidVolume.foamColor = newColor;
+        //        coloredTubes[i].LiquidVolume1.foamColor = newColor;
         //    }
 
-        //    coloredTubes[i].LiquidVolume.UpdateLayers();
+        //    coloredTubes[i].LiquidVolume1.UpdateLayers();
         //}
 
         Color newColor1 = Color.white;
@@ -272,5 +272,5 @@ public class VideoSpawnController : ISpawnController
 //public class Flask
 //{
 //    public GameObject GameObject;
-//    public LiquidVolume LiquidVolume;
+//    public LiquidVolume1 LiquidVolume1;
 //}

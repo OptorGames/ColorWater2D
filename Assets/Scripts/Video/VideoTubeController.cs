@@ -6,32 +6,32 @@ using LiquidVolumeFX;
 
 public class VideoTubeController : TubeController
 {
-    public Vector3 Pos;
-    public GameObject ColorsPivot;
-    public GameObject PourSpriteObject;
+    public Vector3 Pos1;
+    public GameObject ColorsPivot1;
+    public GameObject PourSpriteObject1;
 
-    public int currColors;
-
-    [HideInInspector]
-    public Color[] colorsInTube;
+    public int currColors1;
 
     [HideInInspector]
-    public GameObject[] ColorObjects;
+    public Color[] colorsInTube1;
 
-    public LiquidVolume LiquidVolume;
-    public float ColorLayerAmount = 0.22f;
+    [HideInInspector]
+    public GameObject[] ColorObjects1;
+
+    public LiquidVolume LiquidVolume1;
+    public float ColorLayerAmount1 = 0.22f;
 
     private float RotStart, RotEnd;
-    public bool isrotating = false;
+    public bool isrotating1 = false;
     private float rotationLerp;
 
     private GameManager GM;
-    [HideInInspector] public TubeController NextTube;
-    public SpriteRenderer tubeSR;
-    [HideInInspector] public SortingGroup sorting;
+    [HideInInspector] public TubeController NextTube1;
+    public SpriteRenderer tubeSR1;
+    [HideInInspector] public SortingGroup sorting1;
 
     private bool IsAddColor;
-    [Space(15)] public bool isFull, isEmpty, isBusy;
+    [Space(15)] public bool isFull1, isEmpty1, isBusy1;
     private bool isAddingColor;
 
     private float ColorLerp;
@@ -49,37 +49,37 @@ public class VideoTubeController : TubeController
     {
 
         isAddingColor = false;
-        isEmpty = false;
-        isFull = false;
+        isEmpty1 = false;
+        isFull1 = false;
         IsAddColor = false;
-        currColors = 0;
-        Pos = transform.position;
+        currColors1 = 0;
+        Pos1 = transform.position;
         GM = FindObjectOfType<GameManager>();
         GM.tubesInGame.Add(this.gameObject);
         GM.tubeControllers.Add(this);
         audioSource = GM.audioSource;
 
-        colorsInTube = new Color[LiquidVolume.liquidLayers.Length];
+        colorsInTube1 = new Color[LiquidVolume1.liquidLayers.Length];
         for (int i = 0; i < 4; i++)
         {
-            if (LiquidVolume.liquidLayers[i].amount > 0f)
+            if (LiquidVolume1.liquidLayers[i].amount > 0f)
             {
-                colorsInTube[i] = LiquidVolume.liquidLayers[i].color;
-                ++currColors;
+                colorsInTube1[i] = LiquidVolume1.liquidLayers[i].color;
+                ++currColors1;
             }
         }
 
-        if (currColors == 0)
+        if (currColors1 == 0)
         {
-            isEmpty = true;
+            isEmpty1 = true;
             GM.AddEmpty();
         }
 
-        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
-            colorsInTube[0] == colorsInTube[3])
+        if (currColors1 == 4 && colorsInTube1[0] == colorsInTube1[1] && colorsInTube1[0] == colorsInTube1[2] &&
+            colorsInTube1[0] == colorsInTube1[3])
         {
             GM.AddFull(transform.position, false);
-            isFull = true;
+            isFull1 = true;
         }
     }
 
@@ -95,13 +95,13 @@ public class VideoTubeController : TubeController
                 ColorLerp = 1;
             }
 
-            LiquidVolume.liquidLayers[currColors - 1].amount = ColorLayerAmount * ColorLerp;
-            LiquidVolume.UpdateLayers(true);
+            LiquidVolume1.liquidLayers[currColors1 - 1].amount = ColorLayerAmount1 * ColorLerp;
+            LiquidVolume1.UpdateLayers(true);
         }
 
-        if (isrotating)
+        if (isrotating1)
         {
-            //PourSpriteObject.transform.rotation = Quaternion.identity;
+            //PourSpriteObject1.transform.rotation = Quaternion.identity;
 
             rotationLerp += Time.deltaTime;
             if (rotationLerp >= 1)
@@ -111,29 +111,29 @@ public class VideoTubeController : TubeController
                 transform.eulerAngles = new Vector3(0, 0, tempAngle1);
 
 
-                if (currColors > 1 && colorsInTube[currColors - 1] == colorsInTube[currColors - 2])
+                if (currColors1 > 1 && colorsInTube1[currColors1 - 1] == colorsInTube1[currColors1 - 2])
                 {
                     IsAddColor = true;
                     rotationLerp = 0;
-                    RemoveColor();
-                    RotStart = RotationData.StartAngle[currColors - 1];
-                    RotEnd = RotationData.EndEngle[currColors - 1];
+                    RemoveColor1();
+                    RotStart = RotationData.StartAngle[currColors1 - 1];
+                    RotEnd = RotationData.EndEngle[currColors1 - 1];
                 }
                 else
                 {
-                    isrotating = false;
+                    isrotating1 = false;
                     audioSource.Stop();
 
-                    NextTube.isBusy = false;
+                    NextTube1.isBusy = false;
                     Destroy(_pourSprite);
-                    RemoveColor();
+                    RemoveColor1();
 
                     StartCoroutine(ReturnToStartingPosition(_returnSpeed));
                     GM.addingColor = false;
 
-                    if (currColors == 0)
+                    if (currColors1 == 0)
                     {
-                        isEmpty = true;
+                        isEmpty1 = true;
                         GM.AddEmpty();
                     }
                 }
@@ -143,49 +143,49 @@ public class VideoTubeController : TubeController
                 if (IsAddColor)
                 {
                     IsAddColor = false;
-                    NextTube.AddColor(colorsInTube[currColors - 1]);
+                    NextTube1.AddColor(colorsInTube1[currColors1 - 1]);
                 }
 
                 float tempAngle = Mathf.Lerp(RotStart, RotEnd, rotationLerp);
                 transform.localRotation = Quaternion.Euler(new Vector3(0, 0, tempAngle));
 
-                LiquidVolume.liquidLayers[currColors - 1].amount =
-                Mathf.Clamp01(LiquidVolume.liquidLayers[currColors - 1].amount - Time.deltaTime * 0.22f);
-                LiquidVolume.UpdateLayers(true);
+                LiquidVolume1.liquidLayers[currColors1 - 1].amount =
+                Mathf.Clamp01(LiquidVolume1.liquidLayers[currColors1 - 1].amount - Time.deltaTime * 0.22f);
+                LiquidVolume1.UpdateLayers(true);
             }
         }
     }
 
-    public bool CheckCapacity(int colorCount, int count_curr_colors, Color colr)
+    public bool CheckCapacity1(int colorCount, int count_curr_colors, Color colr)
     {
-        if (currColors == 0)
+        if (currColors1 == 0)
             return true;
-        if (4 - currColors < colorCount)
+        if (4 - currColors1 < colorCount)
             return false;
-        if (colorsInTube[currColors - 1] != colr)
+        if (colorsInTube1[currColors1 - 1] != colr)
             return false;
 
         return true;
     }
 
-    public void PourColor(GameObject otherTube)
+    public void PourColor1(GameObject otherTube)
     {
-        NextTube = otherTube.GetComponent<TubeController>();
+        NextTube1 = otherTube.GetComponent<TubeController>();
 
         _pourRotation = Quaternion.LookRotation(otherTube.transform.position, Vector3.forward);
 
         int MatchCount;
         MatchCount = 1;
 
-        for (int i = currColors - 2; i >= 0; i--)
+        for (int i = currColors1 - 2; i >= 0; i--)
         {
-            if (colorsInTube[i] == colorsInTube[i + 1])
+            if (colorsInTube1[i] == colorsInTube1[i + 1])
                 MatchCount++;
             else
                 break;
         }
 
-        if (currColors > 0 && NextTube.CheckCapacity(MatchCount, currColors, colorsInTube[currColors - 1]))
+        if (currColors1 > 0 && NextTube1.CheckCapacity(MatchCount, currColors1, colorsInTube1[currColors1 - 1]))
         {
             GM.SaveTubes();
 
@@ -193,71 +193,71 @@ public class VideoTubeController : TubeController
 
             if (PlayerPrefs.GetInt("Tube") > 0)
             {
-                if (NextTube.currColors == 0)
+                if (NextTube1.currColors == 0)
                     y = 1.03f;
-                else if (NextTube.currColors == 1)
+                else if (NextTube1.currColors == 1)
                     y = 0.95f;
-                else if (NextTube.currColors == 2)
+                else if (NextTube1.currColors == 2)
                     y = 0.81f;
-                else if (NextTube.currColors == 3)
+                else if (NextTube1.currColors == 3)
                     y = 0.72f;
             }
             else
             {
-                if (NextTube.currColors == 0)
+                if (NextTube1.currColors == 0)
                     y = 1f;
-                else if (NextTube.currColors == 1)
+                else if (NextTube1.currColors == 1)
                     y = 0.9f;
-                else if (NextTube.currColors == 2)
+                else if (NextTube1.currColors == 2)
                     y = 0.8f;
-                else if (NextTube.currColors == 3)
+                else if (NextTube1.currColors == 3)
                     y = 0.7f;
             }
 
-            StartCoroutine(MoveToEndingPosition(_returnSpeed, otherTube));
+            StartCoroutine(MoveToEndingPosition1(_returnSpeed, otherTube));
         }
         else StartCoroutine(ReturnToStartingPosition(_returnSpeed));
     }
 
-    public void RemoveColor()
+    public void RemoveColor1()
     {
-        currColors--;
-        LiquidVolume.liquidLayers[currColors].amount = 0f;
+        currColors1--;
+        LiquidVolume1.liquidLayers[currColors1].amount = 0f;
 
-        if (currColors > 0)
+        if (currColors1 > 0)
         {
-            LiquidVolume.foamColor = LiquidVolume.liquidLayers[currColors - 1].color;
+            LiquidVolume1.foamColor = LiquidVolume1.liquidLayers[currColors1 - 1].color;
         }
     }
 
-    public void AddColor(Color colr)
+    public void AddColor1(Color colr)
     {
         isAddingColor = true;
 
         ColorLerp = 0;
 
-        LiquidVolume.liquidLayers[currColors].color = colr;
-        LiquidVolume.foamColor = colr;
-        colorsInTube[currColors] = colr;
-        currColors++;
+        LiquidVolume1.liquidLayers[currColors1].color = colr;
+        LiquidVolume1.foamColor = colr;
+        colorsInTube1[currColors1] = colr;
+        currColors1++;
 
-        if (isEmpty)
+        if (isEmpty1)
         {
-            isEmpty = false;
+            isEmpty1 = false;
             GM.RemoveEmpty();
         }
 
-        if (currColors == 4 && colorsInTube[0] == colorsInTube[1] && colorsInTube[0] == colorsInTube[2] &&
-            colorsInTube[0] == colorsInTube[3])
+        if (currColors1 == 4 && colorsInTube1[0] == colorsInTube1[1] && colorsInTube1[0] == colorsInTube1[2] &&
+            colorsInTube1[0] == colorsInTube1[3])
         {
             GM.AddFull(transform.position, true);
-            isFull = true;
+            isFull1 = true;
         }
     }
 
     private void OnMouseDown()
     {
-        if (!isFull && !isrotating && _canMouseDown)
+        if (!isFull1 && !isrotating1 && _canMouseDown)
         {
             GM.TubeClicked(this.gameObject);
         }
@@ -265,25 +265,25 @@ public class VideoTubeController : TubeController
 
     private void RotateTube()
     {
-        NextTube.isBusy = true;
+        NextTube1.isBusy = true;
 
         IsAddColor = true;
         rotationLerp = 0;
         {
-            RotStart = RotationData.StartAngle[currColors - 1];
-            RotEnd = RotationData.EndEngle[currColors - 1];
+            RotStart = RotationData.StartAngle[currColors1 - 1];
+            RotEnd = RotationData.EndEngle[currColors1 - 1];
         }
-        _pourSprite = Instantiate(PourSpriteObject);
-        _pourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
+        _pourSprite = Instantiate(PourSpriteObject1);
+        _pourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube1[currColors1 - 1];
         _pourSprite.transform.position += transform.position;
         audioSource.Play();
-        isrotating = true;
+        isrotating1 = true;
         GM.addingColor = true;
     }
 
-    public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
+    public IEnumerator MoveToEndingPosition1(float moveSpeed, GameObject otherTube)
     {
-        RotStart = RotationData.StartAngle[currColors - 1];
+        RotStart = RotationData.StartAngle[currColors1 - 1];
         _canMouseDown = false;
         while (transform.position != otherTube.transform.position + _flaskDistance)
         {
@@ -301,14 +301,14 @@ public class VideoTubeController : TubeController
     private IEnumerator ReturnToStartingPosition(float returnSpeed)
     {
         _canMouseDown = false;
-        while (transform.position != Pos)
+        while (transform.position != Pos1)
         {
-            transform.position = Vector3.MoveTowards(transform.position, Pos, returnSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, Pos1, returnSpeed * Time.deltaTime);
             transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, Vector3.zero, returnSpeed / 2 * Time.deltaTime);
 
             yield return new WaitForEndOfFrame();
         }
-        transform.position = Pos;
+        transform.position = Pos1;
         transform.eulerAngles = Vector3.zero;
         _canMouseDown = true;
     }

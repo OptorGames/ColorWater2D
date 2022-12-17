@@ -13,7 +13,7 @@ public class VideoGameManager : IGameManager
 
     //public List<GameObject> tubesInGame;
     private GameObject selectedTube;
-    public HudHandler HUD;
+    public HudHandler HUD1;
     public ISpawnController spawnController;
     private static bool isGameOver;
     private bool islevelStart;
@@ -182,7 +182,7 @@ public class VideoGameManager : IGameManager
             difficulty = 0;
         PlayerPrefs.SetInt("Difficulty_", difficulty);
         spawnController.NotFirstLoad();
-        HUD.RestartWithoutAds();
+        HUD1.RestartWithoutAds();
     }
 
     private void SetTextDifficulty()
@@ -409,7 +409,7 @@ public class VideoGameManager : IGameManager
                 currGameLevel = 40;
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
-            HUD.WinGame();
+            HUD1.WinGame();
         }
     }
 
@@ -460,7 +460,7 @@ public class VideoGameManager : IGameManager
                 currGameLevel = 40;
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
-            //HUD.WinGame();
+            //HUD1.WinGame();
         }
     }
 

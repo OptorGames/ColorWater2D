@@ -273,7 +273,7 @@ public class GameManager : IGameManager
     {
         //for (int i = 0; i < tubeControllers.Count; i++)
         //{
-        //    tubeControllers[i].tubeSR.sprite = tubes[PlayerPrefs.GetInt("Tube")];
+        //    tubeControllers[i].tubeSR1.sprite = tubes[PlayerPrefs.GetInt("Tube")];
         //    tubeControllers[i].GetComponentInChildren<SpriteMask>().sprite = tubesMasks[PlayerPrefs.GetInt("Tube")];
         //}
     }

@@ -106,7 +106,7 @@ public class TubeController : MonoBehaviour
 
         if (isrotating)
         {
-            //PourSpriteObject.transform.rotation = Quaternion.identity;
+            //PourSpriteObject1.transform.rotation = Quaternion.identity;
 
             rotationLerp += Time.deltaTime * _timeCoef;
             if (rotationLerp >= 1)
