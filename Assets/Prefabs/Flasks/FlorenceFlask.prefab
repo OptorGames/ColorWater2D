@@ -450,7 +450,7 @@ MonoBehaviour:
   _reflectionTexture: {fileID: 0}
   _physicsMass: 1
   _physicsAngularDamp: 0.02
-  _bubblesAmount: 32
+  _bubblesAmount: 0
   _bubblesSizeMin: 1
   _bubblesSizeMax: 3
   _bubblesScale: 100

@@ -3005,7 +3005,7 @@ namespace LiquidVolumeFX {
             }
 
             if (backBufferMat == null) {
-                backBufferMat = new Material(Shader.Find("LiquidVolume1/ZWriteBack")) as Material;
+                backBufferMat = new Material(Shader.Find("LiquidVolume/ZWriteBack")) as Material;
                 backBufferMat.hideFlags = HideFlags.DontSave;
             }
 
@@ -3085,7 +3085,7 @@ namespace LiquidVolumeFX {
             }
 
             if (frontBufferMat == null) {
-                frontBufferMat = new Material(Shader.Find("LiquidVolume1/ZWriteFront")) as Material;
+                frontBufferMat = new Material(Shader.Find("LiquidVolume/ZWriteFront")) as Material;
                 frontBufferMat.hideFlags = HideFlags.DontSave;
             }
 
@@ -4095,7 +4095,7 @@ namespace LiquidVolumeFX {
 #if UNITY_EDITOR
             if (Time.frameCount != fpRenderTextureCheckFrame) {
                 fpRenderTextureCheckFrame = Time.frameCount;
-                Shader shader = Shader.Find("LiquidVolume1/ZWriteBack");
+                Shader shader = Shader.Find("LiquidVolume/ZWriteBack");
                 if (shader == null) return;
                 string path = AssetDatabase.GetAssetPath(shader);
                 path = System.IO.Path.GetDirectoryName(path) + "/LVLiquidPassBase.cginc";

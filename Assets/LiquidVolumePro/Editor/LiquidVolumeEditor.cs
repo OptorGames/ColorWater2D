@@ -211,7 +211,7 @@ namespace LiquidVolumeFX {
             if (shaders == null || shaders.Length < 8) {
                 shaders = new bool[8];
             }
-            string path = AssetDatabase.GetAssetPath(Shader.Find("LiquidVolume1/Blur"));
+            string path = AssetDatabase.GetAssetPath(Shader.Find("LiquidVolume/Blur"));
             if (path == null) {
                 Debug.LogError("Could not fetch shaders folder path.");
                 return;
@@ -783,7 +783,7 @@ namespace LiquidVolumeFX {
             const string constantDefine = "bool FORCE_GLES_COMPATIBILITY";
             const string glesConstant = "FORCE_GLES_COMPATIBILITY";
 
-            Shader shader = Shader.Find("LiquidVolume1/Blur");
+            Shader shader = Shader.Find("LiquidVolume/Blur");
             if (shader != null) {
                 // Update shader
                 string path = AssetDatabase.GetAssetPath(shader);
@@ -802,7 +802,7 @@ namespace LiquidVolumeFX {
                 File.WriteAllLines(file, lines, System.Text.Encoding.UTF8);
 
                 // Update main script
-                file = Path.GetDirectoryName(path) + "/../../Scripts/LiquidVolume1.cs";
+                file = Path.GetDirectoryName(path) + "/../../Scripts/LiquidVolume.cs";
                 lines = File.ReadAllLines(file, System.Text.Encoding.UTF8);
                 for (int k = 0; k < lines.Length; k++) {
                     if (lines[k].Contains(constantDefine)) {
@@ -841,7 +841,7 @@ namespace LiquidVolumeFX {
             string[] res = Directory.GetFiles(Application.dataPath, LV_SHADER_OPTIONS_FILE, SearchOption.AllDirectories);
             string path = null;
             for (int k = 0; k < res.Length; k++) {
-                if (res[k].Contains("LiquidVolume1")) {
+                if (res[k].Contains("LiquidVolume")) {
                     path = res[k];
                     break;
                 }
@@ -865,7 +865,7 @@ namespace LiquidVolumeFX {
             string[] res = Directory.GetFiles(Application.dataPath, LV_SHADER_OPTIONS_FILE, SearchOption.AllDirectories);
             string path = null;
             for (int k = 0; k < res.Length; k++) {
-                if (res[k].Contains("LiquidVolume1")) {
+                if (res[k].Contains("LiquidVolume")) {
                     path = res[k];
                     break;
                 }
