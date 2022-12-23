@@ -299,25 +299,25 @@ MonoBehaviour:
     density: 1
     color: {r: 0.284, g: 1, b: 1, a: 0.15686275}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.244
     viscosity: 1
     adjustmentSpeed: 1
-    bubblesOpacity: 1
+    bubblesOpacity: 0
     baseLevel: 0
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 0.284, g: 1, b: 1, a: 0.15686275}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
-    currentBubblesOpacity: 1
+    currentBubblesOpacity: 0
   - layerName: Layer 1
     amount: 0
     density: 1
     color: {r: 0, g: 1, b: 0.023826122, a: 0.14901961}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.3
     viscosity: 0
@@ -327,7 +327,7 @@ MonoBehaviour:
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 0, g: 1, b: 0.023826122, a: 0.14901961}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 0
   - layerName: Layer 2
@@ -335,7 +335,7 @@ MonoBehaviour:
     density: 1
     color: {r: 1, g: 0.0947057, b: 0, a: 0.16470589}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.3
     viscosity: 1
@@ -345,7 +345,7 @@ MonoBehaviour:
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 1, g: 0.0947057, b: 0, a: 0.16470589}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 1
   - layerName: Layer 3
@@ -353,7 +353,7 @@ MonoBehaviour:
     density: 1
     color: {r: 0, g: 0.23312998, b: 1, a: 0.16862746}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.3
     viscosity: 1
@@ -363,7 +363,7 @@ MonoBehaviour:
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 0, g: 0.23312998, b: 1, a: 0.16862746}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 1
   _smoothContactSurface: 2
@@ -388,13 +388,13 @@ MonoBehaviour:
   _sparklingIntensity: 0.1
   _sparklingAmount: 0.2
   _deepObscurance: 2
-  _foamColor: {r: 0, g: 0.2313726, b: 1, a: 0}
+  _foamColor: {r: 0, g: 0.2313726, b: 1, a: 1}
   _foamScale: 0.2
-  _foamThickness: 0.0052
+  _foamThickness: 0
   _foamDensity: 0.28
   _foamWeight: 10
-  _foamTurbulence: 1
-  _foamVisibleFromBottom: 1
+  _foamTurbulence: 0.566
+  _foamVisibleFromBottom: 0
   _smokeEnabled: 0
   _smokeColor: {r: 0.7, g: 0.7, b: 0.7, a: 0.25}
   _smokeScale: 0.25

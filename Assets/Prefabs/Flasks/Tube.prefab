@@ -299,7 +299,7 @@ MonoBehaviour:
     density: 1
     color: {r: 0.284, g: 1, b: 1, a: 0.15686275}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.244
     viscosity: 1
@@ -309,7 +309,7 @@ MonoBehaviour:
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 0.284, g: 1, b: 1, a: 0.15686275}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 1
   - layerName: Layer 1
@@ -317,7 +317,7 @@ MonoBehaviour:
     density: 1
     color: {r: 0, g: 1, b: 0.023826122, a: 0.14901961}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.3
     viscosity: 0
@@ -327,7 +327,7 @@ MonoBehaviour:
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 0, g: 1, b: 0.023826122, a: 0.14901961}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 0
   - layerName: Layer 2
@@ -335,7 +335,7 @@ MonoBehaviour:
     density: 1
     color: {r: 1, g: 0.0947057, b: 0, a: 0.16470589}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.3
     viscosity: 1
@@ -345,7 +345,7 @@ MonoBehaviour:
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 1, g: 0.0947057, b: 0, a: 0.16470589}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 1
   - layerName: Layer 3
@@ -353,7 +353,7 @@ MonoBehaviour:
     density: 1
     color: {r: 0, g: 0.23312998, b: 1, a: 0.16862746}
     miscible: 0
-    murkiness: 0.379
+    murkiness: 0
     murkColor: {r: 0, g: 0, b: 0, a: 1}
     scale: 0.3
     viscosity: 1
@@ -363,7 +363,7 @@ MonoBehaviour:
     currentBaseLevel: 0
     currentAmount: 0
     currentColor: {r: 0, g: 0.23312998, b: 1, a: 0.16862746}
-    currentMurkiness: 0.379
+    currentMurkiness: 0
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 1
   _smoothContactSurface: 2
@@ -390,7 +390,7 @@ MonoBehaviour:
   _deepObscurance: 2
   _foamColor: {r: 0, g: 0.23137255, b: 1, a: 0}
   _foamScale: 0.2
-  _foamThickness: 0.0052
+  _foamThickness: 0
   _foamDensity: 0.28
   _foamWeight: 10
   _foamTurbulence: 1
@@ -450,7 +450,7 @@ MonoBehaviour:
   _reflectionTexture: {fileID: 0}
   _physicsMass: 1
   _physicsAngularDamp: 0.02
-  _bubblesAmount: 32
+  _bubblesAmount: 0
   _bubblesSizeMin: 1
   _bubblesSizeMax: 3
   _bubblesScale: 100
