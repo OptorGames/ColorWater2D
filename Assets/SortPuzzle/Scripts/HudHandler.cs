@@ -1,5 +1,5 @@
 ﻿using DevToDev.Analytics;
-using Firebase.Analytics;
+//using Firebase.Analytics;
 using ForTutorial;
 using System.Collections;
 using UnityEngine;
@@ -69,12 +69,13 @@ public class HudHandler : MonoBehaviour
             }
             PlayerPrefs.SetInt("CurrentLevel_OFF", 0);
             PlayerPrefs.SetInt("FirstStart", 1);
+            Analytics.AnalyticsAdapter.TutorialCompleted();
         }
 
-        if (old_value == 1) FirebaseAnalytics.LogEvent("level_1");
-        if (old_value == 1 || old_value == 3 || old_value == 5 || old_value == 7 || old_value == 10 ||
-            old_value == 15 || old_value == 20 || old_value == 50 || old_value == 100 || old_value == 150)
-            DTDAnalytics.CustomEvent(eventName: "Level_" + old_value.ToString());
+        //if (old_value == 1) FirebaseAnalytics.LogEvent("level_1");
+        //if (old_value == 1 || old_value == 3 || old_value == 5 || old_value == 7 || old_value == 10 ||
+        //    old_value == 15 || old_value == 20 || old_value == 50 || old_value == 100 || old_value == 150)
+        Analytics.AnalyticsAdapter.LevelCompleted(old_value, true);
 
         PlayerPrefs.SetInt("Steps", 5);
         ads.OnLevelComplete(old_value);

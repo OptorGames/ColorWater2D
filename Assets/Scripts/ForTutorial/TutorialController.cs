@@ -29,6 +29,7 @@ namespace ForTutorial
                 _spawnController.numberOfEmptyTube = 0;
                 ProgressControl(1);
                 _difficultyButton.enabled = false;
+                Analytics.AnalyticsAdapter.TutorialStarted();
             }
         }
 

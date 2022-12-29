@@ -80,6 +80,8 @@ public class GameManager : IGameManager
         {
             TutorialController.enabled = false;
             LoadDifficultyLevel();
+            Debug.Log("LevelStarted");
+            Analytics.AnalyticsAdapter.LevelStarted(curr_level);
         }
         else
         {

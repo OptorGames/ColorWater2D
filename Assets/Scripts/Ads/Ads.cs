@@ -40,7 +40,7 @@ public class Ads : MonoBehaviour
         manager.OnRewardedAdCompleted += RewardedSuccessful;
         manager.OnInterstitialAdClosed += OnInterstitialAdClosed;
 
-        InvokeRepeating("OnRefreshStatus", 1.0f, 1.0f);
+        //InvokeRepeating("OnRefreshStatus", 1.0f, 1.0f);
 
         //bannerView = manager.GetAdView(AdSize.Banner);
         //ShowBanner();
