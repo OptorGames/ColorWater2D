@@ -2,12 +2,11 @@
 //  CASUView.m
 //  CASUnityPlugin
 //
-//  Copyright © 2021 Clever Ads Solutions. All rights reserved.
+//  Copyright © 2022 Clever Ads Solutions. All rights reserved.
 //
 
-    #import "CASUView.h"
-    #import "CASUPluginUtil.h"
-    #import <UIKit/UIKit.h>
+#import "CASUPluginUtil.h"
+#import "CASUView.h"
 
 static const int AD_POSITION_TOP_CENTER = 0;
 static const int AD_POSITION_TOP_LEFT = 1;
@@ -16,41 +15,90 @@ static const int AD_POSITION_BOTTOM_CENTER = 3;
 static const int AD_POSITION_BOTTOM_LEFT = 4;
 static const int AD_POSITION_BOTTOM_RIGHT = 5;
 
+static const int AD_SIZE_BANNER = 1;
+static const int AD_SIZE_ADAPTIVE = 2;
+static const int AD_SIZE_SMART = 3;
+static const int AD_SIZE_LEADER = 4;
+static const int AD_SIZE_MREC = 5;
+static const int AD_SIZE_FULL_WIDTH = 6;
+static const int AD_SIZE_LINE = 7;
 
 @interface CASUView () <CASBannerDelegate>
-@property (nonatomic, assign) CGPoint adPositionOffset;
-@property (nonatomic, assign) int activePos;
 @end
 
-@implementation CASUView
-- (id)initWithManager:(CASMediationManager *)manager
-            forClient:(CASUTypeViewClientRef *)adViewClient
-                 size:(int)size {
+@implementation CASUView {
+    NSObject<CASStatusHandler> *_lastImpression;
+    /// Offset for the ad in the x-axis when a custom position is used. Value will be 0 for non-custom positions.
+    int _horizontalOffset;
+    /// Offset for the ad in the y-axis when a custom position is used. Value will be 0 for non-custom positions.
+    int _verticalOffset;
+    int _activePos;
+    int _activeSizeId;
+}
+
+- (instancetype)initWithManager:(CASMediationManager *)manager
+                      forClient:(CASViewClientRef *)adViewClient
+                           size:(int)size {
     self = [super init];
+
     if (self) {
         UIViewController *unityVC = [CASUPluginUtil unityGLViewController];
         _client = adViewClient;
-        _bannerView = [[CASBannerView alloc] initWithAdSize:[self getBannerSizeFromId:size withViewController:unityVC]
-                                                    manager:manager];
-        _bannerView.hidden = YES;
-        _bannerView.adDelegate = self;
-        _bannerView.rootViewController = unityVC;
+        _horizontalOffset = 0;
+        _verticalOffset = 0;
         _activePos = AD_POSITION_BOTTOM_CENTER;
-        _adPositionOffset = CGPointZero;
+        _activeSizeId = size;
+
+        if (size > 0) {
+            _bannerView = [[CASBannerView alloc] initWithAdSize:[self getSizeByCode:size with:unityVC] manager:manager];
+            _bannerView.hidden = YES;
+            _bannerView.adDelegate = self;
+            _bannerView.rootViewController = unityVC;
+        }
     }
+
     return self;
 }
 
 - (void)dealloc {
-    _bannerView.adDelegate = nil;
+    if (self.bannerView) {
+        self.bannerView.adDelegate = nil;
+    }
 }
 
-- (CASSize *)getBannerSizeFromId:(int)sizeId withViewController:(UIViewController *)controller {
+- (CASSize *)getSizeByCode:(int)sizeId with:(UIViewController *)controller {
     switch (sizeId) {
-        case 2: return [CASSize getAdaptiveBannerInContainer:controller.view];
-        case 3: return [CASSize getSmartBanner];
-        case 4:  return CASSize.leaderboard;
-        case 5: return CASSize.mediumRectangle;
+        case AD_SIZE_BANNER: return CASSize.banner;
+
+        case AD_SIZE_ADAPTIVE: {
+            CGRect screenRect = [controller.view bounds];
+            CGFloat width = MIN(CGRectGetWidth(screenRect), CASSize.leaderboard.width);
+            return [CASSize getAdaptiveBannerForMaxWidth:width];
+        }
+
+        case AD_SIZE_SMART: return [CASSize getSmartBanner];
+
+        case AD_SIZE_LEADER: return CASSize.leaderboard;
+
+        case AD_SIZE_MREC: return CASSize.mediumRectangle;
+
+        case AD_SIZE_FULL_WIDTH:
+            return [CASSize getAdaptiveBannerInContainer:controller.view];
+
+        case AD_SIZE_LINE:{
+            CGSize screenSize = [controller.view bounds].size;
+            BOOL inLandscape = screenSize.height < screenSize.width;
+            CGFloat bannerHeight;
+
+            if (screenSize.height > 720 && screenSize.width >= 728) {
+                bannerHeight = inLandscape ? 50 : 90;
+            } else {
+                bannerHeight = inLandscape ? 32 : 50;
+            }
+
+            return [CASSize getInlineBannerWithWidth:screenSize.width maxHeight:bannerHeight];
+        }
+
         default: return CASSize.banner;
     }
 }
@@ -76,6 +124,7 @@ static const int AD_POSITION_BOTTOM_RIGHT = 5;
 
         UIInterfaceOrientationMask orientation = [unityController supportedInterfaceOrientations];
         NSLog(@"Orientation: %ld", (long)orientation);
+
         if ((orientation & UIInterfaceOrientationMaskPortrait) != 0
             && (orientation & UIInterfaceOrientationMaskLandscape) != 0) {
             [[NSNotificationCenter defaultCenter] addObserver:self
@@ -87,8 +136,17 @@ static const int AD_POSITION_BOTTOM_RIGHT = 5;
 }
 
 - (void)orientationChangedNotification:(NSNotification *)notification {
+    if (!self.bannerView) {
+        return;
+    }
+
     // Ignore changes in device orientation if unknown, face up, or face down.
     if (UIDeviceOrientationIsValidInterfaceOrientation([[UIDevice currentDevice] orientation])) {
+        if (_activeSizeId == AD_SIZE_ADAPTIVE || _activeSizeId == AD_SIZE_FULL_WIDTH || _activeSizeId == AD_SIZE_LINE) {
+            UIViewController *unityController = [CASUPluginUtil unityGLViewController];
+            self.bannerView.adSize = [self getSizeByCode:_activeSizeId with:unityController];
+        }
+
         [self refreshPosition];
     }
 }
@@ -118,41 +176,23 @@ static const int AD_POSITION_BOTTOM_RIGHT = 5;
     }
 }
 
-- (int)xOffsetInPixels {
+- (int)getRefreshInterval {
     if (self.bannerView) {
-        return CGRectGetMinX(self.bannerView.bounds) * [UIScreen mainScreen].scale;
+        return (int)self.bannerView.refreshInterval;
     }
-    return 0;
-}
 
-- (int)yOffsetInPixels {
-    if (self.bannerView) {
-        return CGRectGetMinY(self.bannerView.bounds) * [UIScreen mainScreen].scale;
-    }
-    return 0;
-}
-
-- (int)heightInPixels {
-    if (self.bannerView) {
-        return CGRectGetHeight(CGRectStandardize(self.bannerView.frame)) * [UIScreen mainScreen].scale;
-    }
-    return 0;
-}
-
-- (int)widthInPixels {
-    if (self.bannerView) {
-        return CGRectGetWidth(CGRectStandardize(self.bannerView.frame)) * [UIScreen mainScreen].scale;
-    }
-    return 0;
+    return 30;
 }
 
 - (void)setPositionCode:(int)code withX:(int)x withY:(int)y {
     if (code < AD_POSITION_TOP_CENTER || code > AD_POSITION_BOTTOM_RIGHT) {
-        self.activePos = AD_POSITION_BOTTOM_CENTER;
+        _activePos = AD_POSITION_BOTTOM_CENTER;
     } else {
-        self.activePos = code;
+        _activePos = code;
     }
-    self.adPositionOffset = CGPointMake(x, y);
+
+    _horizontalOffset = x;
+    _verticalOffset = y;
     [self refreshPosition];
 }
 
@@ -160,6 +200,7 @@ static const int AD_POSITION_BOTTOM_RIGHT = 5;
     if (self.bannerView && !self.bannerView.isHidden) {
         /// Align the bannerView in the Unity view bounds.
         UIView *unityView = [CASUPluginUtil unityGLViewController].view;
+
         if (unityView) {
             [self positionView:self.bannerView inParentView:unityView];
         }
@@ -169,48 +210,66 @@ static const int AD_POSITION_BOTTOM_RIGHT = 5;
 - (void)positionView:(UIView *)view
         inParentView:(UIView *)parentView {
     CGRect parentBounds = parentView.bounds;
+
     if (@available(iOS 11, *)) {
         CGRect safeAreaFrame = parentView.safeAreaLayoutGuide.layoutFrame;
+
         if (!CGSizeEqualToSize(CGSizeZero, safeAreaFrame.size)) {
             parentBounds = safeAreaFrame;
         }
     }
 
-    CGFloat bottom = CGRectGetMaxY(parentBounds) - CGRectGetMidY(view.bounds);
-    CGFloat right = CGRectGetMaxX(parentBounds) - CGRectGetMidX(view.bounds);
+    CGSize adSize = view.intrinsicContentSize;
+    CGFloat bottom = CGRectGetMaxY(parentBounds) - adSize.height;
+    CGFloat right = CGRectGetMaxX(parentBounds) - adSize.width;
 
     // Clamp with Maximum Bottom Right position
-    CGFloat top = MIN(CGRectGetMinY(parentBounds) + self.adPositionOffset.y + CGRectGetMidY(view.bounds), bottom);
-    CGFloat left = MIN(CGRectGetMinX(parentBounds) + self.adPositionOffset.x + CGRectGetMidX(view.bounds), right);
-
-    CGPoint center;
-    switch (self.activePos) {
+    CGFloat top = MIN(CGRectGetMinY(parentBounds) + _verticalOffset, bottom);
+    CGFloat left = MIN(CGRectGetMinX(parentBounds) + _horizontalOffset, right);
+    CGFloat center = CGRectGetMidX(parentView.bounds) - adSize.width * 0.5;
+    
+    CGPoint coords;
+    switch (_activePos) {
         case AD_POSITION_TOP_CENTER:
-            center = CGPointMake(CGRectGetMidX(parentBounds), top);
+            coords = CGPointMake(center, top);
             break;
+
         case AD_POSITION_TOP_LEFT:
-            center = CGPointMake(left, top);
+            coords = CGPointMake(left, top);
             break;
+
         case AD_POSITION_TOP_RIGHT:
-            center = CGPointMake(right, top);
+            coords = CGPointMake(right, top);
             break;
+
         case AD_POSITION_BOTTOM_LEFT:
-            center = CGPointMake(left, bottom);
+            coords = CGPointMake(left, bottom);
             break;
+
         case AD_POSITION_BOTTOM_RIGHT:
-            center = CGPointMake(right, bottom);
+            coords = CGPointMake(right, bottom);
             break;
+
         default:
-            center = CGPointMake(CGRectGetMidX(parentBounds), bottom);
+            coords = CGPointMake(center, bottom);
             break;
     }
-    view.center = center;
+    view.frame = CGRectMake(coords.x, coords.y, adSize.width, adSize.height);
+
+    if (_adRectCallback) {
+        CGFloat scale = [UIScreen mainScreen].scale;
+        _adRectCallback(self.client,
+                        coords.x * scale,
+                        coords.y * scale,
+                        adSize.width * scale,
+                        adSize.height * scale);
+    }
 }
 
     #pragma mark - CASBannerDelegate
 - (void)bannerAdView:(CASBannerView *_Nonnull)adView didFailToLoadWith:(enum CASError)error {
     if (self.adFailedCallback) {
-        self.adFailedCallback(self.client, error);
+        self.adFailedCallback(self.client, (int)error);
     }
 }
 
@@ -221,11 +280,20 @@ static const int AD_POSITION_BOTTOM_RIGHT = 5;
 }
 
 - (void)bannerAdView:(CASBannerView *)adView willPresent:(id<CASStatusHandler>)impression {
+    //Escape from callback when App on background.
+    extern bool _didResignActive;
+
+    if (_didResignActive) {
+        // We are in the middle of the shutdown sequence, and at this point unity runtime is already destroyed.
+        // We shall not call unity API, and definitely not script callbacks, so nothing to do here
+        return;
+    }
+
+    [self refreshPosition];
+
     if (self.adPresentedCallback) {
-        self.adPresentedCallback(self.client,
-                                 [[CASNetwork values] indexOfObject:impression.network],
-                                 impression.cpm,
-                                 impression.priceAccuracy);
+        _lastImpression = (NSObject<CASStatusHandler> *)impression;
+        self.adPresentedCallback(self.client, (__bridge CASImpressionRef)_lastImpression);
     }
 }
 

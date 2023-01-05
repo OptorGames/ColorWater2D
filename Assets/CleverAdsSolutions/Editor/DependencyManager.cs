@@ -1,4 +1,10 @@
-﻿using System;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -43,6 +49,7 @@ namespace CAS.UEditor
         }
 
         // Reflection target
+        [UnityEngine.Scripting.Preserve]
         public static string GetActiveMediationPattern()
         {
             var target = Create( EditorUserBuildSettings.activeBuildTarget, Audience.Mixed, true );

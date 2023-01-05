@@ -1,8 +1,12 @@
-﻿namespace CAS
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+namespace CAS
 {
-    /// <summary>
-    /// Wiki page: https://github.com/cleveradssolutions/CAS-Unity/wiki/Banner-Ads#ad-size
-    /// </summary>
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Banner-Ads#ad-size" )]
     public enum AdSize
     {
         // 0 Index reserved for internal logic
@@ -12,12 +16,12 @@
         /// </summary>
         Banner = 1,
         /// <summary>
-        /// Create Adaptive AdSize placed in container for current screen orientation.
-        /// <para>Container height cannot be less than 50dp.</para>
-        ///
+        /// Pick Adaptive AdSize for screen width but not more than 728dp.
         /// <para>Pick the best ad size, adaptive banners use fixed aspect ratios instead of fixed heights.</para>
-        /// <para>This results in banner ads that occupy a more consistent portion of the screen across devices and provide opportunities for improved performance.</para>
-        /// SeeAlso: <a href="https://developers.google.com/admob/ios/banner/adaptive">Google Adaptive Banner</a>
+        /// <para>The height of adaptive banners cannot be less than 50 dp and more than 250 dp.</para>
+        /// <para>This results in banner ads that occupy a more consistent portion
+        /// of the screen across devices and provide opportunities for improved performance.</para>
+        /// <para>Use <see cref="AdaptiveFullWidth"/> to select full screen width</para>
         /// </summary>
         AdaptiveBanner = 2,
         /// <summary>
@@ -32,6 +36,21 @@
         /// <summary>
         /// Medium Rectangle size 300dp width and 250dp height
         /// </summary>
-        MediumRectangle = 5
+        MediumRectangle = 5,
+        /// <summary>
+        /// Pick Adaptive AdSize for full screen width.
+        /// <para>Pick the best ad size, adaptive banners use fixed aspect ratios instead of fixed heights.</para>
+        /// <para>The height of adaptive banners cannot be less than 50 dp and more than 250 dp.</para>
+        /// <para>This results in banner ads that occupy a more consistent portion
+        /// of the screen across devices and provide opportunities for improved performance.</para>
+        /// </summary>
+        AdaptiveFullWidth = 6,
+        /// <summary>
+        /// Thin banners have a smaller height, taller banners compared to anchored adaptive banners.
+        /// The thin banner uses the full available screen width.
+        /// <para>Pick the best ad size in full width of screen and height 32-50 for Landscape and 50-90 for Portrait orientations.</para>
+        /// <para>The height of thin banners can be 32 dp for landscape orientation.</para>
+        /// </summary>
+        ThinBanner = 7
     }
 }

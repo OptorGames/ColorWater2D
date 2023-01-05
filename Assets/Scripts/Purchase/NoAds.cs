@@ -1,3 +1,4 @@
+using Core.IAP;
 using UnityEngine;
 using UnityEngine.Purchasing;
 
@@ -5,6 +6,17 @@ public class NoAds : MonoBehaviour
 {
     [SerializeField] private Ads ads;
     [SerializeField] private GameManager GameManager;
+
+    public void BuyNoAds()
+    {
+        IAPManager.Instance.BuyNoAds();
+    }
+
+    public void BuyUnlockAll()
+    {
+        IAPManager.Instance.BuyUnlockAll();
+    }
+
 
     public void OnPurchaseCompltete(Product product)
     {
@@ -25,6 +37,9 @@ public class NoAds : MonoBehaviour
 
     public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
     {
-        Debug.Log(product.definition.id + " failed to buy: " + reason);
+        if (product != null && product.definition != null)
+        {
+            Debug.Log(product.definition.id + " failed to buy: " + reason);
+        }
     }
 }

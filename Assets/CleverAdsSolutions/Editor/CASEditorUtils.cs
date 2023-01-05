@@ -1,4 +1,10 @@
-﻿using System;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,6 +30,7 @@ namespace CAS.UEditor
         public const string androidResSettingsPath = androidLibFolderPath + "/res/raw/cas_settings";
         public const string androidLibManifestPath = androidLibFolderPath + "/AndroidManifest.xml";
         public const string androidLibPropertiesPath = androidLibFolderPath + "/project.properties";
+        public const string androidLibNetworkConfigPath = androidLibFolderPath + "/res/xml/meta_network_security_config.xml";
 
         public const string iosResSettingsPath = "ProjectSettings/ios_cas_settings";
 
@@ -36,10 +43,9 @@ namespace CAS.UEditor
         public const string propertiesGradlePath = androidPluginsPath + "gradleTemplate.properties";
         public const string packageManifestPath = "Packages/manifest.json";
 
-        public const string swiftEnableFileInXCode = "Libraries/com.cleversolutions.ads.unity/Plugins/iOS/CASUEnable.swift";
-
         public const string gitRootURL = "https://github.com/cleveradssolutions/";
         public const string websiteURL = "https://cleveradssolutions.com";
+        public const string latestEMD4uURL = "https://github.com/googlesamples/unity-jar-resolver/blob/master/external-dependency-manager-latest.unitypackage";
 
         public static System.Version minEDM4UVersion
         {
@@ -59,65 +65,60 @@ namespace CAS.UEditor
         internal const string promoDeprecateDependency = "Promo";
 
         internal const string logTag = "[CleverAdsSolutions] ";
+        internal const string logAutoFeature = "\nYou can disable this automatic feature by `Assets > CleverAdsSolutions > Settings > Other settings` menu.\n";
         internal const string editorRuntimeActiveAdPrefs = "typesadsavailable";
         internal const string editorLatestVersionPrefs = "cas_last_ver_";
         internal const string editorLatestVersionTimestampPrefs = "cas_last_ver_time_";
-        internal const string editorIgnoreMultidexPrefs = "cas_ignore_multidex";
         internal const string iosSKAdNetworksTemplateFile = "CASSKAdNetworks.txt";
 
         internal const string editorIconNamePrefix = "cas_editoricon_";
         #endregion
 
-        #region Internal structures
-        [Serializable]
-        internal class AdmobAppIdData
-        {
-            public string admob_app_id = null;
-#if false
-            public int[] Banner = null;
-            public int[] Interstitial = null;
-            public int[] Rewarded = null;
-
-            public bool IsDisabled()
-            {
-                return ( Interstitial == null || Interstitial.Length < 5 )
-                    && ( Banner == null || Banner.Length < 5 )
-                    && ( Rewarded == null || Rewarded.Length < 5 );
-            }
-#endif
-        }
-
-        [Serializable]
-        internal class GitVersionInfo
-        {
-            public string tag_name = null;
-        }
-        #endregion
-
         #region Menu items
-        [MenuItem( "Assets/CleverAdsSolutions/Android Settings..." )]
+        [MenuItem( "Assets/CleverAdsSolutions/Android Settings...", priority = 1010 )]
         public static void OpenAndroidSettingsWindow()
         {
             OpenSettingsWindow( BuildTarget.Android );
         }
 
-        [MenuItem( "Assets/CleverAdsSolutions/iOS Settings..." )]
+        [MenuItem( "Assets/CleverAdsSolutions/iOS Settings...", priority = 1011 )]
         public static void OpenIOSSettingsWindow()
         {
             OpenSettingsWindow( BuildTarget.iOS );
         }
 
-        [MenuItem( "Assets/CleverAdsSolutions/Documentation..." )]
+        [MenuItem( "Assets/CleverAdsSolutions/Documentation...", priority = 1031 )]
         public static void OpenDocumentationMenu()
         {
             OpenDocumentation( gitUnityRepo );
         }
 
-        [MenuItem( "Assets/CleverAdsSolutions/Report Issue..." )]
+        [MenuItem( "Assets/CleverAdsSolutions/Report Issue...", priority = 1032 )]
         public static void ReportIssueMenu()
         {
             Application.OpenURL( gitRootURL + gitUnityRepo + "/issues" );
         }
+
+#if UNITY_ANDROID || UNITY_IOS || CASDeveloper
+        [MenuItem( "Assets/CleverAdsSolutions/Configure project", priority = 1051 )]
+        public static void ConfigureProjectForTargetPlatform()
+        {
+            try
+            {
+                var target = EditorUserBuildSettings.activeBuildTarget;
+                if (target == BuildTarget.Android)
+                    TryResolveAndroidDependencies(); // Resolve before call configure
+                CASPreprocessBuild.ConfigureProject( target, CASEditorSettings.Load() );
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+            EditorUtility.DisplayDialog( "Configure project",
+                "CAS Plugin has successfully applied all required configurations to your project.",
+                "Ok" );
+        }
+#endif
 
         #endregion
 
@@ -225,6 +226,11 @@ namespace CAS.UEditor
             };
         }
 
+        public static bool isUseAdvertiserIdLimited()
+        {
+            return CASEditorSettings.Load().permissionAdIdRemoved;
+        }
+
         #region Deprecated Dependencies paths
 
         internal static bool IsDeprecateDependencyExists( string dependency, BuildTarget target )
@@ -243,86 +249,27 @@ namespace CAS.UEditor
         }
         #endregion
 
-        public static bool IsAndroidDependenciesResolverExist()
-        {
-            try
-            {
-                var resolverType = Type.GetType( "GooglePlayServices.PlayServicesResolver, Google.JarResolver", false );
-                return resolverType != null;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public static System.Version GetEDM4UVersion( BuildTarget platform )
-        {
-            try
-            {
-                Type resolverType = null;
-                if (platform == BuildTarget.Android)
-                    resolverType = Type.GetType( "Google.AndroidResolverVersionNumber, Google.JarResolver", false );
-                else if (platform == BuildTarget.iOS)
-                    resolverType = Type.GetType( "Google.IOSResolverVersionNumber, Google.IOSResolver", false );
-                if (resolverType == null)
-                    return null;
-                return resolverType.GetProperty( "Value" ).GetValue( null, null ) as System.Version;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public static bool TryResolveAndroidDependencies( bool force = true )
-        {
-            bool success = true;
-            try
-            {
-                var resolverType = Type.GetType( "GooglePlayServices.PlayServicesResolver, Google.JarResolver", false );
-                if (resolverType != null)
-                {
-                    bool autoResolve;
-                    if (force)
-                        autoResolve = false;
-                    else
-                        autoResolve = ( bool )resolverType.GetProperty( "AutomaticResolutionEnabled",
-                            BindingFlags.Public | BindingFlags.Static )
-                            .GetValue( null, null );
-                    if (!autoResolve)
-                    {
-                        try
-                        {
-                            EditorUtility.DisplayProgressBar( "Hold on.", "Resolve Android dependencies", 0.6f );
-                            success = ( bool )resolverType.GetMethod( "ResolveSync", BindingFlags.Public | BindingFlags.Static, null,
-                                new[] { typeof( bool ) }, null )
-                                .Invoke( null, new object[] { true } );
-                        }
-                        finally
-                        {
-                            EditorUtility.ClearProgressBar();
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning( logTag + "GooglePlayServices.PlayServicesResolver error: " + e.Message );
-            }
-            return success;
-        }
-
         public static string GetNewVersionOrNull( string repo, string currVersion, bool force )
         {
             try
             {
-                var newVerStr = GetLatestVersion( repo, force, currVersion );
-                if (newVerStr != null && newVerStr != currVersion && !currVersion.Contains( "-RC" ))
+                string newVerStr = null;
+                if (!force)
                 {
-                    var currVer = new System.Version( currVersion );
-                    var newVer = new System.Version( newVerStr );
-                    if (currVer < newVer)
+                    var editorSettings = CASEditorSettings.Load();
+                    if (!editorSettings.autoCheckForUpdatesEnabled)
+                        return null;
+
+                    if (!HasTimePassed( editorLatestVersionTimestampPrefs + repo, 1, false ))
+                        newVerStr = EditorPrefs.GetString( editorLatestVersionPrefs + repo );
+                }
+
+                if (string.IsNullOrEmpty( newVerStr ))
+                    newVerStr = GetLatestVersion( repo, currVersion );
+
+                if (newVerStr != null && newVerStr != currVersion)
+                {
+                    if (ParseVersionToCompare( currVersion ) < ParseVersionToCompare( newVerStr ))
                         return newVerStr;
                 }
             }
@@ -331,6 +278,31 @@ namespace CAS.UEditor
                 Debug.LogException( e );
             }
             return null;
+        }
+
+        private static System.Version ParseVersionToCompare( string versionName )
+        {
+            try
+            {
+                int separator = versionName.IndexOf( '-' );
+                // Append Revision version for pre release
+                // And 9 Revision for release
+                if (separator > 0)
+                    versionName = versionName.Substring( 0, versionName.Length - separator + 1 ) +
+                        "." + versionName[versionName.Length - 1];
+                else
+                    versionName += ".9";
+                return new System.Version( versionName );
+            }
+#if CASDeveloper
+            catch (Exception e)
+            {
+                Debug.LogException( e );
+            }
+#else
+            catch {}
+#endif
+            return new System.Version( 0, 1 );
         }
 
         public static bool IsPackageExist( string package )
@@ -372,33 +344,18 @@ namespace CAS.UEditor
 
             if (!string.IsNullOrEmpty( newCASVersion ))
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.HelpBox( "There is a new version " + newCASVersion + " of the " + gitRepoName + " available for update.", MessageType.Warning );
-
+                var updateMessage = "There is a new version " + newCASVersion + " of the " + gitRepoName + " available for update.";
 #if UNITY_2018_4_OR_NEWER
-                if (allowedPackageUpdate && GUILayout.Button( "Update", GUILayout.ExpandHeight( true ), GUILayout.ExpandWidth( false ) ))
+                if (allowedPackageUpdate)
                 {
-                    var request = UnityEditor.PackageManager.Client.Add( gitRootURL + gitRepoName + ".git#" + newCASVersion );
-                    try
-                    {
-                        while (!request.IsCompleted)
-                        {
-                            if (EditorUtility.DisplayCancelableProgressBar(
-                                "Update Package Manager dependency", gitRepoName + " " + newCASVersion, 0.5f ))
-                                break;
-                        }
-                        if (request.Status == UnityEditor.PackageManager.StatusCode.Success)
-                            Debug.Log( "Package Manager: Update " + request.Result.displayName );
-                        else if (request.Status >= UnityEditor.PackageManager.StatusCode.Failure)
-                            Debug.LogError( request.Error.message );
-                    }
-                    finally
-                    {
-                        EditorUtility.ClearProgressBar();
-                    }
+                    if (HelpStyles.WarningWithButton( updateMessage, "Update" ))
+                        UpdatePackageManagerRepo( gitRepoName, newCASVersion );
                 }
+                else
 #endif
-                EditorGUILayout.EndHorizontal();
+                {
+                    EditorGUILayout.HelpBox( updateMessage, MessageType.Warning );
+                }
             }
         }
 
@@ -424,30 +381,136 @@ namespace CAS.UEditor
 #if UNITY_2018_4_OR_NEWER
                 if (allowedPackageUpdate && GUILayout.Button( "Update", layoutParams ))
                 {
-                    var request = UnityEditor.PackageManager.Client.Add( gitRootURL + gitRepoName + ".git#" + newCASVersion );
-                    try
-                    {
-                        while (!request.IsCompleted)
-                        {
-                            if (EditorUtility.DisplayCancelableProgressBar(
-                                "Update Package Manager dependency", gitRepoName + " " + newCASVersion, 0.5f ))
-                                break;
-                        }
-                        if (request.Status == UnityEditor.PackageManager.StatusCode.Success)
-                            Debug.Log( "Package Manager: Update " + request.Result.displayName );
-                        else if (request.Status >= UnityEditor.PackageManager.StatusCode.Failure)
-                            Debug.LogError( request.Error.message );
-                    }
-                    finally
-                    {
-                        EditorUtility.ClearProgressBar();
-                    }
+                    UpdatePackageManagerRepo( gitRepoName, newCASVersion );
                 }
 #endif
                 if (GUILayout.Button( "Releases", layoutParams ))
                     Application.OpenURL( gitRootURL + gitRepoName + "/releases" );
                 EditorGUILayout.EndHorizontal();
             }
+        }
+        #endregion
+
+        #region EDM4U Reflection
+        internal static void CheckAssemblyForType<T>( string assembly )
+        {
+            var targetType = typeof( T );
+            var targetAssembly = targetType.Assembly.GetName().Name;
+            if (targetAssembly != assembly)
+                Debug.LogError( logTag + targetType.FullName + " in assembly: " + targetAssembly + " Expecting: " + assembly );
+        }
+
+        internal static Type GetAndroidDependenciesResolverType()
+        {
+            const string assemblyName = "Google.JarResolver";
+#if CASDeveloper
+            CheckAssemblyForType<GooglePlayServices.PlayServicesResolver>( assemblyName );
+#endif
+            return Type.GetType( "GooglePlayServices.PlayServicesResolver, " + assemblyName, false );
+        }
+
+        public static bool IsAndroidDependenciesResolverExist()
+        {
+            return GetAndroidDependenciesResolverType() != null;
+        }
+
+        public static System.Version GetEDM4UVersion( BuildTarget platform )
+        {
+#if CASDeveloper
+            CheckAssemblyForType<Google.AndroidResolverVersionNumber>( "Google.JarResolver" );
+            CheckAssemblyForType<Google.IOSResolverVersionNumber>( "Google.IOSResolver" );
+#endif
+            try
+            {
+                Type resolverType = null;
+                if (platform == BuildTarget.Android)
+                    resolverType = Type.GetType( "Google.AndroidResolverVersionNumber, Google.JarResolver", false );
+                else if (platform == BuildTarget.iOS)
+                    resolverType = Type.GetType( "Google.IOSResolverVersionNumber, Google.IOSResolver", false );
+                if (resolverType == null)
+                    return null;
+                return resolverType.GetProperty( "Value" ).GetValue( null, null ) as System.Version;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static bool TryResolveAndroidDependencies( bool force = true )
+        {
+#if UNITY_ANDROID
+            CASPreprocessGradle.UpdateGradleTemplateIfNeed();
+#endif
+            bool success = false;
+            var resolverType = GetAndroidDependenciesResolverType();
+            if (resolverType == null)
+                return success;
+
+            bool needResolve = force;
+            if (!needResolve)
+                needResolve = ( bool )resolverType
+                    .GetProperty( "AutomaticResolutionEnabled", BindingFlags.Public | BindingFlags.Static )
+                    .GetValue( null, null );
+            if (!needResolve)
+                return success;
+            try
+            {
+                EditorUtility.DisplayProgressBar( "Hold on.", "Resolve Android dependencies", 0.6f );
+                success = ( bool )resolverType
+                    .GetMethod( "ResolveSync", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof( bool ) }, null )
+                    .Invoke( null, new object[] { true } );
+            }
+            catch (Exception e)
+            {
+                Debug.LogException( e );
+            }
+            EditorUtility.ClearProgressBar();
+            return success;
+        }
+
+        public static T GetAndroidResolverSetting<T>( string property )
+        {
+            const string assemblyName = "Google.JarResolver";
+            const string settingsTypeName = "GooglePlayServices.SettingsDialog, " + assemblyName;
+#if CASDeveloper
+            CheckAssemblyForType<GooglePlayServices.SettingsDialog>( assemblyName );
+#endif
+            try
+            {
+                var settingsType = Type.GetType( settingsTypeName, false );
+                if (settingsType != null)
+                {
+                    return ( T )settingsType.GetProperty( property, BindingFlags.NonPublic | BindingFlags.Static )
+                            .GetValue( null, null );
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning( logTag + settingsTypeName + " error: " + e.Message );
+            }
+            return default( T );
+        }
+
+        public static T GetIOSResolverSetting<T>( string property )
+        {
+            const string assemblyName = "Google.IOSResolver";
+            const string settingsTypeName = "Google.IOSResolver, " + assemblyName;
+#if CASDeveloper
+            CheckAssemblyForType<Google.IOSResolver>( assemblyName );
+#endif
+            try
+            {
+                var settingsType = Type.GetType( settingsTypeName, false );
+                if (settingsType != null)
+                    return ( T )settingsType.GetProperty( property, BindingFlags.Public | BindingFlags.Static )
+                            .GetValue( null, null );
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning( logTag + settingsTypeName + " error: " + e.Message );
+            }
+            return default( T );
         }
         #endregion
 
@@ -543,12 +606,18 @@ namespace CAS.UEditor
             return false;
         }
 
+        internal static void DialogOrCancelBuild( string message, BuildTarget target = BuildTarget.NoTarget, string btn = "Continue" )
+        {
+            if (!IsBatchMode() && !EditorUtility.DisplayDialog( "CAS Configure project", message, btn, "Cancel build" ))
+                StopBuildWithMessage( "Cancel build: " + message, target );
+        }
+
         internal static void StopBuildWithMessage( string message, BuildTarget target )
         {
             EditorUtility.ClearProgressBar();
             if (target != BuildTarget.NoTarget
-                && !Application.isBatchMode
-                && EditorUtility.DisplayDialog( "CAS Stop Build", message, "Open Settings", "Close" ))
+                && !IsBatchMode()
+                && EditorUtility.DisplayDialog( "CAS Configure project", message, "Open Settings", "Close" ))
             {
                 OpenSettingsWindow( target );
             }
@@ -562,156 +631,17 @@ namespace CAS.UEditor
 #endif
         }
 
-        internal static string DownloadRemoteSettings( string managerID, BuildTarget platform, CASInitSettings settings, DependencyManager deps )
+        internal static string SelectSettingsFileAndGetAppId( string managerID, BuildTarget platform )
         {
-            const string title = "Update CAS remote settings";
-
-            var editorSettings = CASEditorSettings.Load();
-            string casV = "";
-            #region Find CAS Version
-            if (deps != null)
-            {
-                var casDep = deps.Find( Dependency.adOptimalName );
-                if (casDep != null)
-                    casV = casDep.installedVersion;
-                if (string.IsNullOrEmpty( casV ) && platform == BuildTarget.Android)
-                {
-                    casDep = deps.Find( Dependency.adFamiliesName );
-                    if (casDep != null)
-                        casV = casDep.installedVersion;
-                }
-                if (string.IsNullOrEmpty( casV ))
-                {
-                    casDep = deps.Find( Dependency.adBaseName );
-                    if (casDep != null)
-                        casV = casDep.version;
-                }
-            }
-
-            if (casV.Length > 0)
-            {
-                try
-                {
-                    var parsesV = new System.Version( casV );
-                    casV = parsesV.Major.ToString() + parsesV.Minor.ToString() + parsesV.Build.ToString( "D2" );
-                }
-                catch
-                {
-                    casV = "";
-                }
-            }
-            #endregion
-
-            #region Create request URL
-            #region Hash
-            var managerIdBytes = new UTF8Encoding().GetBytes( managerID );
-            var suffix = new byte[] { 48, 77, 101, 68, 105, 65, 116, 73, 111, 78, 104, 65, 115, 72 };
-            if (platform == BuildTarget.iOS)
-                suffix[0] = 49;
-            var sourceBytes = new byte[managerID.Length + suffix.Length];
-            Array.Copy( managerIdBytes, 0, sourceBytes, 0, managerIdBytes.Length );
-            Array.Copy( suffix, 0, sourceBytes, managerIdBytes.Length, suffix.Length );
-
-            var hashBytes = new System.Security.Cryptography.MD5CryptoServiceProvider().ComputeHash( sourceBytes );
-            StringBuilder hashBuilder = new StringBuilder();
-            for (int i = 0; i < hashBytes.Length; i++)
-                hashBuilder.Append( Convert.ToString( hashBytes[i], 16 ).PadLeft( 2, '0' ) );
-            var hash = hashBuilder.ToString().PadLeft( 32, '0' );
-            #endregion
-
-            var urlBuilder = new StringBuilder( "https://psvpromo.psvgamestudio.com/Scr/cas.php?platform=" )
-                .Append( platform == BuildTarget.Android ? 0 : 1 )
-                .Append( "&bundle=" ).Append( UnityWebRequest.EscapeURL( managerID ) )
-                .Append( "&hash=" ).Append( hash )
-                .Append( "&lang=" ).Append( SystemLanguage.English )
-                .Append( "&appDev=2" )
-                .Append( "&appV=" ).Append( PlayerSettings.bundleVersion )
-                .Append( "&coppa=" ).Append( ( int )settings.defaultAudienceTagged )
-                .Append( "&adTypes=" ).Append( ( int )settings.allowedAdFlags )
-                .Append( "&sdk=" ).Append( casV )
-                .Append( "&nets=" ).Append( DependencyManager.GetActiveMediationPattern( deps ) )
-                .Append( "&orient=" ).Append( GetOrientationId() )
-                .Append( "&framework=Unity_" ).Append( Application.unityVersion );
-            if (string.IsNullOrEmpty( editorSettings.mostPopularCountryOfUsers ))
-                urlBuilder.Append( "&country=" ).Append( "US" );
-            else
-                urlBuilder.Append( "&country=" ).Append( editorSettings.mostPopularCountryOfUsers );
-            if (platform == BuildTarget.Android)
-                urlBuilder.Append( "&appVC=" ).Append( PlayerSettings.Android.bundleVersionCode );
-
-            #endregion
-
-            using (var loader = UnityWebRequest.Get( urlBuilder.ToString() ))
-            {
-                try
-                {
-                    loader.SendWebRequest();
-                    while (!loader.isDone)
-                    {
-                        if (EditorUtility.DisplayCancelableProgressBar( title, managerID,
-                            Mathf.Repeat( ( float )EditorApplication.timeSinceStartup, 1.0f ) ))
-                        {
-                            loader.Dispose();
-                            throw new Exception( "Update CAS Settings canceled" );
-                        }
-                    }
-                    if (string.IsNullOrEmpty( loader.error ))
-                    {
-                        var content = loader.downloadHandler.text.Trim();
-                        if (string.IsNullOrEmpty( content ))
-                            throw new Exception( "ManagerID [" + managerID + "] is not registered in CAS." );
-
-                        EditorUtility.DisplayProgressBar( title, "Write CAS settings", 0.7f );
-                        var data = JsonUtility.FromJson<AdmobAppIdData>( content );
-                        WriteSettingsForPlatform( content, managerID, platform );
-                        return data.admob_app_id;
-                    }
-                    throw new Exception( "Server response " + loader.responseCode + ": " + loader.error );
-                }
-                finally
-                {
-                    EditorUtility.ClearProgressBar();
-                }
-            }
-        }
-
-        public static string ReadAppIdFromCache( string managerID, BuildTarget platform, string error )
-        {
-            const string title = "Update CAS remote settings";
-            var cachePath = GetNativeSettingsPath( platform, managerID );
-            int dialogResponse = 0;
-
-
-            if (!Application.isBatchMode)
-                dialogResponse = EditorUtility.DisplayDialogComplex( title,
-                    error +
-                    "\nPlease try using a real identifier in the first place else contact support." +
-                    "\n- Warning! -" +
-                    "\n1. Continue build the app for release with current settings can reduce monetization revenue." +
-                    "\n2. When build to testing your app, make sure you use Test Ads mode rather than live ads. " +
-                    "Failure to do so can lead to suspension of your account.",
-                    "Continue", "Cancel Build", "Select settings file" );
-
-            if (dialogResponse == 0)
-            {
-                if (File.Exists( cachePath ))
-                    return GetAdmobAppIdFromJson( File.ReadAllText( cachePath ) );
-                return null;
-            }
-            if (dialogResponse == 1)
-            {
-                StopBuildWithMessage( "Build canceled", BuildTarget.NoTarget );
-                return null;
-            }
-
-            var filePath = EditorUtility.OpenFilePanelWithFilters(
-                "Select CAS Settings file for build", "", new[] { "Settings file", "json" } );
+            string filePath = "";
             try
             {
+                filePath = EditorUtility.OpenFilePanelWithFilters(
+                   "Select CAS Settings file for build", "", new[] { "Settings file", "json" } );
                 if (!string.IsNullOrEmpty( filePath ))
                 {
                     var content = File.ReadAllText( filePath );
-                    WriteSettingsForPlatform( content, managerID, platform );
+                    WriteToFile( content, GetNativeSettingsPath( platform, managerID ) );
                     return GetAdmobAppIdFromJson( content );
                 }
             }
@@ -721,11 +651,6 @@ namespace CAS.UEditor
             }
             StopBuildWithMessage( "Selected wrong settings file: " + filePath, BuildTarget.NoTarget );
             return null;
-        }
-
-        private static void WriteSettingsForPlatform( string content, string managerId, BuildTarget target )
-        {
-            WriteToFile( content, GetNativeSettingsPath( target, managerId ) );
         }
 
         internal static void GetCrossPromoAlias( BuildTarget platform, string managerId, HashSet<string> result )
@@ -758,21 +683,9 @@ namespace CAS.UEditor
             return;
         }
 
-        internal static string GetLatestVersion( string repo, bool force, string currVersion )
+        private static string GetLatestVersion( string repo, string currVersion )
         {
-            if (!force)
-            {
-                var editorSettings = CASEditorSettings.Load();
-                if (!editorSettings.autoCheckForUpdatesEnabled
-                    || !HasTimePassed( editorLatestVersionTimestampPrefs + repo, 1, false ))
-                {
-                    var last = EditorPrefs.GetString( editorLatestVersionPrefs + repo );
-                    if (!string.IsNullOrEmpty( last ))
-                        return last;
-                }
-            }
-
-            const string title = "Get latest CAS version info";
+            const string title = "Get latest CAS version";
             string url = "https://api.github.com/repos/cleveradssolutions/" + repo + "/releases/latest";
 
             using (var loader = UnityWebRequest.Get( url ))
@@ -784,7 +697,7 @@ namespace CAS.UEditor
                     while (!loader.isDone)
                     {
                         if (EditorUtility.DisplayCancelableProgressBar( title, repo,
-                            Mathf.Repeat( ( float )EditorApplication.timeSinceStartup, 1.0f ) ))
+                            Mathf.Repeat( ( float )EditorApplication.timeSinceStartup * 0.2f, 1.0f ) ))
                         {
                             loader.Dispose();
                             SaveLatestRepoVersion( repo, currVersion );
@@ -818,7 +731,7 @@ namespace CAS.UEditor
             return null;
         }
 
-        private static int GetOrientationId()
+        internal static int GetOrientationId()
         {
             var orientation = Screen.orientation;
             if (orientation == ScreenOrientation.Portrait || orientation == ScreenOrientation.PortraitUpsideDown)
@@ -834,6 +747,28 @@ namespace CAS.UEditor
             if (supportLandscape)
                 return 2;
             return 0;
+        }
+
+        private static void UpdatePackageManagerRepo( string gitRepoName, string version )
+        {
+            var request = UnityEditor.PackageManager.Client.Add( gitRootURL + gitRepoName + ".git#" + version );
+            try
+            {
+                while (!request.IsCompleted)
+                {
+                    if (EditorUtility.DisplayCancelableProgressBar(
+                        "Update Package Manager dependency", gitRepoName + " " + version, 0.5f ))
+                        break;
+                }
+                if (request.Status == UnityEditor.PackageManager.StatusCode.Success)
+                    Debug.Log( "Package Manager: Update " + request.Result.displayName );
+                else if (request.Status >= UnityEditor.PackageManager.StatusCode.Failure)
+                    Debug.LogError( request.Error.message );
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
         }
 
         private static void SaveLatestRepoVersion( string repo, string version )
@@ -870,7 +805,28 @@ namespace CAS.UEditor
                 return DateTime.Compare( DateTime.Now, checkTime ) > 0; // Now time is later than checkTime
             }
         }
+
+        internal static bool IsBatchMode()
+        {
+#if UNITY_2018_3_OR_NEWER
+            return Application.isBatchMode;
+#else
+            return false;
+#endif
+        }
         #endregion
+    }
+
+    [Serializable]
+    internal class AdmobAppIdData
+    {
+        public string admob_app_id = null;
+    }
+
+    [Serializable]
+    internal class GitVersionInfo
+    {
+        public string tag_name = null;
     }
 
     [Serializable]
@@ -959,7 +915,9 @@ namespace CAS.UEditor
                 case AdFlags.Interstitial: iconIndex = 1; break;
                 case AdFlags.Rewarded: iconIndex = 2; break;
                 case AdFlags.Native: iconIndex = 3; break;
+#pragma warning disable CS0618 // Type or member is obsolete
                 case AdFlags.MediumRectangle: iconIndex = 4; break;
+#pragma warning restore CS0618 // Type or member is obsolete
                 default: return null;
             }
             return formatIcons[active ? iconIndex : iconIndex + 5];
@@ -995,6 +953,21 @@ namespace CAS.UEditor
             if (GUILayout.Button( helpIconContent, EditorStyles.label, GUILayout.ExpandWidth( false ) ))
                 Application.OpenURL( url );
 
+        }
+
+        public static bool WarningWithButton( string message, string btnText, MessageType type = MessageType.Warning )
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.HelpBox( message, type );
+            // Expand height correct work with Unity 2020 or newer
+#if UNITY_2020_1_OR_NEWER
+            var height = GUILayout.ExpandHeight( true );
+#else
+            var height = GUILayout.Height( 38 );
+#endif
+            var action = GUILayout.Button( btnText, GUILayout.ExpandWidth( false ), height );
+            EditorGUILayout.EndHorizontal();
+            return action;
         }
     }
 }

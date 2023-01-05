@@ -1,4 +1,10 @@
-﻿using System;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System;
 using UnityEngine;
 
 namespace CAS
@@ -7,6 +13,7 @@ namespace CAS
     public delegate void CASViewEventWithError( IAdView view, AdError error );
     public delegate void CASViewEventWithMeta( IAdView view, AdMetaData data );
 
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Banner-Ads" )]
     public interface IAdView : IDisposable
     {
         /// <summary>
@@ -18,16 +25,23 @@ namespace CAS
         /// </summary>
         event CASViewEventWithError OnFailed;
         /// <summary>
-        /// Called when the ad view did present for user with <see cref="AdMetaData"/> about the impression. 
+        /// Called when the new ad content did present for user with <see cref="AdMetaData"/> about the impression. 
         /// </summary>
-        event CASViewEventWithMeta OnPresented;
+        event CASViewEventWithMeta OnImpression;
         /// <summary>
         /// Called when the user clicks on the Ad.
         /// </summary>
         event CASViewEvent OnClicked;
+
         /// <summary>
-        /// Called when the ad view did hidden from user.
+        /// Called when the ad view enabled.
         /// </summary>
+        [Obsolete( "Please stop use the event, is called at the same time as the SetActive(true)." )]
+        event CASViewEventWithMeta OnPresented;
+        /// <summary>
+        /// Called when the ad view disabled.
+        /// </summary>
+        [Obsolete( "Please stop use the event, is called at the same time as the SetActive(false)." )]
         event CASViewEvent OnHidden;
 
         /// <summary>
@@ -44,9 +58,8 @@ namespace CAS
 
         /// <summary>
         /// Get the real AdView rect with position and size in pixels on screen.
-        /// <para>This value is calculated by native implementations in real time and is not buffered.</para>
+        /// <para>Return <see cref="Rect.zero"/> when ad view is not active.</para>
         /// <para>The position on the screen is calculated with the addition of indents for the cutouts.</para>
-        /// <para>To improve performance, do not call this property too often.</para>
         /// </summary>
         Rect rectInPixels { get; }
 
@@ -80,7 +93,7 @@ namespace CAS
         /// at the <paramref name="x"/> and <paramref name="y"/> values passed to the method,
         /// where the origin is the top-left of the screen.</para>
         /// <para>The coordinates on the screen are determined not in pixels, but in Density-independent Pixels(DP)!</para>
-        /// <para>When the ad view is positioned using coordinates, the <see cref="position"/> == <see cref="AdPosition.TopLeft"/></para>
+        /// <para>Screen positioning coordinates are only available for the <see cref="AdPosition.TopLeft"/>.</para>
         /// </summary>
         /// <param name="x">X-coordinate on screen in DP.</param>
         /// <param name="y">Y-coordinate on screen in DP.</param>

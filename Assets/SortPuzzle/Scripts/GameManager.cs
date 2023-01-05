@@ -13,6 +13,9 @@ public class GameManager : IGameManager
 
     public static float tubeReturnSpeedModifier = 1;
     public static float defaultTubeReturnSpeed = 8;
+
+    public static GameManager Instance;
+
     //public List<GameObject> tubesInGame;
     protected GameObject selectedTube;
     public ISpawnController spawnController;
@@ -70,6 +73,8 @@ public class GameManager : IGameManager
 
     private void Start()
     {
+        Instance = this;
+
         buttonsManager = GetComponent<ButtonsManager>();
         PlayerPrefs.DeleteKey("UnlockedAll");
 

@@ -1,4 +1,9 @@
-﻿
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
 namespace CAS
 {
     public enum AdError
@@ -15,6 +20,11 @@ namespace CAS
         /// your implementation works correctly and people will be able to see ads in your app once it's live.</para>
         /// </summary>
         NoFill = 3,
+        /// <summary>
+        /// A configuration error has been detected in one of the mediation ad networks.
+        /// Please report error message to your manager support.
+        /// </summary>
+        Configuration = 6,
         /// <summary>
         /// Ad are not ready to show.
         /// You need to call Load ads or use one of the automatic cache mode.
@@ -64,6 +74,7 @@ namespace CAS
             {
                 case AdError.NoConnection: return "No internet connection detected";
                 case AdError.NoFill: return "No Fill";
+                case AdError.Configuration: return "Invalid configuration";
                 case AdError.NotReady: return "Ad are not ready. You need to call Load ads or use one of the automatic cache mode.";
                 case AdError.ManagerIsDisabled: return "Manager is disabled";
                 case AdError.ReachedCap: return "Reached cap for user";

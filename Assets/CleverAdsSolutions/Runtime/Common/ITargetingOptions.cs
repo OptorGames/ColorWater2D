@@ -1,13 +1,17 @@
-﻿namespace CAS
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+namespace CAS
 {
     public enum Gender
     {
         Unknown, Male, Female
     }
 
-    /// <summary>
-    /// Wiki page: https://github.com/cleveradssolutions/CAS-Unity/wiki/Targeting-Options
-    /// </summary>
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Initialize-CAS#targeting-options" )]
     public interface ITargetingOptions
     {
         /// <summary>

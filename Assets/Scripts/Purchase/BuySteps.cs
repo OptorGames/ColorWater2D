@@ -24,6 +24,9 @@ public class BuySteps : MonoBehaviour
 
     public void OnPurchaseFailed(Product product, PurchaseFailureReason reason)
     {
-        Debug.Log(product.definition.id + " failed to buy: " + reason);
+        if (product != null && product.definition != null)
+        {
+            Debug.Log(product.definition.id + " failed to buy: " + reason);
+        }
     }
 }

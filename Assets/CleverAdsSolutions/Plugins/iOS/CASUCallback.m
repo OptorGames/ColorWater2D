@@ -2,42 +2,41 @@
 //  CASUCallback.m
 //  CASUnityPlugin
 //
-//  Copyright © 2020 Clever Ads Solutions. All rights reserved.
+//  Copyright © 2022 Clever Ads Solutions. All rights reserved.
 //
 
 #import "CASUCallback.h"
 #import "CASUPluginUtil.h"
-#if __has_include(<FirebaseAnalytics/FIRAnalytics.h>)
-#import <FirebaseAnalytics/FIRAnalytics.h>
-#endif
 
-@implementation CASUCallback
-{
+@implementation CASUCallback{
     BOOL withComplete;
+    NSObject<CASStatusHandler> *_lastImpression;
 }
 
-- (id)initWithComplete:(BOOL)complete {
+- (instancetype)initWithComplete:(BOOL)complete {
     self = [super init];
+
     if (self) {
         withComplete = complete;
     }
+
     return self;
 }
 
 - (void)willShownWithAd:(id<CASStatusHandler>)adStatus {
     [CASUPluginUtil onAdsWillPressent];
+
     if (self.client) {
         if (self.willOpeningCallback) {
-            self.willOpeningCallback(self.client,
-                                     [[CASNetwork values] indexOfObject:adStatus.network],
-                                     adStatus.cpm,
-                                     adStatus.priceAccuracy);
+            _lastImpression = (NSObject<CASStatusHandler> *)adStatus;
+            self.willOpeningCallback(self.client, (__bridge CASImpressionRef)_lastImpression);
         }
     }
 }
 
 - (void)didShowAdFailedWithError:(NSString *)error {
     [CASUPluginUtil onAdsDidClosed];
+
     if (self.didShowFailedCallback) {
         if (self.client) {
             self.didShowFailedCallback(self.client, [error cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -49,6 +48,7 @@
     if (!withComplete) {
         return;
     }
+
     if (self.didCompleteCallback) {
         if (self.client) {
             self.didCompleteCallback(self.client);
@@ -74,6 +74,7 @@
     //    }
 
     [CASUPluginUtil onAdsDidClosed];
+
     if (self.didClosedCallback) {
         if (self.client) {
             self.didClosedCallback(self.client);
@@ -81,16 +82,42 @@
     }
 }
 
-- (void)log:(NSString *)eventName:(NSDictionary<NSString *, id> *)map {
-    #if __has_include(<FirebaseAnalytics/FIRAnalytics.h>)
-    [FIRAnalytics logEventWithName:eventName parameters:map];
-    #else
-    NSLog(@"[CAS] Framework bridge cant find Firebase Analytics");
-    #endif
-}
-
 - (UIViewController *)viewControllerForPresentingAppReturnAd {
     return [CASUPluginUtil unityGLViewController];
+}
+
+- (void)callInUITheradLoadedCallback {
+    if (self.didLoadedCallback) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.didLoadedCallback(self.client);
+        });
+    }
+}
+
+- (void)callInUITheradFailedToLoadCallbackWithError:(NSString *)error {
+    if (self.didFailedCallback) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.didFailedCallback(self.client, [self getErrorCodeFromString:error]);
+        });
+    }
+}
+
+- (NSInteger)getErrorCodeFromString:(NSString *)error {
+    if (!error) {
+        return CASErrorInternalError;
+    }
+
+    return [error isEqualToString:@"No internet connection detected"] ? CASErrorNoConnection
+    : [error isEqualToString:@"No Fill"] ? CASErrorNoFill
+    : [error isEqualToString:@"Invalid configuration"] ? CASErrorConfigurationError
+    : [error isEqualToString:@"Ad are not ready. You need to call Load ads or use one of the automatic cache mode."] ? CASErrorNotReady
+    : [error isEqualToString:@"Manager is disabled"] ? CASErrorManagerIsDisabled
+    : [error isEqualToString:@"Reached cap for user"] ? CASErrorReachedCap
+    : [error isEqualToString:@"The interval between impressions Ad has not yet passed."] ? CASErrorIntervalNotYetPassed
+    : [error isEqualToString:@"Ad already displayed"] ? CASErrorAlreadyDisplayed
+    : [error isEqualToString:@"Application is paused"] ? CASErrorAppIsPaused
+    : [error isEqualToString:@"Not enough space to display ads"] ? CASErrorNotEnoughSpace
+    : CASErrorInternalError;
 }
 
 @end

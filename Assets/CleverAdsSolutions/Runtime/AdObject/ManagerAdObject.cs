@@ -1,4 +1,10 @@
-﻿using System;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -34,6 +40,9 @@ namespace CAS.AdObject
             OnInitialized.Invoke();
         }
     }
+
+    [Serializable]
+    public class CASUEventWithError : UnityEvent<string> { }
 
     [Serializable]
     public struct ManagerIndex

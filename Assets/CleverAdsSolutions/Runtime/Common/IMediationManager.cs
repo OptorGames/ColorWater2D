@@ -1,4 +1,9 @@
-﻿
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
 using System;
 
 namespace CAS
@@ -9,25 +14,38 @@ namespace CAS
     public delegate void CASEventWithAdError( AdError error );
     public delegate void CASEventWithMeta( AdMetaData meta );
 
+    internal class WikiPageAttribute : Attribute
+    {
+        internal WikiPageAttribute( string url ) { }
+    }
+
     /// <summary>
     /// Interface for managing CAS mediation.
     /// Get instance using the <see cref="MobileAds.BuildManager"/> builder.
-    /// <para>Wiki page: https://github.com/cleveradssolutions/CAS-Unity/wiki/Initialize-SDK </para>
     /// </summary>
-    public interface IMediationManager: ISingleBannerManager
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Initialize-SDK" )]
+    public interface IMediationManager : ISingleBannerManager
     {
         /// <summary>
         /// Called when <see cref="AdType"/> load ad response
-        /// <para>Please for <see cref="AdType.Banner"/> use new ad size api <see cref="GetAdView(AdSize)"/>.OnLoaded instead.</para>
         /// </summary>
+        [Obsolete( "Use OnInterstitialAdLoaded, OnRewardedAdLoaded, IAdView.OnLoaded instead." )]
         event CASTypedEvent OnLoadedAd;
         /// <summary>
         /// Called when <see cref="AdType"/> failed to load ad response with error message
-        /// <para>Please for <see cref="AdType.Banner"/> use new ad size api <see cref="GetAdView(AdSize)"/>.OnFailed instead.</para>
         /// </summary>
+        [Obsolete( "Use OnInterstitialAdFailedToLoad, OnRewardedAdFailedToLoad, IAdView.OnFailed instead." )]
         event CASTypedEventWithError OnFailedToLoadAd;
 
         #region Interstitial Ads events
+        /// <summary>
+        /// Called when Interstitial ad ready to shown.
+        /// </summary>
+        event Action OnInterstitialAdLoaded;
+        /// <summary>
+        /// Called when Interstitial failed to load ad response with error message
+        /// </summary>
+        event CASEventWithAdError OnInterstitialAdFailedToLoad;
         /// <summary>
         /// Called when the ad is displayed.
         /// </summary>
@@ -51,6 +69,14 @@ namespace CAS
         #endregion
 
         #region Rewarded Ads events
+        /// <summary>
+        /// Called when Rewarded video ad ready to shown.
+        /// </summary>
+        event Action OnRewardedAdLoaded;
+        /// <summary>
+        /// Called when Rewarded video failed to load ad response with error message
+        /// </summary>
+        event CASEventWithAdError OnRewardedAdFailedToLoad;
         /// <summary>
         /// Called when the ad is displayed.
         /// </summary>
@@ -94,12 +120,6 @@ namespace CAS
         /// <para>By default, this page will not be displayed while the ad content is NULL.</para>
         /// </summary>
         LastPageAdContent lastPageAdContent { get; set; }
-
-        /// <summary>
-        /// Get last active mediation ad name of selected <see cref="AdType"/>.
-        /// <para>Can return Empty String.</para>
-        /// </summary>
-        string GetLastActiveMediation( AdType adType );
 
         /// <summary>
         /// Check selected <see cref="AdType"/> is processing.
@@ -183,5 +203,8 @@ namespace CAS
         void SkipNextAppReturnAds();
 
         #endregion
+
+        [Obsolete( "No longer supported" )]
+        string GetLastActiveMediation( AdType adType );
     }
 }

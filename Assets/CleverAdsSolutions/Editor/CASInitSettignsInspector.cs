@@ -1,4 +1,10 @@
-﻿#pragma warning disable 649
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+#pragma warning disable 649
 using System;
 using UnityEngine;
 using UnityEditor;
@@ -7,12 +13,14 @@ using Utils = CAS.UEditor.CASEditorUtils;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using UnityEditor.AnimatedValues;
 
 namespace CAS.UEditor
 {
     [CustomEditor( typeof( CASInitSettings ) )]
     internal class CASInitSettignsInspector : Editor
     {
+        #region Init settings properties
         private SerializedProperty testAdModeProp;
         private SerializedProperty managerIdsProp;
         private SerializedProperty allowedAdFlagsProp;
@@ -25,16 +33,22 @@ namespace CAS.UEditor
         private SerializedProperty trackLocationEnabledProp;
         private SerializedProperty analyticsCollectionEnabledProp;
         private SerializedProperty interWhenNoRewardedAdProp;
+        #endregion
 
+        #region Editor settings properties
         private SerializedObject editorSettingsObj;
         private SerializedProperty autoCheckForUpdatesEnabledProp;
+        private SerializedProperty buildPreprocessEnabledProp;
         private SerializedProperty delayAppMeasurementGADInitProp;
         private SerializedProperty multiDexEnabledProp;
+        private SerializedProperty updateGradlePluginVersionProp;
         private SerializedProperty permissionAdIdRemovedProp;
         private SerializedProperty mostPopularCountryOfUsersProp;
         private SerializedProperty attributionReportEndpointProp;
         private SerializedProperty userTrackingUsageDescriptionProp;
+        #endregion
 
+        #region Utility fields
         private DependencyManager dependencyManager;
 
         private ReorderableList managerIdsList;
@@ -44,7 +58,6 @@ namespace CAS.UEditor
         private string newCASVersion = null;
         private bool deprecateDependenciesExist;
         private Version edmVersion;
-        private PropertyInfo edmIOSStaticLinkProp = null;
         private bool edmRequiredNewer = false;
         private string environmentDetails;
 
@@ -52,9 +65,37 @@ namespace CAS.UEditor
 
         private int editorRuntimeActiveAdFlags;
 
+        private AnimBool iOSLocationDescriptionFoldout = null;
+        private AnimBool otherSettingsFoldout = null;
+        #endregion
+
+        #region Initialize logic
         private void OnEnable()
         {
-            var props = serializedObject;
+            SetSettingsPlatform();
+
+            InitMainProperties( serializedObject );
+            InitEditorSettingsProperties();
+
+            iOSLocationDescriptionFoldout = new AnimBool( false, Repaint );
+            otherSettingsFoldout = new AnimBool( false, Repaint );
+
+            allowedPackageUpdate = Utils.IsPackageExist( Utils.packageName );
+
+            dependencyManager = DependencyManager.Create( platform, ( Audience )audienceTaggedProp.enumValueIndex, true );
+
+            HandleDeprecatedComponents();
+            InitEDM4U();
+            InitEnvironmentDetails();
+
+            EditorApplication.delayCall += () =>
+            {
+                newCASVersion = Utils.GetNewVersionOrNull( Utils.gitUnityRepo, MobileAds.wrapperVersion, false );
+            };
+        }
+
+        private void InitMainProperties( SerializedObject props )
+        {
             testAdModeProp = props.FindProperty( "testAdMode" );
             managerIdsProp = props.FindProperty( "managerIds" );
             allowedAdFlagsProp = props.FindProperty( "allowedAdFlags" );
@@ -70,73 +111,22 @@ namespace CAS.UEditor
 
             editorRuntimeActiveAdFlags = PlayerPrefs.GetInt( Utils.editorRuntimeActiveAdPrefs, -1 );
 
-            string assetName = target.name;
-            if (assetName.EndsWith( BuildTarget.Android.ToString() ))
-                platform = BuildTarget.Android;
-            else if (assetName.EndsWith( BuildTarget.iOS.ToString() ))
-                platform = BuildTarget.iOS;
-            else
-                platform = BuildTarget.NoTarget;
-
             managerIdsList = new ReorderableList( props, managerIdsProp, true, true, true, true )
             {
                 drawHeaderCallback = DrawListHeader,
                 drawElementCallback = DrawListElement,
                 onCanRemoveCallback = DisabledRemoveLastItemFromList,
             };
-
-            allowedPackageUpdate = Utils.IsPackageExist( Utils.packageName );
-
-            //usingMultidexOnBuild = PlayerPrefs.GetInt( Utils.editorIgnoreMultidexPrefs, 0 ) == 0;
-
-            dependencyManager = DependencyManager.Create( platform, ( Audience )audienceTaggedProp.enumValueIndex, true );
-
-            EditorApplication.delayCall += () => newCASVersion = Utils.GetNewVersionOrNull( Utils.gitUnityRepo, MobileAds.wrapperVersion, false );
             props.ApplyModifiedProperties();
+        }
 
-            deprecatedAssets = new string[]{
-                Utils.GetDeprecateDependencyName( Utils.generalDeprecateDependency, platform ),
-                Utils.GetDeprecateDependencyName( Utils.teenDeprecateDependency, platform ),
-                Utils.GetDeprecateDependencyName( Utils.promoDeprecateDependency, platform ),
-                Utils.GetDependencyName( "Additional", platform )
-            };
-
-            for (int i = 0; i < deprecatedAssets.Length; i++)
-            {
-                if (deprecateDependenciesExist |= AssetDatabase.FindAssets( deprecatedAssets[i] ).Length > 0)
-                    break;
-            }
-
-            // Remove deprecated CAS settings raw data
-            if (File.Exists( Utils.androidResSettingsPath + ".json" ))
-                AssetDatabase.MoveAssetToTrash( Utils.androidResSettingsPath + ".json" );
-
-            edmVersion = Utils.GetEDM4UVersion( platform );
-            if (edmVersion != null)
-                edmRequiredNewer = edmVersion < Utils.minEDM4UVersion;
-            try
-            {
-                if (platform == BuildTarget.iOS)
-                    edmIOSStaticLinkProp = Type.GetType( "Google.IOSResolver, Google.IOSResolver", true )
-                        .GetProperty( "PodfileStaticLinkFrameworks", BindingFlags.Public | BindingFlags.Static );
-            }
-            catch
-            {
-                edmIOSStaticLinkProp = null;
-            }
-
-
-            var environmentBuilder = new StringBuilder( "Environment Details: " )
-                .Append( "Unity - " ).Append( Application.unityVersion ).Append( "; " )
-                .Append( "Platform - " ).Append( Application.platform ).Append( "; " );
-            if (edmVersion != null)
-                environmentBuilder.Append( "EDM4U - " ).Append( edmVersion ).Append( "; " );
-            environmentDetails = environmentBuilder.ToString();
-
-
+        private void InitEditorSettingsProperties()
+        {
             editorSettingsObj = new SerializedObject( CASEditorSettings.Load( true ) );
             autoCheckForUpdatesEnabledProp = editorSettingsObj.FindProperty( "autoCheckForUpdatesEnabled" );
             delayAppMeasurementGADInitProp = editorSettingsObj.FindProperty( "delayAppMeasurementGADInit" );
+            buildPreprocessEnabledProp = editorSettingsObj.FindProperty( "buildPreprocessEnabled" );
+            updateGradlePluginVersionProp = editorSettingsObj.FindProperty( "updateGradlePluginVersion" );
             multiDexEnabledProp = editorSettingsObj.FindProperty( "multiDexEnabled" );
             permissionAdIdRemovedProp = editorSettingsObj.FindProperty( "permissionAdIdRemoved" );
 
@@ -153,6 +143,140 @@ namespace CAS.UEditor
             };
         }
 
+        private void SetSettingsPlatform()
+        {
+            string assetName = target.name;
+            if (assetName.EndsWith( BuildTarget.Android.ToString() ))
+                platform = BuildTarget.Android;
+            else if (assetName.EndsWith( BuildTarget.iOS.ToString() ))
+                platform = BuildTarget.iOS;
+            else
+                platform = BuildTarget.NoTarget;
+        }
+
+        private void HandleDeprecatedComponents()
+        {
+            deprecatedAssets = new string[]{
+                Utils.GetDeprecateDependencyName( Utils.generalDeprecateDependency, platform ),
+                Utils.GetDeprecateDependencyName( Utils.teenDeprecateDependency, platform ),
+                Utils.GetDeprecateDependencyName( Utils.promoDeprecateDependency, platform ),
+                Utils.GetDependencyName( "Additional", platform )
+            };
+
+            for (int i = 0; i < deprecatedAssets.Length; i++)
+            {
+                if (deprecateDependenciesExist |= AssetDatabase.FindAssets( deprecatedAssets[i] ).Length > 0)
+                    break;
+            }
+        }
+
+        private void InitEDM4U()
+        {
+            edmVersion = Utils.GetEDM4UVersion( platform );
+            if (edmVersion != null)
+                edmRequiredNewer = edmVersion < Utils.minEDM4UVersion;
+        }
+
+        private void InitEnvironmentDetails()
+        {
+            var environmentBuilder = new StringBuilder( "Environment Details: " )
+                            .Append( "Unity " ).Append( Application.unityVersion ).Append( "; " )
+                            .Append( Application.platform ).Append( "; " );
+            if (edmVersion != null)
+                environmentBuilder.Append( "EDM4U " ).Append( edmVersion ).Append( "; " );
+#if UNITY_ANDROID || CASDeveloper
+            if (platform == BuildTarget.Android)
+            {
+                var gradleWrapperVersion = CASPreprocessGradle.GetGradleWrapperVersion();
+                if (gradleWrapperVersion != null)
+                    environmentBuilder.Append( "Gradle Wrapper - " ).Append( gradleWrapperVersion ).Append( "; " );
+                var targetSDK = ( int )PlayerSettings.Android.targetSdkVersion;
+                if (targetSDK == 0)
+                    environmentBuilder.Append( "Target ASDK Auto; " );
+                else
+                    environmentBuilder.Append( "Target ASDK " ).Append( targetSDK ).Append( "; " );
+            }
+#endif
+            if (platform == BuildTarget.iOS)
+            {
+                environmentBuilder.Append( "Target iOS " ).Append( PlayerSettings.iOS.targetOSVersionString );
+            }
+            environmentDetails = environmentBuilder.ToString();
+        }
+        #endregion
+
+        protected override void OnHeaderGUI()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label( "CleverAdsSolutions", HelpStyles.largeTitleStyle );
+            GUILayout.Label( platform.ToString(), HelpStyles.largeTitleStyle, GUILayout.ExpandWidth( false ) );
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            Utils.OnHeaderGUI( Utils.gitUnityRepo, allowedPackageUpdate, MobileAds.wrapperVersion, ref newCASVersion );
+        }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+            editorSettingsObj.Update();
+
+            if (managerIdsList.count > 1)
+            {
+                var appId = managerIdsProp.GetArrayElementAtIndex( 0 ).stringValue;
+                if (!string.IsNullOrEmpty( appId ))
+                    EditorGUILayout.LabelField( "Application id in CAS:", appId );
+            }
+            managerIdsList.DoLayoutList();
+            OnManagerIDVerificationGUI();
+            DrawTestAdMode();
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            var banner = DrawAdFlagToggle( AdFlags.Banner );
+            var inter = DrawAdFlagToggle( AdFlags.Interstitial );
+            var reward = DrawAdFlagToggle( AdFlags.Rewarded );
+            //DrawAdFlagToggle( AdFlags.Native );
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+            if (banner)
+                DrawBannerScope();
+            if (inter)
+                DrawInterstitialScope();
+            if (reward)
+                DrawRewardedScope( inter );
+
+            IsAdFormatsNotUsed();
+            DrawSeparator();
+            OnEditroRuntimeActiveAdGUI();
+            OnAudienceGUI();
+            DeprecatedDependenciesGUI();
+
+            if (dependencyManager == null)
+            {
+                EditorGUILayout.HelpBox( "The integrity of CAS Unity package is broken. " +
+                    "Please try to reimport the package or contact support.", MessageType.Error );
+            }
+            else
+            {
+                dependencyManager.OnGUI( platform, this );
+                OnEDMAreaGUI();
+            }
+
+            OnUserTrackingDesctiptionGUI();
+            OnOtherSettingsGUI();
+
+            HelpStyles.BeginBoxScope();
+            GUILayout.TextField( environmentDetails, EditorStyles.wordWrappedMiniLabel );
+            HelpStyles.EndBoxScope();
+
+            OnAppAdsTxtGUI();
+            editorSettingsObj.ApplyModifiedProperties();
+            serializedObject.ApplyModifiedProperties();
+        }
+
+
+        #region Draw list implementation
         private void DrawListHeader( Rect rect )
         {
             EditorGUI.LabelField( rect, "Manager ID's " + ( platform == BuildTarget.iOS ? "(iTunes ID)" : "(Bundle ID)" ) );
@@ -163,7 +287,7 @@ namespace CAS.UEditor
             var item = managerIdsProp.GetArrayElementAtIndex( index );
             rect.yMin += 1;
             rect.yMax -= 1;
-            item.stringValue = EditorGUI.TextField( rect, item.stringValue );
+            item.stringValue = EditorGUI.TextField( rect, item.stringValue ).Trim();
         }
 
         private bool DisabledRemoveLastItemFromList( ReorderableList list )
@@ -199,123 +323,64 @@ namespace CAS.UEditor
             item.Next( false );
             item.stringValue = EditorGUI.TextField( rect, item.stringValue );
         }
+        #endregion
 
-        protected override void OnHeaderGUI()
+        private void OnAndroidAdIdGUI()
         {
-            EditorGUILayout.Space();
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label( "CleverAdsSolutions", HelpStyles.largeTitleStyle );
-            GUILayout.Label( platform.ToString(), HelpStyles.largeTitleStyle, GUILayout.ExpandWidth( false ) );
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.Space();
-            Utils.OnHeaderGUI( Utils.gitUnityRepo, allowedPackageUpdate, MobileAds.wrapperVersion, ref newCASVersion );
-        }
-
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-            editorSettingsObj.Update();
-
-            if (managerIdsList.count > 1)
-            {
-                var appId = managerIdsProp.GetArrayElementAtIndex( 0 ).stringValue;
-                if (!string.IsNullOrEmpty( appId ))
-                    EditorGUILayout.LabelField( "Application id in CAS:", appId );
-            }
-            managerIdsList.DoLayoutList();
-            OnManagerIDVerificationGUI();
-            DrawTestAdMode();
-            DrawSeparator();
-
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            var mediumFlag = ( int )AdFlags.MediumRectangle;
-            EditorGUI.BeginDisabledGroup( ( allowedAdFlagsProp.intValue & mediumFlag ) == mediumFlag );
-            var banner = DrawAdFlagToggle( AdFlags.Banner );
-            EditorGUI.EndDisabledGroup();
-            EditorGUI.BeginDisabledGroup( !banner );
-            DrawAdFlagToggle( AdFlags.MediumRectangle );
-            EditorGUI.EndDisabledGroup();
-            var inter = DrawAdFlagToggle( AdFlags.Interstitial );
-            var reward = DrawAdFlagToggle( AdFlags.Rewarded );
-            DrawAdFlagToggle( AdFlags.Native );
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-            if (banner)
-                DrawBannerScope();
-            if (inter)
-                DrawInterstitialScope();
-            if (reward)
-                DrawRewardedScope( inter );
-
-            IsAdFormatsNotUsed();
-            DrawSeparator();
-            OnEditroRuntimeActiveAdGUI();
-            OnLoadingModeGUI();
-            OnAudienceGUI();
-            DeprecatedDependenciesGUI();
-
-            if (dependencyManager == null)
-            {
-                EditorGUILayout.HelpBox( "The integrity of CAS Unity package is broken. " +
-                    "Please try to reimport the package or contact support.", MessageType.Error );
-            }
-            else
-            {
-                dependencyManager.OnGUI( platform );
-                OnEDMAreaGUI();
-            }
-
-            OnAppAdsTxtGUI();
-            DrawSeparator();
-
-            OnUserTrackingGUI();
-            OnIOSLocationUsageDescriptionGUI();
-            OnEditorEnvirementGUI();
-            editorSettingsObj.ApplyModifiedProperties();
-            serializedObject.ApplyModifiedProperties();
-        }
-
-        private void OnUserTrackingGUI()
-        {
-            if (platform != BuildTarget.iOS)
+            if (platform != BuildTarget.Android)
                 return;
-            var enabled = userTrackingUsageDescriptionProp.arraySize > 0;
-            EditorGUILayout.BeginHorizontal();
-            if (enabled != EditorGUILayout.ToggleLeft( "Set User Tracking Usage description", enabled ))
-            {
-                enabled = !enabled;
-                if (enabled)
-                {
-                    var defDescr = Utils.DefaultUserTrackingUsageDescription();
-                    userTrackingUsageDescriptionProp.arraySize = defDescr.Length;
-                    for (int i = 0; i < defDescr.Length; i++)
-                    {
-                        var pair = userTrackingUsageDescriptionProp.GetArrayElementAtIndex( i );
-                        pair.Next( true );
-                        pair.stringValue = defDescr[i].key;
-                        pair.Next( false );
-                        pair.stringValue = defDescr[i].value;
-                    }
-                }
-                else
-                {
-                    userTrackingUsageDescriptionProp.ClearArray();
-                }
-            }
-            HelpStyles.HelpButton( Utils.gitUnityRepoURL + "/wiki/App-Tracking-Transparency" );
-            EditorGUILayout.EndHorizontal();
-            if (enabled)
-                userTrackingList.DoLayoutList();
-        }
-
-        private void OnEditorEnvirementGUI()
-        {
-            if (platform == BuildTarget.Android)
-            {
-                permissionAdIdRemovedProp.boolValue = EditorGUILayout.ToggleLeft(
+            permissionAdIdRemovedProp.boolValue = EditorGUILayout.ToggleLeft(
                     "Remove permission to use Advertising ID (AD_ID)",
                     permissionAdIdRemovedProp.boolValue );
+        }
+
+        private void OnOtherSettingsGUI()
+        {
+            HelpStyles.BeginBoxScope();
+            otherSettingsFoldout.target = GUILayout.Toggle( otherSettingsFoldout.target, "Other settings", EditorStyles.foldout );
+            if (!EditorGUILayout.BeginFadeGroup( otherSettingsFoldout.faded ))
+            {
+                EditorGUILayout.EndFadeGroup();
+                HelpStyles.EndBoxScope();
+                return;
+            }
+
+            OnLoadingModeGUI();
+
+            debugModeProp.boolValue = EditorGUILayout.ToggleLeft(
+                HelpStyles.GetContent( "Verbose Debug logging", null,
+                   "The enabled Debug Mode will display a lot of useful information for debugging about the states of the sdk with tag CAS. " +
+                   "Disabling the Debug Mode may improve application performance." ),
+                debugModeProp.boolValue );
+
+            analyticsCollectionEnabledProp.boolValue = EditorGUILayout.ToggleLeft(
+                HelpStyles.GetContent( "Impression Analytics collection (Firebase)", null,
+                    "If your application uses Google Analytics(Firebase) then CAS collects ad impressions and states to analytic.\n" +
+                    "Disabling analytics collection may save internet traffic and improve application performance.\n" +
+                    "The Analytics collection has no effect on ad revenue." ),
+                analyticsCollectionEnabledProp.boolValue );
+
+            buildPreprocessEnabledProp.boolValue = EditorGUILayout.ToggleLeft(
+                    "Build preprocess enabled",
+                    buildPreprocessEnabledProp.boolValue );
+
+            if (!buildPreprocessEnabledProp.boolValue)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.HelpBox( "Automatic configuration at build time is disabled.\n" +
+                    "You can use `Assets > CleverAdsSolutions > Configure project` to call configuration manually.",
+                    MessageType.None );
+                EditorGUI.indentLevel--;
+            }
+
+            if (platform == BuildTarget.Android)
+            {
+                EditorGUI.indentLevel++;
+                updateGradlePluginVersionProp.boolValue = EditorGUILayout.ToggleLeft(
+                   HelpStyles.GetContent( "Update Gradle Plugin enabled", null,
+                       "The Gradle plugin version will be updated during build to be optimal " +
+                       "for the current Gradle Wrapper version." ),
+                    updateGradlePluginVersionProp.boolValue );
 
                 EditorGUILayout.BeginHorizontal();
                 multiDexEnabledProp.boolValue = EditorGUILayout.ToggleLeft(
@@ -323,6 +388,7 @@ namespace CAS.UEditor
                     multiDexEnabledProp.boolValue );
                 HelpStyles.HelpButton( Utils.gitUnityRepoURL + "/wiki/Include-Android#enable-multidex" );
                 EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
             }
             else
             {
@@ -339,7 +405,6 @@ namespace CAS.UEditor
                 }
                 HelpStyles.HelpButton( Utils.gitUnityRepoURL + "/wiki/Include-iOS#ios-15-global-skadnetwork-reporting" );
                 EditorGUILayout.EndHorizontal();
-
                 if (reportEndpointEnabled)
                 {
                     EditorGUI.indentLevel++;
@@ -348,21 +413,14 @@ namespace CAS.UEditor
                     EditorGUI.indentLevel--;
                 }
             }
-            debugModeProp.boolValue = EditorGUILayout.ToggleLeft( HelpStyles.GetContent( "Verbose Debug logging", null,
-                   "The enabled Debug Mode will display a lot of useful information for debugging about the states of the sdk with tag CAS. " +
-                   "Disabling the Debug Mode may improve application performance." ), debugModeProp.boolValue );
 
-            analyticsCollectionEnabledProp.boolValue = EditorGUILayout.ToggleLeft( HelpStyles.GetContent( "Impression Analytics collection (Firebase)", null,
-                "If your application uses Google Analytics(Firebase) then CAS collects ad impressions and states to analytic.\n" +
-                "Disabling analytics collection may save internet traffic and improve application performance.\n" +
-                "The Analytics collection has no effect on ad revenue." ), analyticsCollectionEnabledProp.boolValue );
-
-            delayAppMeasurementGADInitProp.boolValue = EditorGUILayout.ToggleLeft(
-                    "Delay measurement of the Google SDK initialization",
-                    delayAppMeasurementGADInitProp.boolValue );
             autoCheckForUpdatesEnabledProp.boolValue = EditorGUILayout.ToggleLeft(
                 "Auto check for CAS updates enabled",
                 autoCheckForUpdatesEnabledProp.boolValue );
+
+            delayAppMeasurementGADInitProp.boolValue = EditorGUILayout.ToggleLeft(
+                "Delay measurement of the Google SDK initialization",
+                delayAppMeasurementGADInitProp.boolValue );
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label( "Most popular country of users (ISO2)", GUILayout.ExpandWidth( false ) );
@@ -376,7 +434,53 @@ namespace CAS.UEditor
                 mostPopularCountryOfUsersProp.stringValue = countryCode.ToUpper();
             }
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.HelpBox( environmentDetails, MessageType.None );
+
+            EditorGUILayout.EndFadeGroup();
+            HelpStyles.EndBoxScope();
+        }
+
+        private void OnUserTrackingDesctiptionGUI()
+        {
+            if (platform != BuildTarget.iOS)
+                return;
+            HelpStyles.BeginBoxScope();
+            var enabled = userTrackingUsageDescriptionProp.arraySize > 0;
+            iOSLocationDescriptionFoldout.target = GUILayout.Toggle( iOSLocationDescriptionFoldout.target,
+                "User Tracking Usage description: " + ( enabled ? "Used" : "Not used" ), EditorStyles.foldout );
+
+            if (EditorGUILayout.BeginFadeGroup( iOSLocationDescriptionFoldout.faded ))
+            {
+                EditorGUILayout.BeginHorizontal();
+                if (enabled != EditorGUILayout.ToggleLeft( "Set Usage description in Info.plist", enabled ))
+                {
+                    enabled = !enabled;
+                    if (enabled)
+                    {
+                        var defDescr = Utils.DefaultUserTrackingUsageDescription();
+                        userTrackingUsageDescriptionProp.arraySize = defDescr.Length;
+                        for (int i = 0; i < defDescr.Length; i++)
+                        {
+                            var pair = userTrackingUsageDescriptionProp.GetArrayElementAtIndex( i );
+                            pair.Next( true );
+                            pair.stringValue = defDescr[i].key;
+                            pair.Next( false );
+                            pair.stringValue = defDescr[i].value;
+                        }
+                    }
+                    else
+                    {
+                        userTrackingUsageDescriptionProp.ClearArray();
+                    }
+                    iOSLocationDescriptionFoldout = new AnimBool( false, Repaint );
+                    iOSLocationDescriptionFoldout.target = true;
+                }
+                HelpStyles.HelpButton( Utils.gitUnityRepoURL + "/wiki/App-Tracking-Transparency" );
+                EditorGUILayout.EndHorizontal();
+                if (enabled)
+                    userTrackingList.DoLayoutList();
+            }
+            EditorGUILayout.EndFadeGroup();
+            HelpStyles.EndBoxScope();
         }
 
         private bool IsAdFormatsNotUsed()
@@ -391,8 +495,8 @@ namespace CAS.UEditor
 
         private void DrawTestAdMode()
         {
-            EditorGUILayout.PropertyField( testAdModeProp );
             EditorGUI.indentLevel++;
+            testAdModeProp.boolValue = EditorGUILayout.ToggleLeft( "Test ad mode", testAdModeProp.boolValue );
             if (testAdModeProp.boolValue)
                 EditorGUILayout.HelpBox( "Make sure you disable test ad mode and replace test manager ID with your own ad manager ID before publishing your app!", MessageType.Warning );
             else if (EditorUserBuildSettings.development)
@@ -406,10 +510,11 @@ namespace CAS.UEditor
 
         private void DrawInterstitialScope()
         {
-            EditorGUILayout.LabelField( "Interstitial ads:" );
+            EditorGUILayout.LabelField( "Interstitial ads impression interval(sec):" );
             EditorGUI.indentLevel++;
-            interstitialIntervalProp.intValue = Math.Max( 0,
-            EditorGUILayout.IntField( "Impression interval(sec)", interstitialIntervalProp.intValue ) );
+            interstitialIntervalProp.intValue = EditorGUILayout.IntSlider( interstitialIntervalProp.intValue, 0, 120 );
+            if (interstitialIntervalProp.intValue > 0)
+                EditorGUILayout.HelpBox( "For some time after the ad is closed, new ad impressions will fail.", MessageType.None );
             EditorGUI.indentLevel--;
         }
 
@@ -429,13 +534,17 @@ namespace CAS.UEditor
 
         private void DrawBannerScope()
         {
-            EditorGUILayout.LabelField( "Ad View:" );
+            EditorGUILayout.LabelField( "Ad View refresh rate(sec):" );
             EditorGUI.indentLevel++;
-            bannerRefreshProp.intValue = Mathf.Clamp(
-                  EditorGUILayout.IntField( "Refresh rate(sec)", bannerRefreshProp.intValue ), 0, short.MaxValue );
+            int refresh = EditorGUILayout.IntSlider( bannerRefreshProp.intValue, 0, 120 );
+            if (refresh < 10)
+                refresh = 0;
+            if (refresh == 0)
+                EditorGUILayout.HelpBox( "Refresh ad view content is disabled. Invoke IAdView.Load() to refresh ad.", MessageType.None );
+            bannerRefreshProp.intValue = refresh;
 
             var obsoleteAPI = bannerSizeProp.intValue > 0;
-            if (obsoleteAPI != EditorGUILayout.Toggle( "Use Single Banner(Obsolete)", obsoleteAPI ))
+            if (obsoleteAPI != EditorGUILayout.ToggleLeft( "Use Single Banner (Obsolete)", obsoleteAPI ))
             {
                 obsoleteAPI = !obsoleteAPI;
                 bannerSizeProp.intValue = obsoleteAPI ? 1 : 0;
@@ -455,7 +564,10 @@ namespace CAS.UEditor
                         EditorGUILayout.HelpBox( "Size in DPI: 320:50", MessageType.None );
                         break;
                     case AdSize.AdaptiveBanner:
-                        EditorGUILayout.HelpBox( "Pick the best ad size in full width screen for improved performance.", MessageType.None );
+                        EditorGUILayout.HelpBox( "Pick the best ad size in screen width for improved performance but not more than 728dp.", MessageType.None );
+                        break;
+                    case AdSize.AdaptiveFullWidth:
+                        EditorGUILayout.HelpBox( "Pick the best ad size in full width of screen for improved performance.", MessageType.None );
                         break;
                     case AdSize.SmartBanner:
                         EditorGUILayout.HelpBox( "Typically, Smart Banners on phones have a Banner size. " +
@@ -466,9 +578,9 @@ namespace CAS.UEditor
                         break;
                     case AdSize.MediumRectangle:
                         EditorGUILayout.HelpBox( "Size in DPI: 300:250", MessageType.None );
-                        var enableMrec = allowedAdFlagsProp.intValue | ( int )AdFlags.MediumRectangle;
-                        if (enableMrec != allowedAdFlagsProp.intValue)
-                            allowedAdFlagsProp.intValue = enableMrec;
+                        break;
+                    case AdSize.ThinBanner:
+                        EditorGUILayout.HelpBox( "Pick the best ad size in full width of screen and height 32-50 for Landscape and 50-90 for Portrait orientations.", MessageType.None );
                         break;
                 }
                 EditorGUI.indentLevel--;
@@ -517,7 +629,6 @@ namespace CAS.UEditor
 
         private void OnAppAdsTxtGUI()
         {
-            EditorGUILayout.Space();
             var content = HelpStyles.GetContent( " Don’t forget to implement app-ads.txt", HelpStyles.helpIconContent.image );
             if (GUILayout.Button( content, EditorStyles.label, GUILayout.ExpandWidth( false ) ))
                 Application.OpenURL( Utils.gitAppAdsTxtRepoUrl );
@@ -533,7 +644,7 @@ namespace CAS.UEditor
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Label( "1. Download latest EDM4U.unitypackage", GUILayout.ExpandWidth( false ) );
                 if (GUILayout.Button( "here", EditorStyles.miniButton, GUILayout.ExpandWidth( false ) ))
-                    Application.OpenURL( "https://github.com/googlesamples/unity-jar-resolver/tags" );
+                    Application.OpenURL( Utils.latestEMD4uURL );
                 EditorGUILayout.EndHorizontal();
                 GUILayout.Label( "2. Import the EDM4U.unitypackage into your project." );
                 HelpStyles.EndBoxScope();
@@ -541,81 +652,44 @@ namespace CAS.UEditor
             }
             if (edmRequiredNewer)
             {
-                EditorGUILayout.HelpBox( "To properly include third-party dependencies in your project, " +
+                if (HelpStyles.WarningWithButton( "To properly include third-party dependencies in your project, " +
                     "you need an External Dependency Manager version " + Utils.minEDM4UVersion + " or later.",
-                    MessageType.Warning );
+                    "Download" ))
+                    Application.OpenURL( Utils.latestEMD4uURL );
             }
 
             if (platform == BuildTarget.Android)
             {
 #if UNITY_2019_3_OR_NEWER
-                if (!File.Exists( Utils.projectGradlePath ))
-                {
-                    OnWarningGUI( "Custom Base Gradle Template disabled",
-                        "Please enable 'Custom Base Gradle Template' found under " +
-                        "'Player Settings -> Settings for Android -> Publishing Settings' menu " +
-                        "to allow CAS update Grdale plugin version.",
-                        MessageType.Error );
-                }
-
-                if (!File.Exists( Utils.launcherGradlePath ))
-                {
-                    OnWarningGUI( "Custom Launcher Gradle Template disabled",
-                        "Please enable 'Custom Launcher Gradle Template' found under " +
-                        "'Player Settings -> Settings for Android -> Publishing Settings' menu " +
-                        "to allow CAS use MultiDEX.",
-                        MessageType.Error );
-                }
-
-                if (!File.Exists( Utils.propertiesGradlePath ))
-                {
-                    OnWarningGUI( "Custom Gradle Properties Template disabled",
-                        "Please enable 'Custom Gradle Properties Template' found under " +
-                        "'Player Settings > Settings for Android -> Publishing Settings' menu " +
-                        "to allow CAS use Jetifier.",
-                        MessageType.Error );
-                }
+                OnGradleTemplateDisabledGUI( "Main Gradle", Utils.mainGradlePath );
+                OnGradleTemplateDisabledGUI( "Base Gradle", Utils.projectGradlePath );
+                OnGradleTemplateDisabledGUI( "Launcher Gradle", Utils.launcherGradlePath );
+                OnGradleTemplateDisabledGUI( "Gradle Properties", Utils.propertiesGradlePath );
 #else
-                if (!File.Exists( Utils.mainGradlePath ))
-                {
-                    OnWarningGUI( "Custom Gradle Template disabled",
-                        "Please enable 'Custom Gradle Template' found under " +
-                        "'Player Settings -> Settings for Android -> Publishing Settings' menu " +
-                        "to allow CAS update Grdale plugin version and enable MultiDEX.",
-                        MessageType.Error );
-                }
+                OnGradleTemplateDisabledGUI( "Gradle", Utils.mainGradlePath );
 #endif
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.HelpBox( "Changing dependencies will change the project settings. " +
-                    "Please use Android Resolver after the change complete.", MessageType.Info );
-                if (GUILayout.Button( "Resolve", GUILayout.ExpandWidth( false ), GUILayout.Height( 38 ) ))
+                if (HelpStyles.WarningWithButton( "Changing dependencies will change the project settings. " +
+                    "Please use Android Resolver after the change complete.", "Resolve", MessageType.Info ))
                 {
-#if UNITY_ANDROID
-                    var succses = Utils.TryResolveAndroidDependencies();
-                    EditorUtility.DisplayDialog( "Android Dependencies",
-                        succses ? "Resolution Succeeded" : "Resolution Failed. See the log for details.",
-                        "OK" );
-#else
-                    EditorUtility.DisplayDialog( "Android Dependencies",
-                        "Android resolver not enabled. Unity Android platform target must be selected.",
-                        "OK" );
-#endif
+                    if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
+                    {
+                        var succses = Utils.TryResolveAndroidDependencies();
+                        EditorUtility.DisplayDialog( "Android Dependencies",
+                            succses ? "Resolution Succeeded" : "Resolution Failed. See the log for details.",
+                            "OK" );
+                    }
+                    else
+                    {
+                        EditorUtility.DisplayDialog( "Android Dependencies",
+                            "Android resolver not enabled. Unity Android platform target must be selected.",
+                            "OK" );
+                    }
                 }
-                EditorGUILayout.EndHorizontal();
                 return;
             }
             if (platform == BuildTarget.iOS)
             {
-                if (edmIOSStaticLinkProp != null && !( bool )edmIOSStaticLinkProp.GetValue( null, null ))
-                {
-                    OnWarningGUI( "Link frameworks statically disabled",
-                        "Please enable 'Add use_frameworks!' and 'Link frameworks statically' found under " +
-                        "'Assets -> External Dependency Manager -> iOS Resolver -> Settings' menu.\n" +
-                        "Failing to do this step may result in undefined behavior of the plugin and doubled import of frameworks.",
-                        MessageType.Warning );
-                }
-
                 if (PlayerSettings.muteOtherAudioSources)
                 {
                     OnWarningGUI( "Mute Other AudioSources enabled in PlayerSettings",
@@ -626,6 +700,18 @@ namespace CAS.UEditor
             }
         }
 
+        private void OnGradleTemplateDisabledGUI( string prefix, string path )
+        {
+            if (File.Exists( path ))
+                return;
+#if UNITY_ANDROID || CASDeveloper
+            var msg = prefix + " template feature is disabled!\n" +
+                "A successful build requires do modifications to " + prefix + " template.";
+            if (HelpStyles.WarningWithButton( msg, "Enable", MessageType.Error ))
+                CASPreprocessGradle.TryEnableGradleTemplate( path );
+#endif
+        }
+
         private void OnWarningGUI( string title, string message, MessageType type )
         {
             HelpStyles.BeginBoxScope();
@@ -633,7 +719,6 @@ namespace CAS.UEditor
             EditorGUILayout.LabelField( message, EditorStyles.wordWrappedLabel );
             HelpStyles.EndBoxScope();
         }
-
 
         private void OnManagerIDVerificationGUI()
         {
@@ -645,7 +730,9 @@ namespace CAS.UEditor
                 return;
             EditorGUILayout.HelpBox( "If you haven't created an CAS account and registered an manager yet, " +
                 "now's a great time to do so at cleveradssolutions.com. " +
-                "If you're just looking to experiment with the SDK, though, you can use the Test Ad Mode below with any manager ID.", MessageType.Info );
+                "If you're just looking to experiment with the SDK, though, " +
+                "you can use the Test Ad Mode below with any manager ID.",
+                MessageType.Info );
         }
 
         private void OnAudienceGUI()
@@ -663,11 +750,14 @@ namespace CAS.UEditor
             switch (targetAudience)
             {
                 case Audience.Mixed:
-                    EditorGUILayout.HelpBox( "The app is intended for audiences of all ages and complying with COPPA.",
+                    EditorGUILayout.HelpBox( "Game target age groups include both children and older audiences.\n" +
+                        "A neutral age screen must be implemented so that any ads not suitable " +
+                        "for children are only shown to older audiences.\n" +
+                        "You could change the audience at runtime.",
                         MessageType.None );
                     break;
                 case Audience.Children:
-                    EditorGUILayout.HelpBox( "Children restrictions and Google Families Ads Program participation apply to this app. Audience under 12 years old.",
+                    EditorGUILayout.HelpBox( "Audiences under the age of 13 who subject of COPPA.",
                         MessageType.None );
                     if (platform == BuildTarget.Android && !permissionAdIdRemovedProp.boolValue)
                     {
@@ -677,13 +767,16 @@ namespace CAS.UEditor
                     }
                     break;
                 case Audience.NotChildren:
-                    EditorGUILayout.HelpBox( "Audience over 12 years old only. There are no restrictions on ad filling.", MessageType.None );
+                    EditorGUILayout.HelpBox( "Audiences over the age of 13 NOT subject to the restrictions of child protection laws.",
+                        MessageType.None );
                     break;
             }
+            OnAndroidAdIdGUI();
+            OnIOSTrackLocationGUI();
             EditorGUI.indentLevel--;
         }
 
-        private void OnIOSLocationUsageDescriptionGUI()
+        private void OnIOSTrackLocationGUI()
         {
             if (platform != BuildTarget.iOS)
                 return;
@@ -696,7 +789,7 @@ namespace CAS.UEditor
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.PropertyField( loadingModeProp, HelpStyles.GetContent( "Loading mode", null ) );
-            HelpStyles.HelpButton( Utils.gitUnityRepoURL + "/wiki/Configuring-SDK#loading-mode" );
+            HelpStyles.HelpButton( Utils.gitUnityRepoURL + "/wiki/Other-Options#loading-mode" );
             EditorGUILayout.EndHorizontal();
         }
 
@@ -715,22 +808,19 @@ namespace CAS.UEditor
 
         private void DeprecatedDependenciesGUI()
         {
-            if (deprecateDependenciesExist)
+            if (!deprecateDependenciesExist)
+                return;
+            if (HelpStyles.WarningWithButton( "Deprecated dependencies found. " +
+                "Please remove them and use the new dependencies below.",
+                "Remove", MessageType.Error ))
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.HelpBox( "Deprecated dependencies found. " +
-                    "Please remove them and use the new dependencies below.", MessageType.Error );
-                if (GUILayout.Button( "Remove", GUILayout.ExpandWidth( false ), GUILayout.Height( 40 ) ))
+                for (int i = 0; i < deprecatedAssets.Length; i++)
                 {
-                    for (int i = 0; i < deprecatedAssets.Length; i++)
-                    {
-                        var assets = AssetDatabase.FindAssets( deprecatedAssets[i] );
-                        for (int assetI = 0; assetI < assets.Length; assetI++)
-                            AssetDatabase.MoveAssetToTrash( AssetDatabase.GUIDToAssetPath( assets[assetI] ) );
-                    }
-                    deprecateDependenciesExist = false;
+                    var assets = AssetDatabase.FindAssets( deprecatedAssets[i] );
+                    for (int assetI = 0; assetI < assets.Length; assetI++)
+                        AssetDatabase.MoveAssetToTrash( AssetDatabase.GUIDToAssetPath( assets[assetI] ) );
                 }
-                EditorGUILayout.EndHorizontal();
+                deprecateDependenciesExist = false;
             }
         }
     }

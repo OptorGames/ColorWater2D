@@ -1,21 +1,22 @@
-﻿using System;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace CAS
 {
-    [Serializable]
-    public class CASUEventWithError : UnityEvent<string> { }
-
-    public delegate void InitCompleteAction( bool success, string error );
-
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Initialize-SDK" )]
     public static class MobileAds
     {
         /// <summary>
         /// CAS Unity wrapper version
         /// </summary>
-        public const string wrapperVersion = "2.7.0";
+        public const string wrapperVersion = "2.9.8";
 
         /// <summary>
         /// Get singleton instance for configure all mediation managers.
@@ -56,14 +57,11 @@ namespace CAS
 
         /// <summary>
         /// Create <see cref="IMediationManager"/> builder.
-        /// <para>Don't forget to call the <see cref="CASInitSettings.Initialize"/> method to create manager instance.</para>
+        /// <para>Don't forget to call the <see cref="IManagerBuilder.Initialize"/> method to create manager instance.</para>
         /// </summary>
         public static CASInitSettings BuildManager()
         {
-            var builder = CASFactory.LoadInitSettingsFromResources();
-            if (builder == null)
-                return ScriptableObject.CreateInstance<CASInitSettings>();
-            return UnityEngine.Object.Instantiate( builder );
+            return CASFactory.LoadDefaultBuiderFromResources();
         }
 
         /// <summary>
@@ -144,9 +142,9 @@ namespace CAS
             AdFlags enableAd = AdFlags.Everything,
             InitCompleteAction initCompleteAction = null )
         {
-            var builder = BuildManager()
-                .WithInitListener( initCompleteAction );
-            builder.WithEnabledAdTypes( enableAd & builder.allowedAdFlags );
+            var builder = BuildManager();
+            builder.WithInitListener( initCompleteAction );
+            builder.WithEnabledAdTypes( enableAd & builder.defaultAllowedFormats );
             if (managerIndex > 0)
                 builder.WithManagerIdAtIndex( managerIndex );
             return builder.Initialize();

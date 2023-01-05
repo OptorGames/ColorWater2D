@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -9,6 +15,7 @@ namespace CAS
     /// Callbacks from CleverAdsSolutions are not guaranteed to be called on Unity thread.
     /// You can use EventExecutor to schedule each calls on the next Update() loop
     /// </summary>
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Other-Options#execute-events-on-unity-thread" )]
     public static class EventExecutor
     {
         private static EventExecutorComponent instance = null;
@@ -42,14 +49,10 @@ namespace CAS
 
         /// <summary>
         /// Schedule action on the next Update() loop in Unity Thread.
-        /// Using EventExecutor requires call static <see cref="Initialize"/> before adding a new event.
+        /// <para>Warning! To enable EventExecutor requires call once static <see cref="Initialize"/> method.</para>
         /// </summary>
         public static void Add( Action action )
         {
-#if UNITY_EDITOR
-            if (!instance)
-                Debug.LogError( "Using EventExecutor requires call static Initialize() before adding a new event." );
-#endif
             lock (eventsQueue)
             {
                 eventsQueue.Add( action );

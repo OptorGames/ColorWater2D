@@ -14,7 +14,7 @@ public class DontDestroy : MonoBehaviour
 
             instance = this;
 
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
             dTDInit.enabled = true;
         }
         else

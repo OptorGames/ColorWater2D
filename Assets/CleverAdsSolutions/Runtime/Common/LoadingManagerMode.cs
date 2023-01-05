@@ -1,5 +1,12 @@
-﻿namespace CAS
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+namespace CAS
 {
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Other-Options#loading-mode" )]
     public enum LoadingManagerMode
     {
         /// <summary>

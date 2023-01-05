@@ -1,8 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
 using UnityEngine;
 using UnityEditor;
-using CAS.UEditor;
 
 namespace CAS.AdObject
 {
@@ -117,6 +120,7 @@ namespace CAS.AdObject
                 adView.SetAdPosition( newPos.x, newPos.y );
             }
             EditorGUI.EndDisabledGroup();
+            EditorGUILayout.LabelField( "Screen positioning coordinates are only available for the TopLeft position.", EditorStyles.wordWrappedMiniLabel );
             // Calling the calculation in the Editor results in incorrect data
             // because getting the screen size returns the size of the inspector.
             //if (isPlaying)

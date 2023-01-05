@@ -1,9 +1,17 @@
-﻿using System;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEditor;
+using UnityEditor.AnimatedValues;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils = CAS.UEditor.CASEditorUtils;
 
 namespace CAS.UEditor
@@ -21,9 +29,9 @@ namespace CAS.UEditor
 
         internal bool installedAny;
 
-        private static bool solutionsFoldout = true;
-        private static bool advancedFoldout;
-        private static bool otherFoldout;
+        private AnimBool solutionsFoldout = null;
+        private AnimBool advancedFoldout = null;
+        private AnimBool otherFoldout = null;
 
         internal void Init( BuildTarget platform, bool deepInit = true )
         {
@@ -72,10 +80,61 @@ namespace CAS.UEditor
             }
         }
 
+        internal bool IsNewerVersionFound()
+        {
+            for (int i = 0; i < solutions.Length; i++)
+            {
+                if (solutions[i].isNewer)
+                    return true;
+            }
+            for (int i = 0; i < networks.Length; i++)
+            {
+                if (networks[i].isNewer)
+                    return true;
+            }
+            return false;
+        }
+
+        internal string GetInstalledVersion()
+        {
+            string version = "";
+            var casDep = Find( Dependency.adOptimalName );
+            if (casDep != null)
+                version = casDep.installedVersion;
+            if (!string.IsNullOrEmpty( version ))
+                return version;
+            casDep = Find( Dependency.adFamiliesName );
+            if (casDep != null)
+                version = casDep.installedVersion;
+
+            if (!string.IsNullOrEmpty( version ))
+                return version;
+            casDep = Find( Dependency.adBaseName );
+            if (casDep != null)
+                version = casDep.version;
+
+            return version;
+        }
+
+        internal int GetInstalledBuildCode()
+        {
+            var version = GetInstalledVersion();
+            if (!string.IsNullOrEmpty( version ))
+            {
+                try
+                {
+                    var parsesV = new System.Version( version );
+                    return parsesV.Major * 1000 + parsesV.Minor * 100 + parsesV.Build;
+                }
+                catch { }
+            }
+            return 0;
+        }
+
         private void OnHeaderGUI()
         {
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label( "Dependency", EditorStyles.largeLabel );
+            GUILayout.Label( "Name", EditorStyles.largeLabel );
             GUILayout.Label( "Version", EditorStyles.largeLabel, columnWidth );
             GUILayout.Label( "Latest", EditorStyles.largeLabel, columnWidth );
             GUILayout.Space( 25 );
@@ -93,36 +152,46 @@ namespace CAS.UEditor
 
             if (updatesFound)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.HelpBox( "Found one or more updates for native dependencies.", MessageType.Info );
-                if (GUILayout.Button( "Update all", GUILayout.ExpandHeight( true ) ))
+                if (HelpStyles.WarningWithButton( "Found one or more updates for native dependencies.",
+                    "Update all", MessageType.Error ))
                 {
-                    for (int i = 0; i < simple.Length; i++)
-                    {
-                        if (simple[i].filter == -1) // remove deprecated
-                            simple[i].DisableDependencies( platform, this );
-                        else if (simple[i].isNewer)
-                            simple[i].ActivateDependencies( platform, this );
-                    }
-
-                    for (int i = 0; i < advanced.Length; i++)
-                    {
-                        if (advanced[i].filter == -1) // remove deprecated
-                            advanced[i].DisableDependencies( platform, this );
-                        else if (advanced[i].isNewer)
-                            advanced[i].ActivateDependencies( platform, this );
-                    }
+                    UpdateDependencies( platform );
                 }
-                EditorGUILayout.EndHorizontal();
             }
         }
 
-        internal void OnGUI( BuildTarget platform )
+        internal void UpdateDependencies( BuildTarget platform )
+        {
+            for (int i = 0; i < simple.Length; i++)
+            {
+                if (simple[i].filter == -1) // remove deprecated
+                    simple[i].DisableDependencies( platform, this );
+                else if (simple[i].isNewer)
+                    simple[i].ActivateDependencies( platform, this );
+            }
+
+            for (int i = 0; i < advanced.Length; i++)
+            {
+                if (advanced[i].filter == -1) // remove deprecated
+                    advanced[i].DisableDependencies( platform, this );
+                else if (advanced[i].isNewer)
+                    advanced[i].ActivateDependencies( platform, this );
+            }
+        }
+
+        internal void OnGUI( BuildTarget platform, Editor mainWindow )
         {
             if (!installedAny)
                 EditorGUILayout.HelpBox( "Dependencies of native SDK were not found. " +
                     "Please use the following options to integrate solutions or any SDK separately.",
                     MessageType.Error );
+
+            if (solutionsFoldout == null)
+            {
+                solutionsFoldout = new AnimBool( true, mainWindow.Repaint );
+                advancedFoldout = new AnimBool( false, mainWindow.Repaint );
+                otherFoldout = new AnimBool( false, mainWindow.Repaint );
+            }
 
             CheckDependencyUpdates( platform );
 
@@ -132,57 +201,69 @@ namespace CAS.UEditor
             if (simple.Length > 0)
             {
                 HelpStyles.BeginBoxScope();
-                solutionsFoldout = GUILayout.Toggle( solutionsFoldout, "Solutions", EditorStyles.foldout );
-                if (solutionsFoldout)
+                solutionsFoldout.target = GUILayout.Toggle( solutionsFoldout.target, "Mediation Solutions", EditorStyles.foldout );
+
+                if (EditorGUILayout.BeginFadeGroup( solutionsFoldout.faded ))
                 {
                     OnHeaderGUI();
                     for (int i = 0; i < simple.Length; i++)
                         simple[i].OnGUI( this, platform );
                 }
+                EditorGUILayout.EndFadeGroup();
                 HelpStyles.EndBoxScope();
             }
 
             if (advanced.Length > 0)
             {
                 HelpStyles.BeginBoxScope();
-
-                if (advancedFoldout)
+                var advancedVisible = advancedFoldout.target;
+                if (advancedVisible)
                 {
-                    advancedFoldout = GUILayout.Toggle( advancedFoldout, "Advanced Integration", EditorStyles.foldout );
-                    OnHeaderGUI();
-                    for (int i = 0; i < advanced.Length; i++)
-                        advanced[i].OnGUI( this, platform );
+                    advancedFoldout.target = GUILayout.Toggle( true, "Mediation Adapters", EditorStyles.foldout );
                 }
                 else
                 {
                     int installed = 0;
+                    var forceOpen = false;
 
                     for (int i = 0; i < advanced.Length; i++)
                     {
                         if (advanced[i].installedVersion.Length > 0)
                         {
                             installed++;
-                            if (advanced[i].notSupported && Event.current.type == EventType.Repaint)
+                            if (advanced[i].notSupported)
                             {
-                                advancedFoldout = true;
+                                forceOpen = true;
                                 Debug.LogError( Utils.logTag + advanced[i].name +
-                                    " Dependencies found that are not valid for the applications of the selected audience." );
+                                    " Dependencies found that are not valid to use." );
                             }
                         }
                     }
-                    advancedFoldout = GUILayout.Toggle( advancedFoldout, "Advanced Integration (" + installed + ")", EditorStyles.foldout );
+                    advancedFoldout.target = GUILayout.Toggle( forceOpen, "Mediation Adapters (" + installed + ")", EditorStyles.foldout ) || forceOpen;
                 }
+
+                if (EditorGUILayout.BeginFadeGroup( advancedFoldout.faded ))
+                {
+                    OnHeaderGUI();
+                    for (int i = 0; i < advanced.Length; i++)
+                        advanced[i].OnGUI( this, platform );
+                }
+                EditorGUILayout.EndFadeGroup();
                 HelpStyles.EndBoxScope();
             }
             if (other.Count > 0)
             {
                 HelpStyles.BeginBoxScope();
-                otherFoldout = GUILayout.Toggle( otherFoldout, "Other Active Dependencies: " + other.Count, EditorStyles.foldout );
-                if (otherFoldout)
+
+                otherFoldout.target = GUILayout.Toggle( otherFoldout.target,
+                    "Other project dependencies: " + other.Count, EditorStyles.foldout );
+
+                if (EditorGUILayout.BeginFadeGroup( otherFoldout.faded ))
                 {
                     for (int i = 0; i < other.Count; i++)
                         other[i].OnGUI( this );
                 }
+                EditorGUILayout.EndFadeGroup();
                 HelpStyles.EndBoxScope();
             }
         }
@@ -303,35 +384,37 @@ namespace CAS.UEditor
         {
             if (label == Label.None)
                 return;
-            string title = "";
-            string tooltip = "";
-            if (( label & Label.Banner ) == Label.Banner)
-            {
-                title += "b ";
-                tooltip += "'b' - Support Banner Ad\n";
-            }
-            if (( label & Label.Inter ) == Label.Inter)
-            {
-                title += "i ";
-                tooltip += "'i' - Support Interstitial Ad\n";
-            }
-            if (( label & Label.Reward ) == Label.Reward)
-            {
-                title += "r ";
-                tooltip += "'r' - Support Rewarded Ad\n";
-            }
+            string title = string.Empty;
+            string tooltip = string.Empty;
+            //if (( label & Label.Banner ) == Label.Banner)
+            //{
+            //    title += "b ";
+            //    tooltip += "'b' - Support Banner Ad\n";
+            //}
+            //if (( label & Label.Inter ) == Label.Inter)
+            //{
+            //    title += "i ";
+            //    tooltip += "'i' - Support Interstitial Ad\n";
+            //}
+            //if (( label & Label.Reward ) == Label.Reward)
+            //{
+            //    title += "r ";
+            //    tooltip += "'r' - Support Rewarded Ad\n";
+            //}
             if (( label & Label.Beta ) == Label.Beta)
             {
                 title += "beta";
-                tooltip += "'beta' - Dependencies in closed beta and available upon invite only. " +
+                tooltip += "'beta' - Adapter in closed beta and available upon invite only. " +
                     "If you would like to be considered for the beta, please contact Support.";
             }
-            if (( label & Label.Obsolete ) == Label.Obsolete)
-            {
-                title += "obsolete";
-                tooltip += "'obsolete' - The mediation of the network is considered obsolete and not recommended for install.";
-            }
-            GUILayout.Label( HelpStyles.GetContent( title, null, tooltip ), HelpStyles.labelStyle );
+            //if (( label & Label.Obsolete ) == Label.Obsolete)
+            //{
+            //    title += "obsolete";
+            //    tooltip += "'obsolete' - The mediation of the network is considered obsolete and not recommended for install.";
+            //}
+            if (title.Length == 0)
+                return;
+            GUILayout.Label( HelpStyles.GetContent( title, null, tooltip ), "AssetLabel Partial" );
         }
 
         internal void OnGUI( DependencyManager mediation, BuildTarget platform )
@@ -341,8 +424,6 @@ namespace CAS.UEditor
                 return;
             HelpStyles.Devider();
             EditorGUILayout.BeginHorizontal();
-
-            //OnLabelGUI( labels );
 
             string sdkVersion = null;
             for (int i = 0; i < depsSDK.Count; i++)
@@ -356,11 +437,12 @@ namespace CAS.UEditor
 
             if (installed || locked)
             {
-                EditorGUI.BeginDisabledGroup( ( !installed && locked ) || ( installed && isRequired && !locked ) );
+                EditorGUI.BeginDisabledGroup( ( !installed && locked ) || ( installed && isRequired && !locked && !isNewer ) );
                 if (!GUILayout.Toggle( true, " " + name + altName, GUILayout.ExpandWidth( false ) ))
                     DisableDependencies( platform, mediation );
                 if (sdkVersion != null)
                     GUILayout.Label( sdkVersion, EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandWidth( false ) );
+                OnLabelGUI( labels );
                 GUILayout.FlexibleSpace();
 
                 if (notSupported || ( locked && installed ))
@@ -406,6 +488,7 @@ namespace CAS.UEditor
                 }
                 if (sdkVersion != null)
                     GUILayout.Label( sdkVersion, EditorStyles.centeredGreyMiniLabel, GUILayout.ExpandWidth( false ) );
+                OnLabelGUI( labels );
                 GUILayout.FlexibleSpace();
                 GUILayout.Label( "none", mediation.columnWidth );
                 if (isRequired)
@@ -564,26 +647,26 @@ namespace CAS.UEditor
             if (platform == BuildTarget.Android)
                 builder.Append( sdk.version );
             builder.Append( "\" version=\"" ).Append( sdk.version ).Append( "\"" );
-            if (sdk.addToAllTargets)
+            if (sdk.addToAllTargets && platform == BuildTarget.iOS)
                 builder.Append( " addToAllTargets=\"true\"" );
 
-            if (source.Length > 0)
+            var sourcesBuilder = new StringBuilder();
+            AppendSources( platform, sourcesBuilder );
+
+            for (int i = 0; i < contains.Length; i++)
+            {
+                var item = mediation.Find( contains[i] );
+                if (item != null && item.depsSDK.Count == 0)
+                {
+                    item.AppendSources( platform, sourcesBuilder );
+                }
+            }
+
+            if (sourcesBuilder.Length > 0)
             {
                 builder.Append( ">" ).AppendLine();
                 builder.Append( "      <" ).Append( sourcesTagName ).Append( '>' ).AppendLine();
-
-                AppendSources( platform, builder );
-
-                //for (int i = 0; i < contains.Length; i++)
-                //{
-                //    var item = mediation.Find( contains[i] );
-                //    if (item != null)
-                //    {
-                //        item.locked = true;
-                //        item.AppendSources( platform, builder );
-                //    }
-                //}
-
+                builder.Append( sourcesBuilder );
                 builder.Append( "      </" ).Append( sourcesTagName ).Append( '>' ).AppendLine();
                 builder.Append( "    </" ).Append( depTagName ).Append( '>' ).AppendLine();
             }

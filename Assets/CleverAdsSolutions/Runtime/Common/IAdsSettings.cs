@@ -1,11 +1,15 @@
-﻿using System;
+﻿//
+//  Clever Ads Solutions Unity Plugin
+//
+//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//
+
+using System;
 using System.Collections.Generic;
 
 namespace CAS
 {
-    /// <summary>
-    /// Wiki page: https://github.com/cleveradssolutions/CAS-Unity/wiki/Privacy-Laws
-    /// </summary>
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Privacy-Regulations" )]
     public enum ConsentStatus
     {
         /// <summary>
@@ -22,9 +26,7 @@ namespace CAS
         Denied,
     }
 
-    /// <summary>
-    /// Wiki page: https://github.com/cleveradssolutions/CAS-Unity/wiki/Privacy-Laws
-    /// </summary>
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Privacy-Regulations" )]
     public enum CCPAStatus
     {
         /// <summary>
@@ -41,9 +43,7 @@ namespace CAS
         OptInSale,
     }
 
-    /// <summary>
-    /// Wiki page: https://github.com/cleveradssolutions/CAS-Unity/wiki/Privacy-Laws
-    /// </summary>
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Privacy-Regulations" )]
     public enum Audience
     {
         /// <summary>
@@ -53,7 +53,8 @@ namespace CAS
         /// any ads that may be shown to children must comply with Google Play's Families Ads Program.
         /// A neutral age screen must be implemented so that any ads not suitable for children are only shown to older audiences.
         /// A neutral age screen is a mechanism to verify a user's age in a way that doesn't encourage them to falsify their age
-        /// and gain access to areas of your app that aren't designed for children, for example, an age gate.</para> 
+        /// and gain access to areas of your app that aren't designed for children, for example, an age gate.</para>
+        /// <para>You could change the audience at runtime after determining the user's age.</para>
         /// </summary>
         Mixed,
         /// <summary>
@@ -77,19 +78,26 @@ namespace CAS
         NotChildren,
     }
 
-    /// <summary>
-    /// Wiki page: https://github.com/cleveradssolutions/CAS-Unity/wiki/Configuring-SDK
-    /// </summary>
+    [WikiPage( "https://github.com/cleveradssolutions/CAS-Unity/wiki/Configuring-SDK" )]
     public interface IAdsSettings
     {
         /// <summary>
-        /// If your application uses Google Analytics (Firebase)
-        /// then Clever Ads Solutions collects ad impressions and states analytics.  
-        /// <para>This flag has no effect on ad revenue.</para>
-        /// <para>Disabling analytics collection may save internet traffic and improve application performance.</para>
-        /// Disabled by default.
+        /// GDPR user Consent SDK Implementation for ads on session.
+        /// <para>Default: <see cref="ConsentStatus.Undefined"/></para>
         /// </summary>
-        bool analyticsCollectionEnabled { get; set; }
+        ConsentStatus userConsent { get; set; }
+
+        /// <summary>
+        /// Whether or not user has opted out of the sale of their personal information.
+        /// <para>Default: <see cref="CCPAStatus.Undefined"/></para>
+        /// </summary>
+        CCPAStatus userCCPAStatus { get; set; }
+
+        /// <summary>
+        /// Ad filters by Audience
+        /// <para>By default selected in `Assets/CleverAdsSolutions/Settings` menu</para>
+        /// </summary>
+        Audience taggedAudience { get; set; }
 
         /// <summary>
         /// An ad unit’s automatic refresh rate (in seconds) determines how often a new ad request is generated for that ad unit.  
@@ -118,61 +126,10 @@ namespace CAS
         void RestartInterstitialInterval();
 
         /// <summary>
-        /// GDPR user Consent SDK Implementation for ads on session.
-        /// <para>Default: <see cref="ConsentStatus.Undefined"/></para>
-        /// </summary>
-        ConsentStatus userConsent { get; set; }
-
-        /// <summary>
-        /// Whether or not user has opted out of the sale of their personal information.
-        /// <para>Default: <see cref="CCPAStatus.Undefined"/></para>
-        /// </summary>
-        CCPAStatus userCCPAStatus { get; set; }
-
-        /// <summary>
-        /// Ad filters by Audience
-        /// <para>By default selected in `Assets/CleverAdsSolutions/Settings` menu</para>
-        /// </summary>
-        Audience taggedAudience { get; set; }
-
-        /// <summary>
-        /// The enabled Debug Mode will display a lot of useful information for debugging about the states of the sdc with tag `CAS`.  
-        /// <para>Disabling Debug Mode may improve application performance.</para>
-        /// Disabled by default.
-        /// </summary>
-        bool isDebugMode { get; set; }
-
-        /// <summary>
         /// Sounds in ads mute state
         /// <para>Disabled by default.</para>
         /// </summary>
         bool isMutedAdSounds { get; set; }
-
-        /// <summary>
-        /// CAS mediation processing mode of ad requests.
-        /// <para>By default selected in `Assets/CleverAdsSolutions/Settings` menu</para>
-        /// </summary>
-        LoadingManagerMode loadingMode { get; set; }
-
-        /// <summary>
-        /// Identifiers corresponding to test devices which will always request test ads.
-        /// <para>The test device identifier for the current device is logged to the console when the first
-        /// ad request is made.</para>
-        /// </summary>
-        void SetTestDeviceIds( List<string> testDeviceIds );
-
-        /// <summary>
-        /// Identifiers corresponding to test devices which will always request test ads.
-        /// </summary>
-        List<string> GetTestDeviceIds();
-
-        /// <summary>
-        /// Callbacks from CleverAdsSolutions are not guaranteed to be called on Unity thread.
-        /// <para>You can use <see cref="EventExecutor.Add(Action)"/> to schedule each calls on the next Update() loop.
-        /// OR enable this property to automatically schedule all calls on the next Update() loop.</para>
-        /// <para>Disabled by default.</para>
-        /// </summary>
-        bool isExecuteEventsOnUnityThread { get; set; }
 
         /// <summary>
         /// This option will compare ad cost and serve regular interstitial ads
@@ -184,11 +141,41 @@ namespace CAS
         bool allowInterstitialAdsWhenVideoCostAreLower { get; set; }
 
         /// <summary>
-        /// The SDK automatically collects location data if the user allowed the app to track the location.
-        /// <para>iOS supported only right now.</para>
+        /// The enabled Debug Mode will display a lot of useful information for debugging about the states of the sdc with tag `CAS`.  
+        /// <para>Disabling Debug Mode may improve application performance.</para>
+        /// Disabled by default.
+        /// </summary>
+        bool isDebugMode { get; set; }
+
+        /// <summary>
+        /// Identifiers corresponding to test devices which will always request test ads.
+        /// List of test devices should be defined before first MediationManager initialized.
+        /// <para>1. Run an app configured with the CAS SDK.</para>
+        /// <para>2. Check the console or logcat output for a message that looks like this:
+        /// "To get test ads on this device, set ... "</para>
+        /// <para>3. Copy your alphanumeric test device ID to your clipboard.</para>
+        /// <para>4. Add the test device ID to the list.</para>
+        /// </summary>
+        void SetTestDeviceIds( List<string> testDeviceIds );
+
+        /// <summary>
+        /// Identifiers corresponding to test devices which will always request test ads.
+        /// </summary>
+        List<string> GetTestDeviceIds();
+
+        /// <summary>
+        /// CAS mediation processing mode of ad requests.
         /// <para>By default selected in `Assets/CleverAdsSolutions/Settings` menu</para>
         /// </summary>
-        bool trackLocationEnabled { get; set; }
+        LoadingManagerMode loadingMode { get; set; }
+
+        /// <summary>
+        /// Callbacks from CleverAdsSolutions are not guaranteed to be called on Unity thread.
+        /// <para>You can use <see cref="EventExecutor.Add(Action)"/> to schedule each calls on the next Update() loop.
+        /// OR enable this property to automatically execute all calls on the next Update() loop.</para>
+        /// <para>Enabled by default.</para>
+        /// </summary>
+        bool isExecuteEventsOnUnityThread { get; set; }
 
         /// <summary>
         /// Indicates if the Unity app should be paused when a full screen ad (interstitial
@@ -196,5 +183,21 @@ namespace CAS
         /// <para>Enabled by default.</para>
         /// </summary>
         bool iOSAppPauseOnBackground { get; set; }
+
+        /// <summary>
+        /// The SDK automatically collects location data if the user allowed the app to track the location.
+        /// <para>iOS supported only right now.</para>
+        /// <para>By default selected in `Assets/CleverAdsSolutions/Settings` menu</para>
+        /// </summary>
+        bool trackLocationEnabled { get; set; }
+
+        /// <summary>
+        /// If your application uses Google Analytics (Firebase)
+        /// then Clever Ads Solutions collects ad impressions and states analytics.  
+        /// <para>This flag has no effect on ad revenue.</para>
+        /// <para>Disabling analytics collection may save internet traffic and improve application performance.</para>
+        /// Disabled by default.
+        /// </summary>
+        bool analyticsCollectionEnabled { get; set; }
     }
 }
