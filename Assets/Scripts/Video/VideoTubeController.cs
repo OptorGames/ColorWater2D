@@ -116,8 +116,8 @@ public class VideoTubeController : TubeController
                     IsAddColor = true;
                     rotationLerp = 0;
                     RemoveColor();
-                    RotStart = RotationData.SAngle4[currColors - 1];
-                    RotEnd = RotationData.EAngle4[currColors - 1];
+                    RotStart = RotationData.StartAngle[currColors - 1];
+                    RotEnd = RotationData.EndEngle[currColors - 1];
                 }
                 else
                 {
@@ -270,8 +270,8 @@ public class VideoTubeController : TubeController
         IsAddColor = true;
         rotationLerp = 0;
         {
-            RotStart = RotationData.SAngle4[currColors - 1];
-            RotEnd = RotationData.EAngle4[currColors - 1];
+            RotStart = RotationData.StartAngle[currColors - 1];
+            RotEnd = RotationData.EndEngle[currColors - 1];
         }
         _pourSprite = Instantiate(PourSpriteObject);
         _pourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
@@ -283,7 +283,7 @@ public class VideoTubeController : TubeController
 
     public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
     {
-        RotStart = RotationData.SAngle4[currColors - 1];
+        RotStart = RotationData.StartAngle[currColors - 1];
         _canMouseDown = false;
         while (transform.position != otherTube.transform.position + _flaskDistance)
         {

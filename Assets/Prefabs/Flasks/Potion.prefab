@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5593291059401371992
+--- !u!1 &4723100893893440118
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,68 +8,53 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5593291059401371999}
-  - component: {fileID: 5593291059401372003}
-  - component: {fileID: 5593291059401371996}
-  - component: {fileID: 5593291059401371997}
-  - component: {fileID: 5593291059401371998}
+  - component: {fileID: 4721579189832716454}
+  - component: {fileID: 4755066636448311734}
+  - component: {fileID: 4745079729077152822}
+  - component: {fileID: 4619950891243140828}
   m_Layer: 0
-  m_Name: Liquid
+  m_Name: Potion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5593291059401371999
+--- !u!4 &4721579189832716454
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291059401371992}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.10899999, z: 0}
-  m_LocalScale: {x: 0.023, y: 0.103, z: 0.023}
+  m_GameObject: {fileID: 4723100893893440118}
+  m_LocalRotation: {x: -0.000000059604645, y: 0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.0226, y: -0.1288, z: 0}
+  m_LocalScale: {x: 0.08, y: 0.08, z: 0.08}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5593291060191545653}
+  m_Father: {fileID: 5593291060883314850}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5593291059401372003
+--- !u!33 &4755066636448311734
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291059401371992}
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!136 &5593291059401371996
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291059401371992}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &5593291059401371997
+  m_GameObject: {fileID: 4723100893893440118}
+  m_Mesh: {fileID: 4300000, guid: ef3a3917c596444b080a38625a12d03d, type: 2}
+--- !u!23 &4745079729077152822
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291059401371992}
+  m_GameObject: {fileID: 4723100893893440118}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
-  m_MotionVectors: 1
+  m_MotionVectors: 0
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
@@ -86,7 +71,7 @@ MeshRenderer:
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
   m_ReceiveGI: 1
-  m_PreserveUVs: 1
+  m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 0
@@ -99,25 +84,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5593291059401371998
+--- !u!114 &4619950891243140828
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291059401371992}
+  m_GameObject: {fileID: 4723100893893440118}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f61dcfd7077c46509132f92d2df65fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _topology: 1
-  _detail: 51
-  _level: 0
+  _topology: 10
+  _detail: 50
+  _level: 0.88
   _levelMultiplier: 1
   _liquidLayers:
   - layerName: Layer 0
-    amount: 0
+    amount: 0.22
     density: 1
     color: {r: 0.284, g: 1, b: 1, a: 0.15686275}
     miscible: 0
@@ -129,13 +114,13 @@ MonoBehaviour:
     bubblesOpacity: 1
     baseLevel: 0
     currentBaseLevel: 0
-    currentAmount: 0
+    currentAmount: 0.22
     currentColor: {r: 0.284, g: 1, b: 1, a: 0.15686275}
     currentMurkiness: 0.379
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 1
   - layerName: Layer 1
-    amount: 0
+    amount: 0.22
     density: 1
     color: {r: 0, g: 1, b: 0.023826122, a: 0.14901961}
     miscible: 0
@@ -145,15 +130,15 @@ MonoBehaviour:
     viscosity: 0
     adjustmentSpeed: 1
     bubblesOpacity: 0
-    baseLevel: 0
-    currentBaseLevel: 0
-    currentAmount: 0
+    baseLevel: 0.22
+    currentBaseLevel: 0.22
+    currentAmount: 0.22
     currentColor: {r: 0, g: 1, b: 0.023826122, a: 0.14901961}
     currentMurkiness: 0.379
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 0
   - layerName: Layer 2
-    amount: 0
+    amount: 0.22
     density: 1
     color: {r: 1, g: 0.0947057, b: 0, a: 0.16470589}
     miscible: 0
@@ -163,15 +148,15 @@ MonoBehaviour:
     viscosity: 1
     adjustmentSpeed: 1
     bubblesOpacity: 1
-    baseLevel: 0
-    currentBaseLevel: 0
-    currentAmount: 0
+    baseLevel: 0.44
+    currentBaseLevel: 0.44
+    currentAmount: 0.22
     currentColor: {r: 1, g: 0.0947057, b: 0, a: 0.16470589}
     currentMurkiness: 0.379
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
     currentBubblesOpacity: 1
   - layerName: Layer 3
-    amount: 0
+    amount: 0.22
     density: 1
     color: {r: 0, g: 0.23312998, b: 1, a: 0.16862746}
     miscible: 0
@@ -181,9 +166,9 @@ MonoBehaviour:
     viscosity: 1
     adjustmentSpeed: 1
     bubblesOpacity: 1
-    baseLevel: 0
-    currentBaseLevel: 0
-    currentAmount: 0
+    baseLevel: 0.65999997
+    currentBaseLevel: 0.65999997
+    currentAmount: 0.22
     currentColor: {r: 0, g: 0.23312998, b: 1, a: 0.16862746}
     currentMurkiness: 0.379
     currentColor2: {r: 0, g: 0, b: 0, a: 1}
@@ -228,12 +213,12 @@ MonoBehaviour:
   originalPivotOffset: {x: 0, y: 0, z: 0}
   _pivotOffset: {x: 0, y: 0, z: 0}
   _autoCloseMesh: 0
-  _upperLimit: 1
+  _upperLimit: 1.5
   _lowerLimit: -1
   _subMeshIndex: 0
   _flaskColor: {r: 1, g: 1, b: 1, a: 0}
   _flaskTint: {r: 0, g: 0, b: 0, a: 1}
-  _flaskThickness: 0.067
+  _flaskThickness: 0
   _flaskGlossinessExternal: 0.767
   _flaskGlossinessInternal: 0.5
   _scatteringEnabled: 0
@@ -268,7 +253,7 @@ MonoBehaviour:
   _noiseVariation: 1
   _allowViewFromInside: 0
   _debugSpillPoint: 0
-  _renderQueue: 3001
+  _renderQueue: 3000
   _reflectionTexture: {fileID: 0}
   _physicsMass: 1
   _physicsAngularDamp: 0.02
@@ -370,90 +355,6 @@ MonoBehaviour:
   pointLightInsideAtten: 0
   fixedMesh: {fileID: 0}
   closedMesh: {fileID: 0}
---- !u!1 &5593291060191545654
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5593291060191545653}
-  - component: {fileID: 5593291060191545659}
-  - component: {fileID: 5593291060191545652}
-  m_Layer: 0
-  m_Name: FlaskModel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5593291060191545653
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291060191545654}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0131, y: -0.21, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 5593291059401371999}
-  m_Father: {fileID: 5593291060883314850}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5593291060191545659
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291060191545654}
-  m_Mesh: {fileID: 4300002, guid: c292ebaf8e6654c3ab0b53f15f9729f2, type: 3}
---- !u!23 &5593291060191545652
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5593291060191545654}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 3fa06a5fbd16b412c8a012ad61ba024e, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &5593291060883314851
 GameObject:
   m_ObjectHideFlags: 0
@@ -466,7 +367,7 @@ GameObject:
   - component: {fileID: 6496794484623138895}
   - component: {fileID: 4481415655921543634}
   m_Layer: 0
-  m_Name: Flask
+  m_Name: Potion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -480,11 +381,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5593291060883314851}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.9, y: -0.6974939, z: 1}
-  m_LocalScale: {x: 12, y: 5, z: 10}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5593291060191545653}
+  - {fileID: 4721579189832716454}
   - {fileID: 2778097848338650692}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -508,8 +409,9 @@ MonoBehaviour:
   currColors: 4
   colorsInTube: []
   ColorObjects: []
-  LiquidVolume: {fileID: 5593291059401371998}
+  LiquidVolume: {fileID: 0}
   ColorLayerAmount: 0.22
+  FoamThickness: 0.0052
   isrotating: 0
   NextTube: {fileID: 0}
   tubeSR: {fileID: 0}
@@ -527,10 +429,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.013244827
-  m_Height: 0.23544982
+  m_Radius: 0.07092591
+  m_Height: 0.24567625
   m_Direction: 1
-  m_Center: {x: 0.013532997, y: -0.094480954, z: 0.00007414023}
+  m_Center: {x: 0.03007713, y: -0.11820735, z: -0.054014936}
 --- !u!1 &7601366148585710320
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,7 +457,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7601366148585710320}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.014, y: -0.2158, z: -0.015894521}
+  m_LocalPosition: {x: 0.0247, y: -0.252, z: 0.001}
   m_LocalScale: {x: 0.083333336, y: 0.2, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []

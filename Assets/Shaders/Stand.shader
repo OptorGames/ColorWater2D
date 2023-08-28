@@ -1,6 +1,6 @@
 // Unity built-in shader source. Copyright (c) 2016 Unity Technologies. MIT license (see license.txt)
 
-Shader "StandardZAlways"
+Shader "Stand"
 {
     Properties
     {
@@ -53,7 +53,7 @@ Shader "StandardZAlways"
 
     SubShader
     {
-        Tags { "RenderType"="10000" "PerformanceChecks"="False" "Queue"="Overlay+2"}
+        Tags { "RenderType"="Transparent" "PerformanceChecks"="False" "Queue"="Transparent"}
         LOD 300
 
 
@@ -65,7 +65,8 @@ Shader "StandardZAlways"
             Tags { "LightMode" = "ForwardBase" }
 
             Blend [_SrcBlend] [_DstBlend]
-            ZWrite [_ZWrite]
+            //ZWrite On
+            //ZTest Less
 
             CGPROGRAM
             #pragma target 3.0
@@ -99,11 +100,11 @@ Shader "StandardZAlways"
         Pass
         {
             Name "FORWARD_DELTA"
-            Tags { "LightMode" = "ForwardAdd" "Queue"="Overlay+2"}
+            Tags { "LightMode" = "ForwardAdd" "Queue"="Transparent"}
             Blend [_SrcBlend] One
             Fog { Color (0,0,0,0) } // in additive pass fog should be black
-            ZWrite Off
-            ZTest Off 
+            //ZWrite On
+            //ZTest Less 
 
             CGPROGRAM
             #pragma target 3.0
@@ -134,9 +135,10 @@ Shader "StandardZAlways"
         //  Shadow rendering pass
         Pass {
             Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" "Queue"="Overlay+2"}
+            Tags { "LightMode" = "ShadowCaster" "Queue"="Transparent"}
 
-            ZWrite Off ZTest Off 
+            //ZWrite On
+            //ZTest Less 
 
             CGPROGRAM
             #pragma target 3.0
@@ -165,7 +167,9 @@ Shader "StandardZAlways"
         Pass
         {
             Name "DEFERRED"
-            Tags { "LightMode" = "Deferred" "Queue"="Overlay+2"}
+            Tags { "LightMode" = "Deferred" "Queue"="Transparent"}
+            //ZWrite On
+            //ZTest Less 
 
             CGPROGRAM
             #pragma target 3.0
@@ -202,9 +206,11 @@ Shader "StandardZAlways"
         Pass
         {
             Name "META"
-            Tags { "LightMode"="Meta" "Queue"="Overlay+2"}
+            Tags { "LightMode"="Meta" "Queue"="Transparent"}
 
             Cull Off
+            //ZWrite On
+            //ZTest Less 
 
             CGPROGRAM
             #pragma vertex vert_meta
@@ -223,7 +229,7 @@ Shader "StandardZAlways"
 
     SubShader
     {
-        Tags { "RenderType"="10000" "PerformanceChecks"="False" "Queue"="Overlay+2"}
+        Tags { "RenderType"="Transparent" "PerformanceChecks"="False" "Queue"="Transparent"}
         LOD 150
 
         // ------------------------------------------------------------------
@@ -231,10 +237,11 @@ Shader "StandardZAlways"
         Pass
         {
             Name "FORWARD"
-            Tags { "LightMode" = "ForwardBase" "Queue"="Overlay+2"}
+            Tags { "LightMode" = "ForwardBase" "Queue"="Transparent"}
 
             Blend [_SrcBlend] [_DstBlend]
-            ZWrite [_ZWrite]
+            //ZWrite On
+            //ZTest Less 
 
             CGPROGRAM
             #pragma target 2.0
@@ -265,11 +272,11 @@ Shader "StandardZAlways"
         Pass
         {
             Name "FORWARD_DELTA"
-            Tags { "LightMode" = "ForwardAdd" "Queue"="Overlay+2"}
+            Tags { "LightMode" = "ForwardAdd" "Queue"="Transparent"}
             Blend [_SrcBlend] One
             Fog { Color (0,0,0,0) } // in additive pass fog should be black
-            ZWrite Off
-            ZTest Off 
+            //ZWrite On
+            //ZTest Less 
 
             CGPROGRAM
             #pragma target 2.0
@@ -296,9 +303,10 @@ Shader "StandardZAlways"
         //  Shadow rendering pass
         Pass {
             Name "ShadowCaster"
-            Tags { "LightMode" = "ShadowCaster" "Queue"="Overlay+2"}
+            Tags { "LightMode" = "ShadowCaster" "Queue"="Transparent"}
 
-            ZWrite Off ZTest Off
+            //ZWrite On
+            //ZTest Less
 
             CGPROGRAM
             #pragma target 2.0
@@ -323,9 +331,11 @@ Shader "StandardZAlways"
         Pass
         {
             Name "META"
-            Tags { "LightMode"="Meta" "Queue"="Overlay+2"}
+            Tags { "LightMode"="Meta" "Queue"="Transparent"}
 
             Cull Off
+            //ZWrite On
+            //ZTest Less 
 
             CGPROGRAM
             #pragma vertex vert_meta

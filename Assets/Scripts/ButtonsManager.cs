@@ -7,6 +7,8 @@ public class ButtonsManager : MonoBehaviour
     public HudHandler HUD;
     private GameManager _gameManager;
 
+    [SerializeField] private TubesThemesController _tubesThemesController;
+
     [SerializeField] private string feedback_url;
 
     [SerializeField] private Sprite checkTrue;
@@ -28,6 +30,9 @@ public class ButtonsManager : MonoBehaviour
 
     [SerializeField] Button[] buttons_tubes;
     [SerializeField] Button[] buttons_themes;
+
+    [SerializeField] private Button _menu;
+    [SerializeField] private Button _additionalTube;
 
     private void Start()
     {
@@ -51,6 +56,16 @@ public class ButtonsManager : MonoBehaviour
         buttons_themes[PlayerPrefs.GetInt("Theme")].interactable = false;
     }
 
+    public void DisableMenuButton()
+    {
+        _menu.interactable = false;
+    }
+
+    public void EnableMenuButton()
+    {
+        _menu.interactable = true;
+    }
+
     public void UpdateCountState()
     {
         CountText.text = PlayerPrefs.GetInt("Coins").ToString();
@@ -63,15 +78,10 @@ public class ButtonsManager : MonoBehaviour
             buttonsTube.interactable = true;
         }
 
-        if (PlayerPrefs.GetInt("UnlockedTubes") != 2)
-        {
-            HUD.ads.ShowRewarded(2, num);
-        }
-        else if (PlayerPrefs.GetInt("UnlockedTubes") == 2)
-        {
-            PlayerPrefs.SetInt("Tube", num);
-            _gameManager.SetSelectedTubes();
-        }
+        HUD.ads.OnChangeTubeTheme(num);
+
+        PlayerPrefs.SetInt("Tube", num);
+        _tubesThemesController.SetTheme();
     }
 
     public void TrySelectTheme(int num)
@@ -83,7 +93,7 @@ public class ButtonsManager : MonoBehaviour
 
         if (PlayerPrefs.GetInt("UnlockedThemes") != 9)
         {
-            HUD.ads.ShowRewarded(3, num);
+            HUD.ads.OnChangeBackgroundTheme(num);
         }
         else if (PlayerPrefs.GetInt("UnlockedThemes") == 9)
         {
@@ -163,5 +173,18 @@ public class ButtonsManager : MonoBehaviour
             PlayerPrefs.SetInt("Vibrate", 0);
             vibrateImg.sprite = checkFalse;
         }
+    }
+
+    public void AddBackStepsButton()
+    {
+        int count = PlayerPrefs.GetInt("Steps");
+        count += 5;
+        PlayerPrefs.SetInt("Steps", count);
+        _gameManager.UpdateTextSteps();
+    }
+
+    public void DisableAdditionalTubeButton()
+    {
+        _additionalTube.interactable = false;
     }
 }

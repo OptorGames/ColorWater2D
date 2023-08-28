@@ -1,6 +1,7 @@
 ﻿using DevToDev.Analytics;
 using Firebase.Analytics;
 using ForTutorial;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,12 +12,16 @@ public class HudHandler : MonoBehaviour
     public static bool IsGamePaused, isObserveMode;
 
     public Ads ads;
+
+    [HideInInspector] public GameObject Pour;
+
     private int old_value;
 
     [Header("Links")] [SerializeField] private GameObject MainInterface;
     [SerializeField] private TutorialController _tutorialController;
-    [SerializeField] protected GameObject _stand;
-    [SerializeField] protected GameObject _flasks;
+    [SerializeField] private GameObject _stand;
+    [SerializeField] private GameObject _confetti;
+    [HideInInspector] public GameObject Flasks;
 
     private void Start()
     {
@@ -34,12 +39,25 @@ public class HudHandler : MonoBehaviour
 
     public void WinGame()
     {
+        StartCoroutine(WinGameCoroutine());
+    }
+
+    public IEnumerator WinGameCoroutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+
         IsGamePaused = true;
 
         UpdateDifficultyLevel();
 
-        _flasks.SetActive(false);
+        Flasks.SetActive(false);
         _stand.SetActive(false);
+        _confetti.SetActive(false);
+
+        if (Pour != null)
+        {
+            Pour.SetActive(false);
+        }
 
         WinMenu.SetActive(true);
         MainInterface.SetActive(false);
@@ -49,7 +67,7 @@ public class HudHandler : MonoBehaviour
             {
                 tutorialArrow.SetActive(false);
             }
-            PlayerPrefs.SetInt("CurrentLevel_OFF",0);
+            PlayerPrefs.SetInt("CurrentLevel_OFF", 0);
             PlayerPrefs.SetInt("FirstStart", 1);
         }
 
@@ -59,11 +77,7 @@ public class HudHandler : MonoBehaviour
             DTDAnalytics.CustomEvent(eventName: "Level_" + old_value.ToString());
 
         PlayerPrefs.SetInt("Steps", 5);
-
-        if (old_value > 2 && PlayerPrefs.GetInt("NoAds") != 1 && old_value != 9&&old_value !=10)
-        {
-            ads.ShowInterstitial();
-        }
+        ads.OnLevelComplete(old_value);
     }
 
     private void UpdateDifficultyLevel()
@@ -93,12 +107,6 @@ public class HudHandler : MonoBehaviour
 
     public void Restart()
     {
-        if (PlayerPrefs.GetInt("RestartCount") > 5)
-        {
-            if (PlayerPrefs.GetInt("NoAds") != 1)
-                ads.ShowInterstitial();
-        }
-
         int new_count = PlayerPrefs.GetInt("RestartCount") + 1;
         PlayerPrefs.SetInt("RestartCount", new_count);
         PlayerPrefs.SetInt("Steps", 5);

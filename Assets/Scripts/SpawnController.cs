@@ -25,6 +25,7 @@ public class SpawnController : ISpawnController
     };
 
     public int numberOfEmptyTube = 2;
+    private int defaultNumberOfEmptyTube = 2;
     protected int usedColb;
     protected int difficulty = 0;
     protected List<UsedColor> usedColors = new List<UsedColor>();
@@ -32,7 +33,7 @@ public class SpawnController : ISpawnController
     [SerializeField] protected TutorialController _tutorialController;
     public static ISpawnController spawnController = null;
     public static bool firstStart = true;
-    
+
     [SerializeField] protected Color tutorialColor = new Color(0.9176471f, 0.2235294f, 0.7463644f);
 
     private void Start()
@@ -65,6 +66,7 @@ public class SpawnController : ISpawnController
 
     public override void SpawnObject()
     {
+        numberOfEmptyTube = defaultNumberOfEmptyTube;
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
         spawnCount = level + numberOfEmptyTube;
@@ -77,7 +79,7 @@ public class SpawnController : ISpawnController
         {
             int colorID = Random.Range(0, colors.Length);
             if (CheckOnExist(colorID))
-                usedColors.Add(new UsedColor {colorID = colorID, colorCount = 0});
+                usedColors.Add(new UsedColor { colorID = colorID, colorCount = 0 });
         }
 
         SpawnGrid();
@@ -139,6 +141,7 @@ public class SpawnController : ISpawnController
 
     private void SpawnGrid()
     {
+        coloredTubes = new List<TubeController>();
         int spawnedCount = 0;
         float y = 0;
         int spawnGrid = (usedColb + numberOfEmptyTube);
@@ -157,7 +160,16 @@ public class SpawnController : ISpawnController
             }
         }
 
-        FillTube();
+        if (PlayerPrefs.HasKey("FirstStart"))
+        {
+            FillTubes();
+        }
+        else
+        {
+            FillTutorialTubes();
+        }
+
+
         SetCenterPosition();
     }
 
@@ -215,46 +227,124 @@ public class SpawnController : ISpawnController
         }
     }
 
-    private void FillTube()
+    private void FillTubes()
     {
-
-        if (PlayerPrefs.HasKey("FirstStart"))
+        foreach (UsedColor usedColor in usedColors)
         {
-            int colorID;
-            Color newColor = Color.white;
+            usedColor.colorCount = 0;
+        }
 
-            for (int i = 0; i < coloredTubes.Count; i++)
+        int colorIndex;
+        Color newColor = Color.white;
+
+        for (int i = 0; i < coloredTubes.Count; i++)
+        {
+            for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
             {
-                for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
+                var freeColors = usedColors.FindAll(x => x.colorCount < 4);
+                colorIndex = Random.Range(0, freeColors.Count);
+
+                ColorUtility.TryParseHtmlString(colors[freeColors[colorIndex].colorID], out newColor);
+                coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
+                coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+                usedColors.First(x => x.colorID == freeColors[colorIndex].colorID).colorCount++;
+
+                coloredTubes[i].LiquidVolume.foamColor = newColor;
+                coloredTubes[i].LiquidVolume.foamThickness = coloredTubes[i].FoamThickness;
+            }
+
+            coloredTubes[i].LiquidVolume.UpdateLayers(true);
+        }
+
+        CheckFilledTubes();
+    }
+
+    private void FillTutorialTubes()
+    {
+        for (int i = 0; i < coloredTubes.Count; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                coloredTubes[i].LiquidVolume.liquidLayers[j].color = tutorialColor;
+                coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
+                coloredTubes[i].LiquidVolume.foamColor = tutorialColor;
+            }
+
+            coloredTubes[i].LiquidVolume.UpdateLayers(true);
+        }
+    }
+
+    private void CheckFilledTubes()
+    {
+        for (int i = 0; i < coloredTubes.Count; i++)
+        {
+            if (coloredTubes[i].LiquidVolume.liquidLayers.Length <= 0)
+            {
+                continue;
+            }
+
+            int sameColorsCount = 0;
+
+            for (int j = 0; j < coloredTubes[i].LiquidVolume.liquidLayers.Length; j++)
+            {
+                if (j > 0 && coloredTubes[i].LiquidVolume.liquidLayers[j].currentAmount > 0.01f
+                    && coloredTubes[i].LiquidVolume.liquidLayers[j - 1].currentAmount > 0.01f
+                    && coloredTubes[i].LiquidVolume.liquidLayers[j - 1].color ==
+                       coloredTubes[i].LiquidVolume.liquidLayers[j].color)
                 {
-                    var freeColors = usedColors.FindAll(x => x.colorCount < 4);
-                    colorID = Random.Range(0, freeColors.Count);
-
-                    ColorUtility.TryParseHtmlString(colors[freeColors[colorID].colorID], out newColor);
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
-                    freeColors[colorID].colorCount++;
-
-                    coloredTubes[i].LiquidVolume.foamColor = newColor;
-                    coloredTubes[i].LiquidVolume.foamThickness = coloredTubes[i].FoamThickness;
+                    ++sameColorsCount;
                 }
+            }
 
-                coloredTubes[i].LiquidVolume.UpdateLayers(true);
+            if (sameColorsCount == coloredTubes[i].LiquidVolume.liquidLayers.Length - 1)
+            {
+                FillTubes();
+                return;
             }
         }
-        else
-        {
-            for (int i = 0; i < coloredTubes.Count; i++)
-            {
-                for (int j = 0; j < 2; j++)
-                {
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].color = tutorialColor;
-                    coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
-                    coloredTubes[i].LiquidVolume.foamColor = tutorialColor;
-                }
+    }
 
-                coloredTubes[i].LiquidVolume.UpdateLayers(true);
+    public void RefillTubes(List<TubeInfo> tubes)
+    {
+        foreach(TubeInfo info in tubes)
+        {
+            var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+
+            var controller = flask.GameObject.GetComponent<TubeController>();
+            controller.isEmpty = info.isEmpty;
+            controller.isFull = info.isFull;
+            controller.currColors = info.currColors;
+
+            flask?.GameObject.SetActive(true);
+
+            for (int i = 0; i < info.colors.Length; ++i)
+            {
+                flask.LiquidVolume.liquidLayers[i].color = info.colors[i];
+                flask.LiquidVolume.liquidLayers[i].amount = info.capacities[i];
+                
+                if (info.capacities[i] > 0.01)
+                {
+                    flask.LiquidVolume.foamColor = info.colors[i];
+                }
             }
+
+            flask.LiquidVolume.UpdateLayers(true);
+        }
+    }
+
+    public override void AddAdditionalTube()
+    {
+        var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+        var controller = flask.GameObject.GetComponent<TubeController>();
+        controller.isEmpty = true;
+        flask?.GameObject.SetActive(true);
+        flask.LiquidVolume.foamThickness = 0f;
+
+        flask.LiquidVolume.UpdateLayers(true);
+
+        if (!Flasks.Exists(x => !x.GameObject.activeInHierarchy))
+        {
+            GM.buttonsManager.DisableAdditionalTubeButton();
         }
     }
 }
@@ -279,4 +369,5 @@ public abstract class ISpawnController : MonoBehaviour
     public abstract void NotFirstLoad();
     public abstract void SpawnObject();
     public abstract void SetCenterPosition();
+    public abstract void AddAdditionalTube();
 }

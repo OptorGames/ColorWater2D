@@ -13,17 +13,16 @@ public class GameManager : IGameManager
 
     //public List<GameObject> tubesInGame;
     protected GameObject selectedTube;
-    public HudHandler HUD;
     public ISpawnController spawnController;
     protected static bool isGameOver;
-    protected bool islevelStart;
+    [HideInInspector] public bool islevelStart;
     protected int difficulty = 0;
-    protected int curr_level;
+    [HideInInspector] public int curr_level;
 
-    [SerializeField] protected TutorialController _tutorialController;
+    public TutorialController TutorialController;
 
     [Header("Links")] [SerializeField] protected GameObject BuyStepsPanel;
-    [SerializeField] protected Button ButBackStep;
+    [SerializeField] protected Button BackStepButton;
     [SerializeField] protected Button AddTubeButton;
 
     [SerializeField] protected GameObject NoAdsButton;
@@ -41,10 +40,9 @@ public class GameManager : IGameManager
     //[SerializeField] public bool addingColor;
 
     //public List<TubeController> tubeControllers = new List<TubeController>();
-    protected List<AllTubesInfo> savedTubes = new List<AllTubesInfo>();
+    [HideInInspector] public List<AllTubesInfo> SavedTubes = new List<AllTubesInfo>();
 
     //public AudioSource audioSource;
-    [HideInInspector] public ButtonsManager buttonsManager;
 
     [Header("FromShop")] public Sprite[] tubes;
     public Sprite[] tubesMasks;
@@ -73,23 +71,18 @@ public class GameManager : IGameManager
         buttonsManager = GetComponent<ButtonsManager>();
         PlayerPrefs.DeleteKey("UnlockedAll");
 
-        Time.timeScale = 1;
-        islevelStart = true;
-        StartCoroutine(LevelInitialized());
-        EmptyTubes = 0;
-        FullTubes = 0;
-        selectedTube = null;
-        isGameOver = false;
+        StartLevel();
         difficulty = spawnController.GetDifficulty();
         SetTextDifficulty();
         if (PlayerPrefs.HasKey("FirstStart"))
         {
-            _tutorialController.enabled = false;
+            TutorialController.enabled = false;
             LoadDifficultyLevel();
         }
         else
         {
-            _tutorialController.enabled = true;
+            TutorialController.enabled = true;
+            buttonsManager.DisableAdditionalTubeButton();
         }
 
         SetSelectedBackground();
@@ -122,13 +115,13 @@ public class GameManager : IGameManager
 
     private void Update()
     {
-        if (addingColor && ButBackStep.interactable)
+        if (addingColor && BackStepButton.interactable)
         {
-            ButBackStep.interactable = false;
+            BackStepButton.interactable = false;
         }
-        else if (!addingColor && !ButBackStep.interactable)
+        else if (!addingColor && !BackStepButton.interactable)
         {
-            ButBackStep.interactable = true;
+            BackStepButton.interactable = true;
         }
 
         if (Time.timeScale <= 0.1f)
@@ -153,6 +146,19 @@ public class GameManager : IGameManager
                 needUnPause = false;
             }
         }
+    }
+
+    public void StartLevel()
+    {
+        Time.timeScale = 1;
+        islevelStart = true;
+        StartCoroutine(LevelInitialized());
+        EmptyTubes = 0;
+        FullTubes = 0;
+        selectedTube = null;
+        isGameOver = false;
+        tubeControllers = new List<TubeController>();
+        tubesInGame = new List<GameObject>();
     }
 
     public override void DisablePurchaseButtons()
@@ -302,7 +308,7 @@ public class GameManager : IGameManager
 
         if (!PlayerPrefs.HasKey("FirstStart"))
         {
-            _tutorialController.ProgressControl(0);
+            TutorialController.ProgressControl(0);
         }
     }
 
@@ -326,6 +332,11 @@ public class GameManager : IGameManager
 
     public override void SaveTubes()
     {
+        SavedTubes.Add(GetLastTubesCombination());
+    }
+
+    public AllTubesInfo GetLastTubesCombination()
+    {
         AllTubesInfo tubes_info = new AllTubesInfo();
         for (int i = 0; i < tubesInGame.Count; i++)
         {
@@ -347,7 +358,8 @@ public class GameManager : IGameManager
 
         tubes_info.empty = EmptyTubes;
         tubes_info.full = FullTubes;
-        savedTubes.Add(tubes_info);
+
+        return tubes_info;
     }
 
     public override void StepBackForTubes()
@@ -356,7 +368,7 @@ public class GameManager : IGameManager
         if (count <= 0)
             return;
 
-        if (savedTubes.Count >= 1)
+        if (SavedTubes.Count >= 1)
         {
             selectedTube = null;
             for (int i = 0; i < tubeControllers.Count; i++)
@@ -367,38 +379,38 @@ public class GameManager : IGameManager
 
             for (int i = 0; i < tubeControllers.Count; i++)
             {
-                if (tubeControllers.Count > savedTubes[savedTubes.Count - 1].tubes.Count &&
+                if (tubeControllers.Count > SavedTubes[SavedTubes.Count - 1].tubes.Count &&
                     i == tubeControllers.Count - 1)
                     break;
 
-                tubeControllers[i].currColors = savedTubes[savedTubes.Count - 1].tubes[i].currColors;
-                tubeControllers[i].isEmpty = savedTubes[savedTubes.Count - 1].tubes[i].isEmpty;
-                tubeControllers[i].isFull = savedTubes[savedTubes.Count - 1].tubes[i].isFull;
+                tubeControllers[i].currColors = SavedTubes[SavedTubes.Count - 1].tubes[i].currColors;
+                tubeControllers[i].isEmpty = SavedTubes[SavedTubes.Count - 1].tubes[i].isEmpty;
+                tubeControllers[i].isFull = SavedTubes[SavedTubes.Count - 1].tubes[i].isFull;
 
                 tubeControllers[i].transform.position = new Vector3(tubeControllers[i].transform.position.x,
                     tubeControllers[i].Pos.y, tubeControllers[i].transform.position.z);
-                tubeControllers[i].transform.localScale = savedTubes[savedTubes.Count - 1].tubes[i].scale;
+                tubeControllers[i].transform.localScale = SavedTubes[SavedTubes.Count - 1].tubes[i].scale;
 
                 tubeControllers[i].NextTube = null;
 
                 for (int a = 0; a < tubeControllers[i].LiquidVolume.liquidLayers.Length; a++)
                 {
                     tubeControllers[i].LiquidVolume.liquidLayers[a].color =
-                        savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
+                        SavedTubes[SavedTubes.Count - 1].tubes[i].colors[a];
                     tubeControllers[i].LiquidVolume.liquidLayers[a].amount =
-                        savedTubes[savedTubes.Count - 1].tubes[i].capacities[a];
+                        SavedTubes[SavedTubes.Count - 1].tubes[i].capacities[a];
                     
                     
-                    tubeControllers[i].colorsInTube[a] = savedTubes[savedTubes.Count - 1].tubes[i].colors[a];
+                    tubeControllers[i].colorsInTube[a] = SavedTubes[SavedTubes.Count - 1].tubes[i].colors[a];
                 }
 
                 tubeControllers[i].LiquidVolume.foamThickness = 0;
                 for (int j = tubeControllers[i].LiquidVolume.liquidLayers.Length - 1; j >= 0 ; j--)
                 {
-                    if (savedTubes[savedTubes.Count - 1].tubes[i].capacities[j] > 0.001f)
+                    if (SavedTubes[SavedTubes.Count - 1].tubes[i].capacities[j] > 0.001f)
                     {
                         tubeControllers[i].LiquidVolume.foamColor =
-                            savedTubes[savedTubes.Count - 1].tubes[i].colors[j];
+                            SavedTubes[SavedTubes.Count - 1].tubes[i].colors[j];
                         tubeControllers[i].LiquidVolume.foamThickness =
                             tubeControllers[i].FoamThickness;
                         break;
@@ -409,10 +421,10 @@ public class GameManager : IGameManager
 
             }
 
-            EmptyTubes = savedTubes[savedTubes.Count - 1].empty;
-            FullTubes = savedTubes[savedTubes.Count - 1].full;
+            EmptyTubes = SavedTubes[SavedTubes.Count - 1].empty;
+            FullTubes = SavedTubes[SavedTubes.Count - 1].full;
 
-            savedTubes.RemoveAt(savedTubes.Count - 1);
+            SavedTubes.RemoveAt(SavedTubes.Count - 1);
 
             count--;
             PlayerPrefs.SetInt("Steps", count);
@@ -443,11 +455,11 @@ public class GameManager : IGameManager
     {
         yield return new WaitForSeconds(0.5f);
 
-        if (!isGameOver)
-        {
+        //if (!isGameOver)
+        //{
             confetti.transform.position = pos;
             confetti.Play();
-        }
+        //}
 
         if (PlayerPrefs.GetInt("Vibrate") == 1 && !isGameOver)
         {
@@ -538,6 +550,10 @@ public abstract class IGameManager : MonoBehaviour
     public List<GameObject> tubesInGame;
     public List<TubeController> tubeControllers = new List<TubeController>();
     public AudioSource audioSource;
+    public HudHandler HUD;
+
+    [HideInInspector] public ButtonsManager buttonsManager;
+
     [SerializeField] public bool addingColor;
 
 

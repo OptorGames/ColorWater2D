@@ -1,6 +1,8 @@
 using CAS;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
 
 public class Ads : MonoBehaviour
 {
@@ -17,8 +19,17 @@ public class Ads : MonoBehaviour
 
     public GameManager GM;
 
+    private DateTime _lastInterstitialTime;
+    private int _interstitialPause = 120;
+
+    private DateTime _lastRewardTime;
+    private int _rewardPause = 300;
+
+    private DateTime _lastAdditionalTubeTime;
+
     public void Start()
     {
+        GetValues();
         MobileAds.settings.userConsent = userConsent;
         MobileAds.settings.userCCPAStatus = userCCPAStatus;
 
@@ -27,12 +38,79 @@ public class Ads : MonoBehaviour
         manager = MobileAds.BuildManager().Initialize();
 
         manager.OnRewardedAdCompleted += RewardedSuccessful;
+        manager.OnInterstitialAdClosed += OnInterstitialAdClosed;
 
         InvokeRepeating("OnRefreshStatus", 1.0f, 1.0f);
 
         //bannerView = manager.GetAdView(AdSize.Banner);
         //ShowBanner();
         rew_id = 10;
+    }
+
+    private void OnInterstitialAdClosed()
+    {
+        _lastInterstitialTime = DateTime.Now;
+    }
+
+    public void OnLevelComplete(int level)
+    {
+        if (PlayerPrefs.GetInt("NoAds") != 1 && 
+            (level == 6 || level == 8 ||
+            (level >= 11 && (DateTime.Now - _lastInterstitialTime).TotalSeconds > _interstitialPause)))
+        {
+            ShowInterstitial();
+        }
+    }
+
+    public void OnChangeTubeTheme(int visualNumber)
+    {
+        int id = 2;
+
+        if ((DateTime.Now - _lastRewardTime).TotalSeconds > _rewardPause)
+        {
+            _lastRewardTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+        else
+        {
+            rew_id = id;
+            rev_VisualNumber = visualNumber;
+            RewardedSuccessful();
+        }
+    }
+
+    public void OnChangeBackgroundTheme(int visualNumber)
+    {
+        int id = 3;
+
+        if ((DateTime.Now - _lastRewardTime).TotalSeconds > _rewardPause)
+        {
+            _lastRewardTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+        else
+        {
+            rew_id = id;
+            rev_VisualNumber = visualNumber;
+            RewardedSuccessful();
+        }
+    }
+
+    public void OnGetAdditionalTube(int visualNumber)
+    {
+        int id = 0;
+
+        if ((DateTime.Now - _lastAdditionalTubeTime).TotalSeconds > _rewardPause)
+        {
+            _lastAdditionalTubeTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+        else
+        {
+            rew_id = id;
+            rev_VisualNumber = visualNumber;
+            RewardedSuccessful();
+        }
     }
 
     //public void ShowBanner()
@@ -117,7 +195,8 @@ public class Ads : MonoBehaviour
     {
         if(rew_id == 0)
         {
-            GM.AddTube();
+            //GM.AddTube();
+            GM.spawnController.AddAdditionalTube();
         }
         else if(rew_id == 1)
         {
@@ -140,5 +219,37 @@ public class Ads : MonoBehaviour
         {
             Debug.LogError("Реклама з'явилась зашвидко, на телефоні такої проблеми немає.");
         }
+    }
+
+    private void SaveValues()
+    {
+        PlayerPrefs.SetString(nameof(_lastAdditionalTubeTime), JsonConvert.SerializeObject(_lastAdditionalTubeTime));
+        PlayerPrefs.SetString(nameof(_lastInterstitialTime), JsonConvert.SerializeObject(_lastInterstitialTime));
+        PlayerPrefs.SetString(nameof(_lastRewardTime), JsonConvert.SerializeObject(_lastRewardTime));
+    }
+
+    private void GetValues()
+    {
+        if (PlayerPrefs.HasKey(nameof(_lastAdditionalTubeTime)))
+        {
+            _lastAdditionalTubeTime = (DateTime)JsonConvert.DeserializeObject(PlayerPrefs.GetString(nameof(_lastAdditionalTubeTime)));
+        }
+
+        if (PlayerPrefs.HasKey(nameof(_lastInterstitialTime)))
+        {
+            _lastInterstitialTime = (DateTime)JsonConvert.DeserializeObject(PlayerPrefs.GetString(nameof(_lastInterstitialTime)));
+        }
+
+        if (PlayerPrefs.HasKey(nameof(_lastRewardTime)))
+        {
+            _lastRewardTime = (DateTime)JsonConvert.DeserializeObject(PlayerPrefs.GetString(nameof(_lastRewardTime)));
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SaveValues();
+        manager.OnRewardedAdCompleted -= RewardedSuccessful;
+        manager.OnInterstitialAdClosed -= OnInterstitialAdClosed;
     }
 }
