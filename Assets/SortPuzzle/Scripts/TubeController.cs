@@ -8,8 +8,6 @@ using DG.Tweening;
 
 public class TubeController : MonoBehaviour
 {
-    private const float ResultColorAlpha = 0.5f;
-    [SerializeField] private SpriteRenderer colorResult;
     public Vector3 Pos;
     public GameObject ColorsPivot;
     public GameObject PourSpriteObject;
@@ -273,17 +271,7 @@ public class TubeController : MonoBehaviour
         {
             GM.AddFull(transform.position, true);
             isFull = true;
-            PlayFullAnim();
         }
-    }
-
-    private void PlayFullAnim()
-    {
-        var color = LiquidVolume.liquidLayers[0].color;
-        color.a = ResultColorAlpha;
-        var sequence = DOTween.Sequence();
-        sequence.Append(colorResult.DOColor(color, 1f));
-        sequence.Append(colorResult.DOColor(new Color(0,0,0,0),1f));
     }
 
     private void OnMouseDown()
