@@ -273,7 +273,7 @@ public class GameManager : IGameManager
 
     public override void SetSelectedBackground()
     {
-        background.sprite = themes[PlayerPrefs.GetInt("Theme")];
+        // background.sprite = themes[PlayerPrefs.GetInt("Theme")];
     }
 
     public override void SetSelectedTubes()

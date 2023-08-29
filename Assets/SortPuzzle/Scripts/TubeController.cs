@@ -7,6 +7,7 @@ using LiquidVolumeFX;
 
 public class TubeController : MonoBehaviour
 {
+    [SerializeField] private SpriteRenderer colorResult;
     public Vector3 Pos;
     public GameObject ColorsPivot;
     public GameObject PourSpriteObject;
