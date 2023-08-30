@@ -52,7 +52,7 @@ public class GameManager : IGameManager
     [Header("FromShop")] public Sprite[] tubes;
     public Sprite[] tubesMasks;
 
-    [SerializeField] protected Sprite[] themes;
+    [field: SerializeField] public Sprite[] Themes{get;private set;}
 
     [SerializeField] protected Image background;
 
@@ -273,7 +273,7 @@ public class GameManager : IGameManager
 
     public override void SetSelectedBackground()
     {
-        // background.sprite = themes[PlayerPrefs.GetInt("Theme")];
+        background.sprite = Themes[PlayerPrefs.GetInt("Theme")];
     }
 
     public override void SetSelectedTubes()

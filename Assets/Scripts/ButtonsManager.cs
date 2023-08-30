@@ -1,3 +1,4 @@
+using System.Security.Policy;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,7 +30,7 @@ public class ButtonsManager : MonoBehaviour
     [SerializeField] Text CountText;
 
     [SerializeField] Button[] buttons_tubes;
-    [SerializeField] Button[] buttons_themes;
+    [SerializeField] ThemeButton[] buttons_themes;
 
     [SerializeField] private Button _menu;
     [SerializeField] private Button _additionalTube;
@@ -48,12 +49,13 @@ public class ButtonsManager : MonoBehaviour
         }
 
         buttons_tubes[PlayerPrefs.GetInt("Tube")].interactable = false;
-        foreach (var buttonsTheme in buttons_themes)
+        for (int i = 0; i < buttons_themes.Length; i++)
         {
-            buttonsTheme.interactable = true;
+            buttons_themes[i].SetInteractable(true);
+            buttons_themes[i].Init(_gameManager.Themes[i], i, TrySelectTheme);
         }
 
-        buttons_themes[PlayerPrefs.GetInt("Theme")].interactable = false;
+        buttons_themes[PlayerPrefs.GetInt("Theme")].SetInteractable(false);
     }
 
     public void DisableMenuButton()
@@ -88,7 +90,7 @@ public class ButtonsManager : MonoBehaviour
     {
         foreach (var buttonsTheme in buttons_themes)
         {
-            buttonsTheme.interactable = true;
+            buttonsTheme.SetInteractable(true);
         }
 
         if (PlayerPrefs.GetInt("UnlockedThemes") != 9)
