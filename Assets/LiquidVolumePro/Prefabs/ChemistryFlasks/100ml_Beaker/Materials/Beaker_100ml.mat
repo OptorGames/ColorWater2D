@@ -97,7 +97,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex2D:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 37b23f164cc634bc88eb781583452d00, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
@@ -113,7 +113,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RefractTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 8900000, guid: a730bb546543847cfb568b69de54fdbb, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RightTex:
@@ -151,7 +151,7 @@ Material:
     - _FoamTurbulence: 1
     - _FoamWeight: 10
     - _FresnelPower: 9.8
-    - _GlossMapScale: 0.715
+    - _GlossMapScale: 0.79
     - _Glossiness: 1
     - _GlossinessInt: 0.5
     - _GlossyReflections: 1
@@ -175,7 +175,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _TurbulenceSpeed: 1
-    - _UVSec: 1
+    - _UVSec: 0
     - _UpperLimit: 1
     - _ZTestMode: 4
     - _ZWrite: 0
