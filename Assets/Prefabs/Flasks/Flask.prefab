@@ -282,7 +282,7 @@ MonoBehaviour:
   _liquidScale1: 1
   _liquidColor2: {r: 1, g: 0.51724136, b: 0, a: 0.3}
   _liquidScale2: 5
-  _alpha: 1
+  _alpha: 0.684
   _emissionColor: {r: 0, g: 0, b: 0, a: 0.266}
   _emissionBrightness: 3.68
   _ditherShadows: 1
@@ -565,7 +565,7 @@ Transform:
   m_GameObject: {fileID: 5593291060883314851}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.9, y: -0.6974939, z: 1}
-  m_LocalScale: {x: 12, y: 5, z: 10}
+  m_LocalScale: {x: 12, y: 7, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5593291060191545653}
@@ -586,7 +586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1766397cda70040b77b1c9dc6fff34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorResult: {fileID: 8886222623032414116}
+  _returnSpeed: 1
   Pos: {x: 0, y: 0, z: 0}
   ColorsPivot: {fileID: 0}
   PourSpriteObject: {fileID: 8044496643208948664, guid: f9b35b6df224c9a4bbcda7e543e6bf70,

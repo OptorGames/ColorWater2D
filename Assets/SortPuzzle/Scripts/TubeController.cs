@@ -8,6 +8,7 @@ using DG.Tweening;
 
 public class TubeController : MonoBehaviour
 {
+    [SerializeField] private float _returnSpeed;
     public Vector3 Pos;
     public GameObject ColorsPivot;
     public GameObject PourSpriteObject;
@@ -25,6 +26,7 @@ public class TubeController : MonoBehaviour
     public float FoamThickness = 0.0052f;
 
     private float RotStart, RotEnd;
+
     public bool isrotating = false;
     private float rotationLerp;
 
@@ -32,7 +34,6 @@ public class TubeController : MonoBehaviour
     [HideInInspector] public TubeController NextTube;
     public SpriteRenderer tubeSR;
     [HideInInspector] public SortingGroup sorting;
-
     private bool IsAddColor;
     [Space(15)] public bool isFull, isEmpty, isBusy;
     private bool isAddingColor;
@@ -40,7 +41,6 @@ public class TubeController : MonoBehaviour
     private float ColorLerp;
 
     private AudioSource audioSource;
-    private float _returnSpeed = 8;
     private bool _canMouseDown = true;
 
     private Vector3 _pourAngle = new Vector3(0, 0, 0f);
@@ -49,7 +49,7 @@ public class TubeController : MonoBehaviour
     private GameObject _pourSprite;
     private float _timeCoef = 1.5f;
 
-   
+
 
     private void Start()
     {
@@ -64,7 +64,7 @@ public class TubeController : MonoBehaviour
         GM.tubesInGame.Add(this.gameObject);
         GM.tubeControllers.Add(this);
         audioSource = GM.audioSource;
-        
+
         colorsInTube = new Color[LiquidVolume.liquidLayers.Length];
         for (int i = 0; i < 4; i++)
         {
@@ -113,8 +113,8 @@ public class TubeController : MonoBehaviour
             if (rotationLerp >= 1)
             {
                 rotationLerp = 1;
-                float tempAngle1 = Mathf.Lerp(0, RotEnd, rotationLerp);
-                transform.eulerAngles = new Vector3(0, 0, tempAngle1);
+                // float tempAngle1 = Mathf.Lerp(transform.eulerAngles.z, RotEnd, rotationLerp);
+                // transform.eulerAngles = new Vector3(0, 0, tempAngle1);
 
 
                 if (currColors > 1 && colorsInTube[currColors - 1] == colorsInTube[currColors - 2])
@@ -153,7 +153,7 @@ public class TubeController : MonoBehaviour
                 }
 
                 float tempAngle = Mathf.Lerp(RotStart, RotEnd, rotationLerp);
-                transform.localRotation = Quaternion.Euler(new Vector3(0, 0, tempAngle));
+                // transform.localRotation = Quaternion.Euler(new Vector3(0, 0, tempAngle));
 
                 LiquidVolume.liquidLayers[currColors - 1].amount =
                 Mathf.Clamp01(LiquidVolume.liquidLayers[currColors - 1].amount - Time.deltaTime * _timeCoef * ColorLayerAmount);
@@ -304,32 +304,45 @@ public class TubeController : MonoBehaviour
 
     public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
     {
-        moveSpeed = moveSpeed + GameManager.tubeReturnSpeedModifier * 1.5f;
-        RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].StartAngle[currColors - 1];
+        RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].EndAngle[currColors - 1];
         _canMouseDown = false;
-        while (transform.position != otherTube.transform.position + _flaskDistance)
-        {
-            transform.position = Vector3.MoveTowards(transform.position,
-                otherTube.transform.position + _flaskDistance, moveSpeed  * Time.deltaTime);
-            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(0, 0, RotStart),
-                moveSpeed / 4 * Time.deltaTime);
+        var endPosition = otherTube.transform.position + _flaskDistance;
+        var start = transform.position;
+        var startRotation = transform.eulerAngles;
+        var endRotation = new Vector3(0, 0, RotStart);
+        float t = 0;
 
-            yield return new WaitForEndOfFrame();
+        while (t < 1)
+        {
+            t += Time.deltaTime / moveSpeed;
+            if (t > 1)
+                t = 1;
+            
+            transform.position = Vector3.Lerp(start, endPosition, t);
+            transform.eulerAngles = Vector3.Lerp(startRotation, endRotation, t);
+                // moveSpeed / 4 * Time.deltaTime);
+
+            yield return null;
         }
 
         RotateTube();
     }
 
-    private IEnumerator ReturnToStartingPosition(float returnSpeed)
+    private IEnumerator ReturnToStartingPosition(float returnTime)
     {
-        returnSpeed = returnSpeed + GameManager.tubeReturnSpeedModifier * 1.5f;
+        float t = 0;
         _canMouseDown = false;
-        while (transform.position != Pos)
+        var start = transform.position;
+        var startRotation = transform.eulerAngles;
+        while (t < 1)
         {
-            transform.position = Vector3.MoveTowards(transform.position, Pos, returnSpeed * Time.deltaTime);
-            transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, Vector3.zero, returnSpeed / 2 * Time.deltaTime);
-
-            yield return new WaitForEndOfFrame();
+            t += Time.deltaTime / returnTime;
+            if (t > 1)
+                t = 1;
+            
+            transform.position = Vector3.Lerp(start, Pos, t);
+            transform.eulerAngles = Vector3.Lerp(startRotation, Vector3.zero, t);
+            yield return null;
         }
         transform.position = Pos;
         transform.eulerAngles = Vector3.zero;
