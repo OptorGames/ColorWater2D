@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1766397cda70040b77b1c9dc6fff34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _returnSpeed: 0.5
   Pos: {x: 0, y: 0, z: 0}
   ColorsPivot: {fileID: 0}
   PourSpriteObject: {fileID: 8044496643208948664, guid: f9b35b6df224c9a4bbcda7e543e6bf70,
