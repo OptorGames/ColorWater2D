@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class SpawnController : ISpawnController
 {
+    private const int V = 17;
     public int gridX;
     public float verticalOffset;
     //public int level { get; set; }
@@ -151,8 +152,8 @@ public class SpawnController : ISpawnController
         int spawnedCount = 0;
         float y = 0;
         int spawnGrid = (usedColb + numberOfEmptyTube);
-        if (spawnGrid > 17)
-            spawnGrid = 17;
+        if (spawnGrid > Colors.Count)
+            spawnGrid = Colors.Count;
         activatedFlasks = 0;
         for (int i = 0; i < spawnGrid; i++)
         {
@@ -224,7 +225,7 @@ public class SpawnController : ISpawnController
         }
         if (PlayerPrefs.HasKey("FirstStart"))
         {
-            if (numberOfEmptyTube == 0)
+            if (activatedFlasks <= usedColb)//(numberOfEmptyTube == 0)
             {
                 coloredTubes.Add(flask?.GameObject.GetComponent<TubeController>());
             }
