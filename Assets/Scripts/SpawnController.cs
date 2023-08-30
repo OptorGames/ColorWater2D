@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class SpawnController : ISpawnController
 {
-    private const int V = 17;
+    private const int numberOfAdTubes = 1;
     public int gridX;
     public float verticalOffset;
     //public int level { get; set; }
@@ -151,7 +151,7 @@ public class SpawnController : ISpawnController
         coloredTubes = new List<TubeController>();
         int spawnedCount = 0;
         float y = 0;
-        int spawnGrid = (usedColb + numberOfEmptyTube);
+        int spawnGrid = (usedColb + numberOfEmptyTube + numberOfAdTubes);
         if (spawnGrid > Colors.Count)
             spawnGrid = Colors.Count;
         activatedFlasks = 0;
@@ -179,6 +179,13 @@ public class SpawnController : ISpawnController
 
 
         SetCenterPosition();
+
+        var spawnedFlasks = Flasks.Where(x => x.GameObject.activeInHierarchy).ToList();
+        foreach (var flask in spawnedFlasks)
+        {
+            GM.AddTube(flask.GameObject);
+        }
+        GM.tubeControllers.Last().SetIsOpenedByAd(true);
     }
 
     public override void SetCenterPosition()
@@ -225,13 +232,12 @@ public class SpawnController : ISpawnController
         }
         if (PlayerPrefs.HasKey("FirstStart"))
         {
-            if (activatedFlasks <= usedColb)//(numberOfEmptyTube == 0)
+            if (activatedFlasks <= usedColb)
             {
                 coloredTubes.Add(flask?.GameObject.GetComponent<TubeController>());
             }
             else
             {
-                //Instantiate(emptyTube, positionToSpawn, rotationToSpawn);
                 numberOfEmptyTube--;
             }
         }

@@ -5,10 +5,18 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using LiquidVolumeFX;
 using DG.Tweening;
+using UnityEngine.UI;
 
 public class TubeController : MonoBehaviour
 {
+    private const int AdWatchCount = 4;
+
     [SerializeField] private float _returnSpeed;
+    [SerializeField] private Button adBtn;
+
+    public event Action<TubeController> OnAdBtnClick;
+    public bool IsReady => !adBtn.gameObject.activeSelf;
+
     public Vector3 Pos;
     public GameObject ColorsPivot;
     public GameObject PourSpriteObject;
@@ -49,20 +57,28 @@ public class TubeController : MonoBehaviour
     private GameObject _pourSprite;
     private float _timeCoef = 1.5f;
 
+    private int adWatched = 0;
 
+    public void SetIsOpenedByAd(bool value)
+    {
+        adBtn.gameObject.SetActive(value);
+        if (!value)
+            return;
+
+        adWatched = 0;
+    }
 
     private void Start()
     {
-
+        adWatched = 0;
         isAddingColor = false;
         isEmpty = false;
         isFull = false;
         IsAddColor = false;
         currColors = 0;
         Pos = transform.position;
-        GM = FindObjectOfType<IGameManager>();
-        GM.tubesInGame.Add(this.gameObject);
-        GM.tubeControllers.Add(this);
+        GM = FindObjectOfType<GameManager>();
+
         audioSource = GM.audioSource;
 
         colorsInTube = new Color[LiquidVolume.liquidLayers.Length];
@@ -91,6 +107,9 @@ public class TubeController : MonoBehaviour
 
     private void Update()
     {
+        if (!IsReady)
+            return;
+
         if (isAddingColor)
         {
 
@@ -276,6 +295,9 @@ public class TubeController : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (!IsReady)
+            return;
+
         if (!isFull && !isrotating && _canMouseDown)
         {
             GM.TubeClicked(this.gameObject);
@@ -317,10 +339,10 @@ public class TubeController : MonoBehaviour
             t += Time.deltaTime / moveSpeed;
             if (t > 1)
                 t = 1;
-            
+
             transform.position = Vector3.Lerp(start, endPosition, t);
             transform.eulerAngles = Vector3.Lerp(startRotation, endRotation, t);
-                // moveSpeed / 4 * Time.deltaTime);
+            // moveSpeed / 4 * Time.deltaTime);
 
             yield return null;
         }
@@ -339,7 +361,7 @@ public class TubeController : MonoBehaviour
             t += Time.deltaTime / returnTime;
             if (t > 1)
                 t = 1;
-            
+
             transform.position = Vector3.Lerp(start, Pos, t);
             transform.eulerAngles = Vector3.Lerp(startRotation, Vector3.zero, t);
             yield return null;
@@ -361,6 +383,20 @@ public class TubeController : MonoBehaviour
     private void OnBecameInvisible()
     {
         OnDestroy();
+    }
+
+    public void AdButtonClick()
+    {
+        OnAdBtnClick?.Invoke(this);
+    }
+
+    public void UpdateWatchCount()
+    {
+        adWatched++;
+        if (adWatched == AdWatchCount)
+        {
+            adBtn.gameObject.SetActive(false);
+        }
     }
 }
 

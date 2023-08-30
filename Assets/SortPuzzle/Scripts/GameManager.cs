@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ForTutorial;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 //[RequireComponent(typeof(BuySteps), typeof(ButtonsManager))]
 public class GameManager : IGameManager
@@ -26,7 +27,7 @@ public class GameManager : IGameManager
 
     public TutorialController TutorialController;
 
-    [Header("Links")] [SerializeField] protected GameObject BuyStepsPanel;
+    [Header("Links")][SerializeField] protected GameObject BuyStepsPanel;
     [SerializeField] protected Button BackStepButton;
     [SerializeField] protected Button AddTubeButton;
 
@@ -52,7 +53,7 @@ public class GameManager : IGameManager
     [Header("FromShop")] public Sprite[] tubes;
     public Sprite[] tubesMasks;
 
-    [field: SerializeField] public Sprite[] Themes{get;private set;}
+    [field: SerializeField] public Sprite[] Themes { get; private set; }
 
     [SerializeField] protected Image background;
 
@@ -62,6 +63,8 @@ public class GameManager : IGameManager
     // Create instance of ReviewManager
     protected ReviewManager _reviewManager;
     protected PlayReviewInfo _playReviewInfo;
+
+    private TubeController adTube;
 
     public override void SetLvl(int numberOffLvl)
     {
@@ -408,13 +411,13 @@ public class GameManager : IGameManager
                         SavedTubes[SavedTubes.Count - 1].tubes[i].colors[a];
                     tubeControllers[i].LiquidVolume.liquidLayers[a].amount =
                         SavedTubes[SavedTubes.Count - 1].tubes[i].capacities[a];
-                    
-                    
+
+
                     tubeControllers[i].colorsInTube[a] = SavedTubes[SavedTubes.Count - 1].tubes[i].colors[a];
                 }
 
                 tubeControllers[i].LiquidVolume.foamThickness = 0;
-                for (int j = tubeControllers[i].LiquidVolume.liquidLayers.Length - 1; j >= 0 ; j--)
+                for (int j = tubeControllers[i].LiquidVolume.liquidLayers.Length - 1; j >= 0; j--)
                 {
                     if (SavedTubes[SavedTubes.Count - 1].tubes[i].capacities[j] > 0.001f)
                     {
@@ -466,8 +469,8 @@ public class GameManager : IGameManager
 
         //if (!isGameOver)
         //{
-            confetti.transform.position = pos;
-            confetti.Play();
+        confetti.transform.position = pos;
+        confetti.Play();
         //}
 
         if (PlayerPrefs.GetInt("Vibrate") == 1 && !isGameOver)
@@ -495,7 +498,7 @@ public class GameManager : IGameManager
             confetti.gameObject.SetActive(false);
 
             isGameOver = true;
-            
+
             int currGameLevel = PlayerPrefs.GetInt("CurrentGameLevel") + 1;
 
             if (currGameLevel >= levelHandler.Levels.Length)
@@ -503,13 +506,29 @@ public class GameManager : IGameManager
 
             PlayerPrefs.SetInt("CurrentGameLevel", currGameLevel);
             HUD.WinGame();
-            
+
         }
     }
 
     public override void RemoveFull()
     {
         FullTubes--;
+    }
+
+    public void AddTube(GameObject gameObject)
+    {
+        if (gameObject.TryGetComponent<TubeController>(out var tube))
+        {
+            tube.OnAdBtnClick += ShowRewardedAd;
+            tubeControllers.Add(tube);
+            tubesInGame.Add(gameObject);
+        }
+    }
+
+    private void ShowRewardedAd(TubeController tube)
+    {
+        adTube = tube;
+        HUD.ads.OnGetAdTube(4);
     }
 
     private IEnumerator ReviewInfo()
@@ -534,6 +553,11 @@ public class GameManager : IGameManager
             // Log error. For example, using requestFlowOperation.Error.ToString().
             yield break;
         }
+    }
+
+    public void UpdateAdTubeWatchCount()
+    {
+        adTube?.UpdateWatchCount();
     }
 }
 

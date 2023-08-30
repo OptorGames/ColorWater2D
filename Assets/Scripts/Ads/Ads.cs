@@ -54,7 +54,7 @@ public class Ads : MonoBehaviour
 
     public void OnLevelComplete(int level)
     {
-        if (PlayerPrefs.GetInt("NoAds") != 1 && 
+        if (PlayerPrefs.GetInt("NoAds") != 1 &&
             (level == 6 || level == 8 ||
             (level >= 11 && (DateTime.Now - _lastInterstitialTime).TotalSeconds > _interstitialPause)))
         {
@@ -113,6 +113,17 @@ public class Ads : MonoBehaviour
         }
     }
 
+    public void OnGetAdTube(int visualNumber)
+    {
+        int id = 4;
+
+        if ((DateTime.Now - _lastAdditionalTubeTime).TotalSeconds > 1)//_rewardPause)
+        {
+            _lastAdditionalTubeTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+    }
+
     //public void ShowBanner()
     //{
     //    if (PlayerPrefs.GetInt("NoAds") != 1)
@@ -143,7 +154,7 @@ public class Ads : MonoBehaviour
         {
             Debug.LogError("Interstitial Ad are not ready. Please try again later.");
             manager.LoadAd(AdType.Interstitial);
-        }   
+        }
     }
 
     public void ShowRewarded(int id, int visualNumber)
@@ -153,6 +164,7 @@ public class Ads : MonoBehaviour
         if (manager.IsReadyAd(AdType.Rewarded))
         {
             manager.ShowAd(AdType.Rewarded);
+            manager.OnRewardedAdCompleted += RewardedSuccessful;
         }
         else
         {
@@ -193,12 +205,13 @@ public class Ads : MonoBehaviour
 
     private void RewardedSuccessful()
     {
-        if(rew_id == 0)
+        manager.OnRewardedAdCompleted -= RewardedSuccessful;
+        if (rew_id == 0)
         {
             //GM.AddTube();
             GM.spawnController.AddAdditionalTube();
         }
-        else if(rew_id == 1)
+        else if (rew_id == 1)
         {
             int steps = PlayerPrefs.GetInt("Steps") + 5;
 
@@ -210,10 +223,14 @@ public class Ads : MonoBehaviour
             PlayerPrefs.SetInt("Tube", rev_VisualNumber);
             GM.SetSelectedTubes();
         }
-        else if(rew_id == 3)
+        else if (rew_id == 3)
         {
             PlayerPrefs.SetInt("Theme", rev_VisualNumber);
             GM.SetSelectedBackground();
+        }
+        else if (rew_id == 4)
+        {
+            GM.UpdateAdTubeWatchCount();
         }
         else
         {
