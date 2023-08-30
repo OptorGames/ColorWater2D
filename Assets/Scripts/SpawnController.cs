@@ -22,13 +22,10 @@ public class SpawnController : ISpawnController
     public override int ActivatedFlasks
     {
         get => activatedFlasks;
-        set => activatedFlasks = value; 
+        set => activatedFlasks = value;
     }
-    protected string[] colors =
-    {
-        "#98FB98", "#FFFFFF", "#FF0000", "#8B0000", "#FF1493", "#8B4513", "#FA8072", "#FFFF00", "#BDB76B", "#DDA0DD",
-        "#8B008B", "#808080", "#00FF00", "#008000", "#00FFFF", "#0000FF", "#000080", "#000000"
-    };
+
+    [field: SerializeField] public List<Color> Colors { get; private set; }
 
     public int numberOfEmptyTube = 2;
     private int defaultNumberOfEmptyTube = 2;
@@ -78,22 +75,21 @@ public class SpawnController : ISpawnController
         spawnCount = level + numberOfEmptyTube;
         usedColb = spawnCount - numberOfEmptyTube;
 
-        if (usedColb > colors.Length)
-            usedColb = colors.Length;
+        if (usedColb > Colors.Count)
+            usedColb = Colors.Count;
 
 
         var random = new System.Random();
-        //Random.InitState((int)System.DateTime.Now.Subtract(System.DateTime.MinValue).TotalMilliseconds);
 
         while (usedColors.Count < usedColb)
         {
             //int colorID = Random.Range(0, colors.Length);
-            int colorID = random.Next(colors.Length);
+            int colorID = random.Next(Colors.Count);
             if (CheckOnExist(colorID))
                 usedColors.Add(new UsedColor { colorID = colorID, colorCount = 0 });
         }
 
-        
+
         SpawnGrid();
     }
 
@@ -163,7 +159,7 @@ public class SpawnController : ISpawnController
             Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
             PickAndSpawn(spawnPosition, Quaternion.identity);
             spawnedCount++;
-            
+
             if (spawnedCount == gridX)
             {
                 y -= verticalOffset;
@@ -263,7 +259,7 @@ public class SpawnController : ISpawnController
                 var freeColors = usedColors.FindAll(x => x.colorCount < 4);
                 colorIndex = Random.Range(0, freeColors.Count);
 
-                ColorUtility.TryParseHtmlString(colors[freeColors[colorIndex].colorID], out newColor);
+                newColor = Colors[freeColors[colorIndex].colorID];
                 coloredTubes[i].LiquidVolume.liquidLayers[j].color = newColor;
                 coloredTubes[i].LiquidVolume.liquidLayers[j].amount = coloredTubes[i].ColorLayerAmount;
                 usedColors.First(x => x.colorID == freeColors[colorIndex].colorID).colorCount++;
@@ -325,7 +321,7 @@ public class SpawnController : ISpawnController
 
     public void RefillTubes(List<TubeInfo> tubes)
     {
-        foreach(TubeInfo info in tubes)
+        foreach (TubeInfo info in tubes)
         {
             var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
             flask?.GameObject.SetActive(true);
@@ -340,7 +336,7 @@ public class SpawnController : ISpawnController
             {
                 flask.LiquidVolume.liquidLayers[i].color = info.colors[i];
                 flask.LiquidVolume.liquidLayers[i].amount = info.capacities[i];
-                
+
                 if (info.capacities[i] > 0.01)
                 {
                     flask.LiquidVolume.foamColor = info.colors[i];
@@ -367,7 +363,7 @@ public class SpawnController : ISpawnController
         }
     }
 
-    
+
 }
 
 public class UsedColor
