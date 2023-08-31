@@ -66,6 +66,8 @@ public class TubeController : MonoBehaviour
 
     private bool isInverted;
 
+    private Flask _flask;
+
     public void SetIsOpenedByAd(bool value)
     {
         adBtn.gameObject.SetActive(value);
@@ -333,14 +335,15 @@ public class TubeController : MonoBehaviour
     public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
     {
         float sideOffset = otherTube.transform.position.x > this.transform.position.x ? -1 : 1;
+        Vector3 offset = _flaskDistance;
         if (sideOffset < 0)
         {
             isInverted = true;
-            this.transform.rotation = Quaternion.Euler(0, 180, 0);
+            offset = new Vector3(_flaskDistance.x + 0.1f, _flaskDistance.y, _flaskDistance.z);
         }
         RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].EndAngle[currColors - 1];
         _canMouseDown = false;
-        var endPosition = otherTube.transform.position + _flaskDistance;
+        var endPosition = otherTube.transform.position + offset;
         var start = transform.position;
         var startRotation = transform.eulerAngles;
         var endRotation = new Vector3(0, 0, RotStart * sideOffset);
@@ -412,6 +415,11 @@ public class TubeController : MonoBehaviour
             adBtn.gameObject.SetActive(false);
             meshRenderer.material = normalMaterial;
         }
+    }
+
+    public void SetFlask(Flask flask)
+    {
+        _flask = flask;
     }
 }
 

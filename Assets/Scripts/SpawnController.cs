@@ -7,7 +7,7 @@ using UnityEngine;
 public class SpawnController : ISpawnController
 {
     private const int numberOfAdTubes = 1;
-    
+
     [SerializeField] private LevelSO levelSO;
 
     public int gridX;
@@ -118,6 +118,7 @@ public class SpawnController : ISpawnController
         var levelData = levelSO.GetLevelSettings(level_ID);
         FilledTubesAmount = levelData.FilledTubesAmount;
         EmptyTubesAmount = levelData.EmptyTubesAmount;
+        IsHiddenColors = levelData.WithQuestionMark;
     }
 
     private void EndlessMode()
@@ -213,6 +214,7 @@ public class SpawnController : ISpawnController
     {
         var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
         flask?.GameObject.SetActive(true);
+        flask?.SetIsHiddenColor(IsHiddenColors);
         activatedFlasks++;
         if (activatedFlasks >= 5)
         {
@@ -226,7 +228,9 @@ public class SpawnController : ISpawnController
         {
             if (activatedFlasks <= usedColb)
             {
-                coloredTubes.Add(flask?.GameObject.GetComponent<TubeController>());
+                var tube = flask?.GameObject.GetComponent<TubeController>();
+                tube.SetFlask(flask);
+                coloredTubes.Add(tube);
             }
             else
             {
@@ -265,6 +269,9 @@ public class SpawnController : ISpawnController
 
                 coloredTubes[i].LiquidVolume.foamColor = newColor;
                 coloredTubes[i].LiquidVolume.foamThickness = coloredTubes[i].FoamThickness;
+
+                // if(j < coloredTubes[i].LiquidVolume.liquidLayers.Length - 1)
+                //     coloredTubes[i].LiquidVolume.liquidLayers[j].color = new Color(newColor.r, newColor.g, newColor.b, 0);
             }
 
             coloredTubes[i].LiquidVolume.UpdateLayers(true);
@@ -376,6 +383,9 @@ public class Flask
 {
     public GameObject GameObject;
     public LiquidVolume LiquidVolume;
+    public bool IsHiddenColor { get; private set; }
+
+    public void SetIsHiddenColor(bool value) => IsHiddenColor = value;
 }
 
 public abstract class ISpawnController : MonoBehaviour
@@ -383,6 +393,7 @@ public abstract class ISpawnController : MonoBehaviour
     public int level { get; set; }
     public int FilledTubesAmount { get; protected set; }
     public int EmptyTubesAmount { get; protected set; }
+    public bool IsHiddenColors { get; protected set; }
     public abstract int GetDifficulty();
     public abstract void NotFirstLoad();
     public abstract void SpawnObject();
