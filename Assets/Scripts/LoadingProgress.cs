@@ -17,7 +17,7 @@ public class LoadingProgress : MonoBehaviour
 
     void Start()
     {
-        _progress.DOFillAmount(0.8f, 2f);
+        _progress.DOFillAmount(1f, 3f);
     }
 
     void OnFirebaseLoaded()
