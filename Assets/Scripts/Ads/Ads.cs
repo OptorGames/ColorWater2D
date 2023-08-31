@@ -230,7 +230,7 @@ public class Ads : MonoBehaviour
         }
         else if (rew_id == 1)
         {
-            int steps = PlayerPrefs.GetInt("Steps") + 5;
+            int steps = PlayerPrefs.GetInt("Steps", 0) + 5;
 
             PlayerPrefs.SetInt("Steps", steps);
             GM.UpdateTextSteps();

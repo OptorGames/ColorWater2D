@@ -238,8 +238,14 @@ public class GameManager : IGameManager
 
     public override void UpdateTextSteps()
     {
+        int steps = PlayerPrefs.GetInt("Steps");
         if (textCountSteps != null)
-            textCountSteps.text = PlayerPrefs.GetInt("Steps").ToString();
+            textCountSteps.text = steps.ToString();
+
+        if (steps == 0)
+            buttonsManager.SetAdsSpriteForStepBackButton();
+        else
+            buttonsManager.SetNormalSpriteForStepBackButton();
     }
 
     public override void StepsPanelButton()
@@ -380,6 +386,7 @@ public class GameManager : IGameManager
         if (count <= 0)
         {
             UpdateTextSteps();
+            buttonsManager.
             HUD.ads.OnAddSteps(1);
             return;
         }
