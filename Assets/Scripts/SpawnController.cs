@@ -38,7 +38,7 @@ public class SpawnController : ISpawnController
     public static ISpawnController spawnController = null;
     public static bool firstStart = true;
 
-    [SerializeField] protected Color tutorialColor = new Color(0.9176471f, 0.2235294f, 0.7463644f);
+    [SerializeField] protected Color tutorialColor;
 
     private void Start()
     {
