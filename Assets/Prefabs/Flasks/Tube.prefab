@@ -48,6 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1766397cda70040b77b1c9dc6fff34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normalMaterial: {fileID: 2100000, guid: 3fa06a5fbd16b412c8a012ad61ba024e, type: 2}
+  blurredMaterial: {fileID: 2100000, guid: 4611d8b5b27c3f948a79f0dbe36b084b, type: 2}
+  meshRenderer: {fileID: 7833537631927739937}
   _returnSpeed: 0.5
   adBtn: {fileID: 7927934644182187832}
   Pos: {x: 0, y: 0, z: 0}
@@ -201,8 +204,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -359.852, y: -640.5962}
-  m_SizeDelta: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -359.88196, y: -640.57623}
+  m_SizeDelta: {x: 0.4404, y: 0.4204}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5303391227711801008
 CanvasRenderer:
@@ -225,7 +228,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8817116, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

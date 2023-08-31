@@ -79,6 +79,23 @@ public class Ads : MonoBehaviour
         }
     }
 
+    public void OnAddSteps(int visualNumber)
+    {
+        int id = 1;
+
+        if ((DateTime.Now - _lastRewardTime).TotalSeconds > _rewardPause)
+        {
+            _lastRewardTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+        else
+        {
+            rew_id = id;
+            rev_VisualNumber = visualNumber;
+            RewardedSuccessful();
+        }
+    }
+
     public void OnChangeBackgroundTheme(int visualNumber)
     {
         int id = 3;

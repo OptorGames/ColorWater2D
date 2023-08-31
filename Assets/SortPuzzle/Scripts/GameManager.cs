@@ -378,8 +378,11 @@ public class GameManager : IGameManager
     {
         int count = PlayerPrefs.GetInt("Steps");
         if (count <= 0)
+        {
+            UpdateTextSteps();
+            HUD.ads.OnAddSteps(1);
             return;
-
+        }
         if (SavedTubes.Count >= 1)
         {
             selectedTube = null;

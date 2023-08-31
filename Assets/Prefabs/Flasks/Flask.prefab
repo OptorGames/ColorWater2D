@@ -688,6 +688,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1766397cda70040b77b1c9dc6fff34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normalMaterial: {fileID: 2100000, guid: 192138a2b1690cf41a3b441eb2523600, type: 2}
+  blurredMaterial: {fileID: 2100000, guid: 37b6b08671a82d44889998cf68623dca, type: 2}
+  meshRenderer: {fileID: 5593291060191545652}
   _returnSpeed: 1
   adBtn: {fileID: 8279106599876117824}
   Pos: {x: 0, y: 0, z: 0}
@@ -778,7 +781,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8886574129763826792}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.816}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -787,8 +790,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -362.05, y: -641.1528}
-  m_SizeDelta: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -358.94928, y: -641.38837}
+  m_SizeDelta: {x: 0.5405, y: 0.4539}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5254544245201067439
 CanvasRenderer:
@@ -811,7 +814,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8817116, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

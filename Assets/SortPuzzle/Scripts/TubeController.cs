@@ -9,8 +9,11 @@ using UnityEngine.UI;
 
 public class TubeController : MonoBehaviour
 {
-    private const int AdWatchCount = 4;
+    private const int AdWatchCount = 1;
 
+    [SerializeField] private Material normalMaterial;
+    [SerializeField] private Material blurredMaterial;
+    [SerializeField] private MeshRenderer meshRenderer;
     [SerializeField] private float _returnSpeed;
     [SerializeField] private Button adBtn;
 
@@ -65,6 +68,7 @@ public class TubeController : MonoBehaviour
         if (!value)
             return;
 
+        meshRenderer.material = blurredMaterial;
         adWatched = 0;
     }
 
@@ -396,6 +400,7 @@ public class TubeController : MonoBehaviour
         if (adWatched == AdWatchCount)
         {
             adBtn.gameObject.SetActive(false);
+            meshRenderer.material = normalMaterial;
         }
     }
 }

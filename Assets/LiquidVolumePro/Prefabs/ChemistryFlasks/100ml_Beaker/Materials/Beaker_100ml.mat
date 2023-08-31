@@ -151,7 +151,7 @@ Material:
     - _FoamTurbulence: 1
     - _FoamWeight: 10
     - _FresnelPower: 9.8
-    - _GlossMapScale: 0.79
+    - _GlossMapScale: 0.729
     - _Glossiness: 1
     - _GlossinessInt: 0.5
     - _GlossyReflections: 1
