@@ -1,12 +1,12 @@
 ﻿//
 //  Clever Ads Solutions Unity Plugin
 //
-//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//  Copyright © 2023 CleverAdsSolutions. All rights reserved.
 //
 
-using UnityEngine;
-using UnityEditor;
 using CAS.UEditor;
+using UnityEditor;
+using UnityEngine;
 
 namespace CAS.AdObject
 {

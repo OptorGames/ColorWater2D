@@ -15,7 +15,7 @@ public class FirebaseAnalyticsAdapter : IAnalyticsAdapter
 
     public void LevelStarted(int levelNumber)
     {
-        Debug.LogError("Frebase level_started");
+        Debug.LogError("Firebase level_started");
         Firebase.Analytics.FirebaseAnalytics.LogEvent(
             $"level_started_{levelNumber}",
             new Parameter("Level_number", levelNumber.ToString()));

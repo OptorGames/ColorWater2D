@@ -1,8 +1,20 @@
 ﻿//
 //  Clever Ads Solutions Unity Plugin
 //
-//  Copyright © 2022 CleverAdsSolutions. All rights reserved.
+//  Copyright © 2023 CleverAdsSolutions. All rights reserved.
 //
+
+#define DisableBitcode
+
+// EDM4U will do this by default
+//#define AddMainTargetToPodfile
+
+// No longer required
+//#define AddApplicationQueriesSchames
+
+#if UNITY_2019_3_OR_NEWER
+#define EmbedDynamicLibraries
+#endif
 
 #if UNITY_IOS || CASDeveloper
 using System;
@@ -19,7 +31,7 @@ using UnityEditor.iOS.Xcode.Extensions;
 
 namespace CAS.UEditor
 {
-    internal static class CASPostprocessBuild
+    public static class CASPostprocessBuild
     {
         private const string unityProjectName = "Unity-iPhone";
 
@@ -45,7 +57,9 @@ namespace CAS.UEditor
                 plist.SetAttributionReportEndpoint(editorSettings.attributionReportEndpoint);
                 plist.SetDefaultUserTrackingDescription(editorSettings.userTrackingUsageDescription);
                 plist.AddSKAdNetworkItemsForCAS();
+#if AddApplicationQueriesSchames
                 plist.AddApplicationQueriesSchamesForCAS();
+#endif
             });
 
             EditXCProject(buildPath, unityProjectName, (project) =>
@@ -60,10 +74,10 @@ namespace CAS.UEditor
             if (editorSettings.generateIOSDeepLinksForPromo && initSettings)
                 ApplyCrosspromoDynamicLinks(buildPath, initSettings, depManager);
 
-#if UNITY_2019_3_OR_NEWER
-            UpdatePodfileForUnity2019( buildPath );
+#if AddMainTargetToPodfile
+            UpdatePodfileForUnity2019(buildPath);
 #endif
-            Debug.Log(CASEditorUtils.logTag + "Postrocess Build done.");
+            CASEditorUtils.Log("Postrocess Build done: " + MobileAds.wrapperVersion);
         }
 
         [PostProcessBuild(int.MaxValue - 2)]
@@ -77,29 +91,26 @@ namespace CAS.UEditor
             EditXCProject(buildPath, unityProjectName, (project) =>
             {
                 var appTargetGuid = project.GetAppGUID();
-                if (editorSettings.bitcodeIOSDisabled)
-                {
-                    project.SetBitcodeEnabled(appTargetGuid, false);
-                    var frameworkGuid = project.GetFrameworkGUID();
-                    if (appTargetGuid != frameworkGuid)
-                        project.SetBitcodeEnabled(frameworkGuid, false);
-                }
+#if DisableBitcode
+                project.SetBitcodeEnabled(appTargetGuid, false);
+                var frameworkGuid = project.GetFrameworkGUID();
+                if (appTargetGuid != frameworkGuid)
+                    project.SetBitcodeEnabled(frameworkGuid, false);
+#endif
                 project.LocalizeUserTrackingDescription(buildPath, appTargetGuid, editorSettings.userTrackingUsageDescription);
 
-                if (IsNeedEmbedDynamicLibraries())
-                {
-                    var depManager = DependencyManager.Create(BuildTarget.iOS, Audience.Mixed, true);
-                    project.EmbedDynamicLibrariesIfNeeded(buildPath, appTargetGuid, depManager);
-                }
+#if EmbedDynamicLibraries
+                var depManager = DependencyManager.Create(BuildTarget.iOS, Audience.Mixed, true);
+                project.EmbedDynamicLibrariesIfNeeded(buildPath, appTargetGuid, depManager);
+#endif
             });
 
-            if (editorSettings.bitcodeIOSDisabled)
+#if DisableBitcode
+            EditXCProject(Path.Combine(buildPath, "Pods"), "Pods", (project) =>
             {
-                EditXCProject(Path.Combine(buildPath, "Pods"), "Pods", (project) =>
-                {
-                    project.SetBitcodeEnabled(project.ProjectGuid(), false);
-                });
-            }
+                project.SetBitcodeEnabled(project.ProjectGuid(), false);
+            });
+#endif
         }
 
         private static void UpdatePodfileForUnity2019(string buildPath)
@@ -209,7 +220,7 @@ namespace CAS.UEditor
                 if (!string.IsNullOrEmpty(networksLines[i]))
                 {
                     var dict = adNetworkItems.AddDict();
-                    dict.SetString("SKAdNetworkIdentifier", networksLines[i]);
+                    dict.SetString("SKAdNetworkIdentifier", networksLines[i] + ".skadnetwork");
                 }
             }
         }
@@ -250,7 +261,7 @@ namespace CAS.UEditor
             if (atsRoot == null || atsRoot.GetType() != typeof(PlistElementDict))
             {
                 // Add the missing App Transport Security settings for publishers if needed. 
-                Debug.Log(CASEditorUtils.logTag + "Adding App Transport Security settings...");
+                CASEditorUtils.Log("Adding App Transport Security settings");
                 atsRoot = plist.root.CreateDict("NSAppTransportSecurity");
                 atsRoot.AsDict().SetBoolean("NSAllowsArbitraryLoads", true);
                 return;
@@ -262,7 +273,7 @@ namespace CAS.UEditor
             if (atsRootDict.ContainsKey("NSAllowsArbitraryLoads")
                 && atsRootDict.ContainsKey("NSAllowsArbitraryLoadsInWebContent"))
             {
-                Debug.Log(CASEditorUtils.logTag + "Removing NSAllowsArbitraryLoadsInWebContent");
+                CASEditorUtils.Log("Removing NSAllowsArbitraryLoadsInWebContent");
                 atsRootDict.Remove("NSAllowsArbitraryLoadsInWebContent");
             }
         }
@@ -295,7 +306,7 @@ namespace CAS.UEditor
             var path = Path.Combine(root, projectName + ".xcodeproj") + "/project.pbxproj";
             if (!File.Exists(path))
             {
-                Debug.LogError(CASEditorUtils.logTag + "XCode project not found: " + path);
+                Debug.LogWarning(CASEditorUtils.logTag + "XCode project not found: " + path);
                 return;
             }
             var project = new PBXProject();
@@ -349,7 +360,7 @@ namespace CAS.UEditor
                 }
                 else
                 {
-                    Debug.Log(CASEditorUtils.logTag + "Not found Raw file: " + pathInAssets);
+                    CASEditorUtils.Log("Not found Raw file: " + pathInAssets);
                 }
             }
         }
@@ -376,7 +387,7 @@ namespace CAS.UEditor
                 string link = "applinks:psvios" + casSettings.GetManagerId(0) + ".page.link";
                 entitlements.AddAssociatedDomains(new[] { link });
                 entitlements.WriteToFile();
-                Debug.Log(CASEditorUtils.logTag + "Apply application Associated Domain: " + link);
+                CASEditorUtils.Log("Apply application Associated Domain: " + link);
             }
             catch (Exception e)
             {
@@ -561,15 +572,6 @@ namespace CAS.UEditor
             }
         }
 
-        private static bool IsNeedEmbedDynamicLibraries()
-        {
-#if UNITY_2019_3_OR_NEWER
-            return true;
-#else
-            return false;
-#endif
-        }
-
         private static void EmbedDynamicLibrariesIfNeeded(this PBXProject project, string buildPath, string targetGuid, DependencyManager deps)
         {
             for (int i = 0; i < deps.networks.Length; i++)
@@ -582,8 +584,8 @@ namespace CAS.UEditor
                     continue;
 
 #if UNITY_2019_3_OR_NEWER
-                var fileGuid = project.AddFile( dynamicLibraryPath, dynamicLibraryPath );
-                project.AddFileToEmbedFrameworks( targetGuid, fileGuid );
+                var fileGuid = project.AddFile(dynamicLibraryPath, dynamicLibraryPath);
+                project.AddFileToEmbedFrameworks(targetGuid, fileGuid);
 #endif
             }
         }
