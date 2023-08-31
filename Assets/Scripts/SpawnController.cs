@@ -7,6 +7,9 @@ using UnityEngine;
 public class SpawnController : ISpawnController
 {
     private const int numberOfAdTubes = 1;
+    
+    [SerializeField] private LevelSO levelSO;
+
     public int gridX;
     public float verticalOffset;
     //public int level { get; set; }
@@ -73,7 +76,7 @@ public class SpawnController : ISpawnController
         numberOfEmptyTube = defaultNumberOfEmptyTube;
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
-        spawnCount = level + numberOfEmptyTube;
+        spawnCount = FilledTubesAmount + EmptyTubesAmount;
         usedColb = spawnCount - numberOfEmptyTube;
 
         if (usedColb > Colors.Count)
@@ -112,22 +115,9 @@ public class SpawnController : ISpawnController
 
     private void ChooseTubesNumber(int level_ID)
     {
-        if (level_ID == 1)
-            level = 2;
-        else if (level_ID >= 2 & level_ID <= 3)
-            level = Random.Range(3, 5);
-        else if (level_ID >= 4 & level_ID <= 8)
-            level = Random.Range(4, 6);
-        else if (level_ID >= 9 & level_ID <= 12)
-            level = Random.Range(5, 7);
-        else if (level_ID >= 13 & level_ID <= 17)
-            level = Random.Range(5, 8);
-        else if (level_ID >= 18 & level_ID <= 25)
-            level = Random.Range(5, 9);
-        else if (level_ID >= 26 & level_ID <= 100)
-            level = Random.Range(6, 9);
-        else if (level_ID >= 101)
-            level = Random.Range(5, 10);
+        var levelData = levelSO.GetLevelSettings(level_ID);
+        FilledTubesAmount = levelData.FilledTubesAmount;
+        EmptyTubesAmount = levelData.EmptyTubesAmount;
     }
 
     private void EndlessMode()
@@ -391,6 +381,8 @@ public class Flask
 public abstract class ISpawnController : MonoBehaviour
 {
     public int level { get; set; }
+    public int FilledTubesAmount { get; protected set; }
+    public int EmptyTubesAmount { get; protected set; }
     public abstract int GetDifficulty();
     public abstract void NotFirstLoad();
     public abstract void SpawnObject();
