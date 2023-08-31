@@ -151,7 +151,8 @@ public class SpawnController : ISpawnController
         coloredTubes = new List<TubeController>();
         int spawnedCount = 0;
         float y = 0;
-        int spawnGrid = (usedColb + numberOfEmptyTube + numberOfAdTubes);
+        int adTubes = PlayerPrefs.HasKey("FirstStart") ? numberOfAdTubes : 0;
+        int spawnGrid = (usedColb + numberOfEmptyTube + adTubes);
         if (spawnGrid > Colors.Count)
             spawnGrid = Colors.Count;
         activatedFlasks = 0;
@@ -185,7 +186,8 @@ public class SpawnController : ISpawnController
         {
             GM.AddTube(flask.GameObject);
         }
-        GM.tubeControllers.Last().SetIsOpenedByAd(true);
+        if (PlayerPrefs.HasKey("FirstStart"))
+            GM.tubeControllers.Last().SetIsOpenedByAd(true);
     }
 
     public override void SetCenterPosition()
