@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class TubeController : MonoBehaviour
 {
+    private readonly Vector3 PourSpriteYOffset = new Vector3(0, 0.05f, 0);
+    private readonly Vector3 PourSpriteInvertYOffset = new Vector3(0.1f, -0.3f, 0);
     private const int AdWatchCount = 1;
 
     [SerializeField] private Material normalMaterial;
@@ -61,6 +63,8 @@ public class TubeController : MonoBehaviour
     private float _timeCoef = 1.5f;
 
     private int adWatched = 0;
+
+    private bool isInverted;
 
     public void SetIsOpenedByAd(bool value)
     {
@@ -130,14 +134,11 @@ public class TubeController : MonoBehaviour
 
         if (isrotating)
         {
-            //PourSpriteObject1.transform.rotation = Quaternion.identity;
 
             rotationLerp += Time.deltaTime * _timeCoef;
             if (rotationLerp >= 1)
             {
                 rotationLerp = 1;
-                // float tempAngle1 = Mathf.Lerp(transform.eulerAngles.z, RotEnd, rotationLerp);
-                // transform.eulerAngles = new Vector3(0, 0, tempAngle1);
 
 
                 if (currColors > 1 && colorsInTube[currColors - 1] == colorsInTube[currColors - 2])
@@ -176,7 +177,6 @@ public class TubeController : MonoBehaviour
                 }
 
                 float tempAngle = Mathf.Lerp(RotStart, RotEnd, rotationLerp);
-                // transform.localRotation = Quaternion.Euler(new Vector3(0, 0, tempAngle));
 
                 LiquidVolume.liquidLayers[currColors - 1].amount =
                 Mathf.Clamp01(LiquidVolume.liquidLayers[currColors - 1].amount - Time.deltaTime * _timeCoef * ColorLayerAmount);
@@ -321,6 +321,8 @@ public class TubeController : MonoBehaviour
         _pourSprite = Instantiate(PourSpriteObject);
         _pourSprite.GetComponentInChildren<SpriteRenderer>().color = colorsInTube[currColors - 1];
         _pourSprite.transform.position += transform.position;
+        var offset = isInverted ? PourSpriteInvertYOffset : PourSpriteYOffset;
+        _pourSprite.transform.position += offset;
         GM.HUD.Pour = _pourSprite;
         audioSource.Play();
         isrotating = true;
@@ -330,12 +332,18 @@ public class TubeController : MonoBehaviour
 
     public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
     {
+        float sideOffset = otherTube.transform.position.x > this.transform.position.x ? -1 : 1;
+        if (sideOffset < 0)
+        {
+            isInverted = true;
+            this.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
         RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].EndAngle[currColors - 1];
         _canMouseDown = false;
         var endPosition = otherTube.transform.position + _flaskDistance;
         var start = transform.position;
         var startRotation = transform.eulerAngles;
-        var endRotation = new Vector3(0, 0, RotStart);
+        var endRotation = new Vector3(0, 0, RotStart * sideOffset);
         float t = 0;
 
         while (t < 1)
@@ -346,12 +354,13 @@ public class TubeController : MonoBehaviour
 
             transform.position = Vector3.Lerp(start, endPosition, t);
             transform.eulerAngles = Vector3.Lerp(startRotation, endRotation, t);
-            // moveSpeed / 4 * Time.deltaTime);
 
             yield return null;
         }
 
+
         RotateTube();
+        isInverted = false;
     }
 
     private IEnumerator ReturnToStartingPosition(float returnTime)
@@ -359,7 +368,7 @@ public class TubeController : MonoBehaviour
         float t = 0;
         _canMouseDown = false;
         var start = transform.position;
-        var startRotation = transform.eulerAngles;
+        var startRotation = transform.rotation;
         while (t < 1)
         {
             t += Time.deltaTime / returnTime;
@@ -367,9 +376,10 @@ public class TubeController : MonoBehaviour
                 t = 1;
 
             transform.position = Vector3.Lerp(start, Pos, t);
-            transform.eulerAngles = Vector3.Lerp(startRotation, Vector3.zero, t);
+            transform.rotation = Quaternion.Lerp(startRotation, Quaternion.Euler(Vector3.zero), t);
             yield return null;
         }
+
         transform.position = Pos;
         transform.eulerAngles = Vector3.zero;
         _canMouseDown = true;
