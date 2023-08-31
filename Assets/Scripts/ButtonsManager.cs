@@ -34,7 +34,8 @@ public class ButtonsManager : MonoBehaviour
 
     [SerializeField] private Button _menu;
     [SerializeField] private Button _additionalTube;
-    [SerializeField] private GameObject stepBackButtonContent;
+    [SerializeField] private GameObject stepBackButtonNormalContent;
+    [SerializeField] private GameObject stepBackButtonAdsContent;
     [SerializeField] private Image stepBackImage;
     [SerializeField] private Sprite adsSpriteForStepBtn;
     [SerializeField] private Sprite normalSpriteForStepBtn;
@@ -196,13 +197,13 @@ public class ButtonsManager : MonoBehaviour
 
     public void SetAdsSpriteForStepBackButton()
     {
-        stepBackImage.sprite = adsSpriteForStepBtn;
-        stepBackButtonContent.gameObject.SetActive(false);
+        stepBackButtonNormalContent.gameObject.SetActive(false);
+        stepBackButtonAdsContent.gameObject.SetActive(true);
     }
 
     public void SetNormalSpriteForStepBackButton()
     {
-        stepBackImage.sprite = normalSpriteForStepBtn;
-        stepBackButtonContent.gameObject.SetActive(true);
+        stepBackButtonNormalContent.gameObject.SetActive(true);
+        stepBackButtonAdsContent.gameObject.SetActive(false);
     }
 }

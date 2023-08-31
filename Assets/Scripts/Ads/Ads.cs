@@ -230,6 +230,7 @@ public class Ads : MonoBehaviour
         }
         else if (rew_id == 1)
         {
+            PlayerPrefs.SetInt("Steps", 0);
             int steps = PlayerPrefs.GetInt("Steps", 0) + 5;
 
             PlayerPrefs.SetInt("Steps", steps);
