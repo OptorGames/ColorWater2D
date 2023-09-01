@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+  <androidPackages>
+    <androidPackage spec="com.cleveradssolutions:facebook:6.15.0.1" version="6.15.0.1"/>
+  </androidPackages>
+</dependencies>
