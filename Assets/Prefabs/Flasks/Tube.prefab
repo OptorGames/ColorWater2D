@@ -51,7 +51,7 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: 3fa06a5fbd16b412c8a012ad61ba024e, type: 2}
   blurredMaterial: {fileID: 2100000, guid: 4611d8b5b27c3f948a79f0dbe36b084b, type: 2}
   meshRenderer: {fileID: 7833537631927739937}
-  _returnSpeed: 0.5
+  _returnSpeed: 0.4
   adBtn: {fileID: 3549352999482184905}
   Pos: {x: 0, y: 0, z: 0}
   ColorsPivot: {fileID: 0}

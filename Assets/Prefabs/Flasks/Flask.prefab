@@ -691,7 +691,7 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: 192138a2b1690cf41a3b441eb2523600, type: 2}
   blurredMaterial: {fileID: 2100000, guid: 37b6b08671a82d44889998cf68623dca, type: 2}
   meshRenderer: {fileID: 5593291060191545652}
-  _returnSpeed: 1
+  _returnSpeed: 0.4
   adBtn: {fileID: 8279106599876117824}
   Pos: {x: 0, y: 0, z: 0}
   ColorsPivot: {fileID: 0}
