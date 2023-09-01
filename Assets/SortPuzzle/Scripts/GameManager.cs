@@ -95,7 +95,6 @@ public class GameManager : IGameManager
             if (!InternetConnectionDataChecker.IsNextLevelAvailable(curr_level))
             {
                 HUD.ShowBlockLevelPopup();
-                return;
             }
         }
         else
