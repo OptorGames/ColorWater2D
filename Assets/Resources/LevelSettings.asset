@@ -13,188 +13,231 @@ MonoBehaviour:
   m_Name: LevelSettings
   m_EditorClassIdentifier: 
   levelSettings:
-  - <Level>k__BackingField: 1
+  - <Level>k__BackingField: 0
     <FilledTubesAmount>k__BackingField: 2
-    <EmptyTubesAmount>k__BackingField: 1
+    <EmptyTubesAmount>k__BackingField: 0
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
+  - <Level>k__BackingField: 1
+    <FilledTubesAmount>k__BackingField: 2
+    <EmptyTubesAmount>k__BackingField: 2
+    <ColorsInTube>k__BackingField: 4
+    <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 2
     <FilledTubesAmount>k__BackingField: 3
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 3
     <FilledTubesAmount>k__BackingField: 3
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 4
     <FilledTubesAmount>k__BackingField: 3
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 5
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 6
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 7
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 8
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 9
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 10
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 11
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 12
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 13
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 14
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 15
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 16
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 17
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 18
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 19
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 20
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 21
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 22
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 23
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 6
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 24
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 25
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 26
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 27
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 28
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 29
     <FilledTubesAmount>k__BackingField: 9
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 30
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 31
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 32
     <FilledTubesAmount>k__BackingField: 9
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 33
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 34
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 35
     <FilledTubesAmount>k__BackingField: 7
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 36
     <FilledTubesAmount>k__BackingField: 9
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 1
+    <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 37
     <FilledTubesAmount>k__BackingField: 5
     <EmptyTubesAmount>k__BackingField: 2
     <ColorsInTube>k__BackingField: 6
     <WithQuestionMark>k__BackingField: 0
+    <PredefinedColors>k__BackingField: []
