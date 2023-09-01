@@ -49,13 +49,13 @@ public class TubesThemesController : MonoBehaviour
             Destroy(child.gameObject);
         }
         var theme = Instantiate(_themes[PlayerPrefs.GetInt("Tube", 0)], _themesParent.transform);
-        _spawnController.Flasks = theme.GetComponent<Flasks>().FlasksList;
+        _spawnController.Flasks = theme.GetComponent<Flasks>();
         _hudHandler.Flasks = theme;
     }
 
     private void UpdateGameManagerInfo()
     {
-        foreach (var flask in _spawnController.Flasks)
+        foreach (var flask in _spawnController.Flasks.FlasksList)
         {
             if (flask.GameObject.activeInHierarchy)
                 _gameManager.AddTube(flask.GameObject);

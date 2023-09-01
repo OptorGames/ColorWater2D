@@ -14,6 +14,7 @@ public class TubeController : MonoBehaviour
     private readonly Vector3 PourSpriteInvertYOffset = new Vector3(0.05f, -0.3f, 0);
     private const int AdWatchCount = 1;
 
+    [SerializeField] private List<GameObject> questionMarks;
     [SerializeField] private Material normalMaterial;
     [SerializeField] private Material blurredMaterial;
     [SerializeField] private MeshRenderer meshRenderer;

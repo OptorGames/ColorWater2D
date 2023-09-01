@@ -20,7 +20,7 @@ public class SpawnController : ISpawnController
     public GameObject rewardedTube;
     public GameManager GM;
     public Vector3 origin;
-    public List<Flask> Flasks = new List<Flask>();
+    public Flasks Flasks;
     public int activatedFlasks;
 
     public override int ActivatedFlasks
@@ -169,10 +169,10 @@ public class SpawnController : ISpawnController
             FillTutorialTubes();
         }
 
-
         SetCenterPosition();
 
-        var spawnedFlasks = Flasks.Where(x => x.GameObject.activeInHierarchy).ToList();
+        var spawnedFlasks = Flasks.FlasksList.Where(x => x.GameObject.activeInHierarchy).ToList();
+        Flasks.UpdateShelfVisibility();
         foreach (var flask in spawnedFlasks)
         {
             GM.AddTube(flask.GameObject);
@@ -212,7 +212,7 @@ public class SpawnController : ISpawnController
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)
     {
-        var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+        var flask = Flasks.FlasksList.Find(x => !x.GameObject.activeInHierarchy);
         flask?.GameObject.SetActive(true);
         flask?.SetIsHiddenColor(IsHiddenColors);
         activatedFlasks++;
@@ -326,7 +326,7 @@ public class SpawnController : ISpawnController
     {
         foreach (TubeInfo info in tubes)
         {
-            var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+            var flask = Flasks.FlasksList.Find(x => !x.GameObject.activeInHierarchy);
             flask?.GameObject.SetActive(true);
 
             var controller = flask.GameObject.GetComponent<TubeController>();
@@ -352,7 +352,7 @@ public class SpawnController : ISpawnController
 
     public override void AddAdditionalTube()
     {
-        var flask = Flasks.Find(x => !x.GameObject.activeInHierarchy);
+        var flask = Flasks.FlasksList.Find(x => !x.GameObject.activeInHierarchy);
         var controller = flask.GameObject.GetComponent<TubeController>();
         controller.isEmpty = true;
         flask?.GameObject.SetActive(true);
@@ -360,7 +360,7 @@ public class SpawnController : ISpawnController
 
         flask.LiquidVolume.UpdateLayers(true);
 
-        if (!Flasks.Exists(x => !x.GameObject.activeInHierarchy))
+        if (!Flasks.FlasksList.Exists(x => !x.GameObject.activeInHierarchy))
         {
             GM.buttonsManager.DisableAdditionalTubeButton();
         }

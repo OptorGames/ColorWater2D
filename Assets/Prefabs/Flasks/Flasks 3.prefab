@@ -48,18 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _flasks:
-  - GameObject: {fileID: 3647283075398598543}
-    LiquidVolume: {fileID: 3647283076628780658}
-  - GameObject: {fileID: 4613455102448775832}
-    LiquidVolume: {fileID: 4613455100977994597}
-  - GameObject: {fileID: 8900192508594290594}
-    LiquidVolume: {fileID: 8900192507648218719}
-  - GameObject: {fileID: 6642531201983748242}
-    LiquidVolume: {fileID: 6642531202628415855}
-  - GameObject: {fileID: 8025569522567038513}
-    LiquidVolume: {fileID: 8025569524053094348}
-  - GameObject: {fileID: 2397973558159625051}
-    LiquidVolume: {fileID: 2397973559643185830}
   - GameObject: {fileID: 8681043274069836374}
     LiquidVolume: {fileID: 8681043275015515051}
   - GameObject: {fileID: 7974714218903603084}
@@ -72,6 +60,19 @@ MonoBehaviour:
     LiquidVolume: {fileID: 486336338797833178}
   - GameObject: {fileID: 2539849125536785760}
     LiquidVolume: {fileID: 2539849126751308957}
+  - GameObject: {fileID: 3647283075398598543}
+    LiquidVolume: {fileID: 3647283076628780658}
+  - GameObject: {fileID: 4613455102448775832}
+    LiquidVolume: {fileID: 4613455100977994597}
+  - GameObject: {fileID: 8900192508594290594}
+    LiquidVolume: {fileID: 8900192507648218719}
+  - GameObject: {fileID: 6642531201983748242}
+    LiquidVolume: {fileID: 6642531202628415855}
+  - GameObject: {fileID: 8025569522567038513}
+    LiquidVolume: {fileID: 8025569524053094348}
+  - GameObject: {fileID: 2397973558159625051}
+    LiquidVolume: {fileID: 2397973559643185830}
+  shelf: {fileID: 3393134465253736144}
 --- !u!1 &3355960205005506419
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,6 +333,11 @@ PrefabInstance:
       value: Flask (2)
       objectReference: {fileID: 0}
     - target: {fileID: 5593291060883314851, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8117681543965265533, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
         type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -700,6 +706,12 @@ PrefabInstance:
 --- !u!4 &2620256593000080490 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 23c0e88e1d0d7a740becf249bd2211c4,
+    type: 3}
+  m_PrefabInstance: {fileID: 2582739621261099905}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3393134465253736144 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 23c0e88e1d0d7a740becf249bd2211c4,
     type: 3}
   m_PrefabInstance: {fileID: 2582739621261099905}
   m_PrefabAsset: {fileID: 0}
@@ -1336,6 +1348,16 @@ PrefabInstance:
       value: Flask
       objectReference: {fileID: 0}
     - target: {fileID: 5593291060883314851, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769588345872548594, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -358.97412
+      objectReference: {fileID: 0}
+    - target: {fileID: 8117681543965265533, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
         type: 3}
       propertyPath: m_IsActive
       value: 0

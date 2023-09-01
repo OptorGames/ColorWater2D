@@ -85,18 +85,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _flasks:
-  - GameObject: {fileID: 6673521055964205501}
-    LiquidVolume: {fileID: 1553962744528085862}
-  - GameObject: {fileID: 7150497438809557547}
-    LiquidVolume: {fileID: 3041758657211152624}
-  - GameObject: {fileID: 8660630750738674473}
-    LiquidVolume: {fileID: 3548107670894789106}
-  - GameObject: {fileID: 2409481212794108161}
-    LiquidVolume: {fileID: 7529427646465067994}
-  - GameObject: {fileID: 8321929295144943761}
-    LiquidVolume: {fileID: 4211070654056215114}
-  - GameObject: {fileID: 8437898734634019744}
-    LiquidVolume: {fileID: 4329266396284033403}
   - GameObject: {fileID: 4206389813817091015}
     LiquidVolume: {fileID: 8317530410921496860}
   - GameObject: {fileID: 7001658544946130128}
@@ -109,6 +97,19 @@ MonoBehaviour:
     LiquidVolume: {fileID: 4836244489570289635}
   - GameObject: {fileID: 4253036181726038530}
     LiquidVolume: {fileID: 8216823255205787865}
+  - GameObject: {fileID: 6673521055964205501}
+    LiquidVolume: {fileID: 1553962744528085862}
+  - GameObject: {fileID: 7150497438809557547}
+    LiquidVolume: {fileID: 3041758657211152624}
+  - GameObject: {fileID: 8660630750738674473}
+    LiquidVolume: {fileID: 3548107670894789106}
+  - GameObject: {fileID: 2409481212794108161}
+    LiquidVolume: {fileID: 7529427646465067994}
+  - GameObject: {fileID: 8321929295144943761}
+    LiquidVolume: {fileID: 4211070654056215114}
+  - GameObject: {fileID: 8437898734634019744}
+    LiquidVolume: {fileID: 4329266396284033403}
+  shelf: {fileID: 2252012681275366206}
 --- !u!1 &3355960205005506419
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,6 +480,12 @@ PrefabInstance:
 --- !u!4 &1444267031337075076 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 23c0e88e1d0d7a740becf249bd2211c4,
+    type: 3}
+  m_PrefabInstance: {fileID: 1405589603038717551}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2252012681275366206 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 23c0e88e1d0d7a740becf249bd2211c4,
     type: 3}
   m_PrefabInstance: {fileID: 1405589603038717551}
   m_PrefabAsset: {fileID: 0}
