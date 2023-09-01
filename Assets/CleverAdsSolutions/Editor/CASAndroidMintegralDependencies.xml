@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+  <androidPackages>
+    <repositories>
+      <repository>https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea</repository>
+    </repositories>
+    <androidPackage spec="com.cleveradssolutions:mintegral:16.4.91.0" version="16.4.91.0"/>
+  </androidPackages>
+</dependencies>

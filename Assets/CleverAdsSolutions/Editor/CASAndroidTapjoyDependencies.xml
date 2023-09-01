@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dependencies>
+  <androidPackages>
+    <repositories>
+      <repository>https://sdk.tapjoy.com/</repository>
+    </repositories>
+    <androidPackage spec="com.cleveradssolutions:tapjoy:13.1.2.1" version="13.1.2.1"/>
+  </androidPackages>
+</dependencies>
