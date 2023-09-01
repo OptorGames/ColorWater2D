@@ -226,10 +226,10 @@ public class SpawnController : ISpawnController
         }
         if (PlayerPrefs.HasKey("FirstStart"))
         {
+            var tube = flask?.GameObject.GetComponent<TubeController>();
+            tube.SetFlask(flask);
             if (activatedFlasks <= usedColb)
             {
-                var tube = flask?.GameObject.GetComponent<TubeController>();
-                tube.SetFlask(flask);
                 coloredTubes.Add(tube);
             }
             else
