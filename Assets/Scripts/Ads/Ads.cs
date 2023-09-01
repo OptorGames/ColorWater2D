@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 public class Ads : MonoBehaviour
 {
+    [SerializeField] private HudHandler hud;
     public ConsentStatus userConsent;
     public CCPAStatus userCCPAStatus;
     public IMediationManager manager;
@@ -203,6 +204,7 @@ public class Ads : MonoBehaviour
         else
         {
             Debug.LogError("Rewarded Video Ad are not ready. Please try again later.");
+            hud.ShowNoInternetPopup();
             manager.LoadAd(AdType.Rewarded);
         }
     }
