@@ -1,6 +1,7 @@
 ﻿using DevToDev.Analytics;
 //using Firebase.Analytics;
 using ForTutorial;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,6 +18,8 @@ public class HudHandler : MonoBehaviour
 
     private int old_value;
 
+    [SerializeField] private GameObject noInternetPopup;
+    [SerializeField] private GameObject blockLevelPopup;
     [Header("Links")] [SerializeField] private GameObject MainInterface;
     [SerializeField] private TutorialController _tutorialController;
     [SerializeField] private GameObject _stand;
@@ -111,8 +114,7 @@ public class HudHandler : MonoBehaviour
         int new_count = PlayerPrefs.GetInt("RestartCount") + 1;
         PlayerPrefs.SetInt("RestartCount", new_count);
         PlayerPrefs.SetInt("Steps", 5);
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        ads.OnLevelRestart(5);
     }
 
     public void RestartWithoutAds() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -122,5 +124,15 @@ public class HudHandler : MonoBehaviour
         IsGamePaused = true;
         LoseMenu.SetActive(true);
         MainInterface.SetActive(false);
+    }
+
+    public void ShowNoInternetPopup()
+    {
+        noInternetPopup.SetActive(true);
+    }
+
+    public void ShowBlockLevelPopup()
+    {
+        blockLevelPopup.SetActive(true);
     }
 }

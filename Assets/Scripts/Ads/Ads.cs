@@ -141,6 +141,23 @@ public class Ads : MonoBehaviour
         }
     }
 
+    public void OnLevelRestart(int visualNumber)
+    {
+        int id = 5;
+
+        if ((DateTime.Now - _lastAdditionalTubeTime).TotalSeconds > _rewardPause)
+        {
+            _lastAdditionalTubeTime = DateTime.Now;
+            ShowRewarded(id, visualNumber);
+        }
+        else
+        {
+            rew_id = id;
+            rev_VisualNumber = visualNumber;
+            RewardedSuccessful();
+        }
+    }
+
     //public void ShowBanner()
     //{
     //    if (PlayerPrefs.GetInt("NoAds") != 1)
@@ -250,6 +267,10 @@ public class Ads : MonoBehaviour
         else if (rew_id == 4)
         {
             GM.UpdateAdTubeWatchCount();
+        }
+        else if (rew_id == 5)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
         else
         {
