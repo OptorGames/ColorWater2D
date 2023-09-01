@@ -27,6 +27,7 @@ public class GameManager : IGameManager
 
     public TutorialController TutorialController;
 
+    [SerializeField] private InternetConnectionDataChecker internetConnectionDataChecker;
     [Header("Links")][SerializeField] protected GameObject BuyStepsPanel;
     [SerializeField] protected Button BackStepButton;
     [SerializeField] protected Button AddTubeButton;
@@ -90,12 +91,20 @@ public class GameManager : IGameManager
             LoadDifficultyLevel();
             Debug.Log("LevelStarted");
             Analytics.AnalyticsAdapter.LevelStarted(curr_level);
+
+            if (!InternetConnectionDataChecker.IsNextLevelAvailable(curr_level))
+            {
+                HUD.ShowBlockLevelPopup();
+                return;
+            }
         }
         else
         {
             TutorialController.enabled = true;
             buttonsManager.DisableAdditionalTubeButton();
         }
+
+
 
         SetSelectedBackground();
         UpdateTextSteps();
@@ -537,6 +546,11 @@ public class GameManager : IGameManager
 
     private void ShowRewardedAd(TubeController tube)
     {
+        if (!InternetConnectionDataChecker.IsOnline())
+        {
+            HUD.ShowNoInternetPopup();
+            return;
+        }
         adTube = tube;
         HUD.ads.OnGetAdTube(4);
     }

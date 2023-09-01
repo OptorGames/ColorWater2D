@@ -8,6 +8,7 @@ using static GameEvents;
 
 public class LoadingProgress : MonoBehaviour
 {
+    [SerializeField] private InternetConnectionDataChecker internetConnectionDataChecker;
     [SerializeField] private Image _progress;
 
     private void Awake()
@@ -22,6 +23,7 @@ public class LoadingProgress : MonoBehaviour
 
     void OnFirebaseLoaded()
     {
+        internetConnectionDataChecker.SetLevelOnStart(PlayerPrefs.GetInt("CurrentLevel_OFF", 0));
         SceneManager.LoadScene("Gameplay");
     }
 }
