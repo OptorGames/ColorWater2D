@@ -23,7 +23,7 @@ public class Ads : MonoBehaviour
     private int _interstitialPause = 120;
 
     private DateTime _lastRewardTime;
-    private int _rewardPause = 300;
+    private int _rewardPause = 1;
 
     private DateTime _lastAdditionalTubeTime;
 
@@ -180,6 +180,7 @@ public class Ads : MonoBehaviour
         rev_VisualNumber = visualNumber;
         if (manager.IsReadyAd(AdType.Rewarded))
         {
+            Debug.LogError("SHOW REWARDED");
             manager.ShowAd(AdType.Rewarded);
             manager.OnRewardedAdCompleted += RewardedSuccessful;
         }
