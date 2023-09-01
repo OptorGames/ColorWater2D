@@ -367,7 +367,12 @@ public class TubeController : MonoBehaviour
 
     public IEnumerator MoveToEndingPosition(float moveSpeed, GameObject otherTube)
     {
+        var parent = transform.parent;
         float sideOffset = otherTube.transform.position.x > this.transform.position.x ? -1 : 1;
+        if (sideOffset == -1 && transform.position.x <= 0 && otherTube.transform.position.x <= 0)
+            sideOffset = 1;
+        if (sideOffset == 1 && transform.position.x > 0 && otherTube.transform.position.x > 0)
+            sideOffset = -1;
         Vector3 offset = _flaskDistance;
         if (sideOffset < 0)
         {

@@ -197,7 +197,6 @@ public class Ads : MonoBehaviour
         rev_VisualNumber = visualNumber;
         if (manager.IsReadyAd(AdType.Rewarded))
         {
-            Debug.LogError("SHOW REWARDED");
             manager.ShowAd(AdType.Rewarded);
             manager.OnRewardedAdCompleted += RewardedSuccessful;
         }
