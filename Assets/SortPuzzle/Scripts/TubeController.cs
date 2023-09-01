@@ -6,11 +6,12 @@ using UnityEngine.Rendering;
 using LiquidVolumeFX;
 using DG.Tweening;
 using UnityEngine.UI;
+using System.Linq;
 
 public class TubeController : MonoBehaviour
 {
     private readonly Vector3 PourSpriteYOffset = new Vector3(0, 0.05f, 0);
-    private readonly Vector3 PourSpriteInvertYOffset = new Vector3(0.1f, -0.3f, 0);
+    private readonly Vector3 PourSpriteInvertYOffset = new Vector3(0.05f, -0.3f, 0);
     private const int AdWatchCount = 1;
 
     [SerializeField] private Material normalMaterial;
@@ -67,6 +68,8 @@ public class TubeController : MonoBehaviour
     private bool isInverted;
 
     private Flask _flask;
+    private List<Color> savedColors;
+    private Color hiddenColor = Color.grey;
 
     public void SetIsOpenedByAd(bool value)
     {
@@ -92,11 +95,14 @@ public class TubeController : MonoBehaviour
         audioSource = GM.audioSource;
 
         colorsInTube = new Color[LiquidVolume.liquidLayers.Length];
+        savedColors = new List<Color>();
+
         for (int i = 0; i < 4; i++)
         {
             if (LiquidVolume.liquidLayers[i].amount > 0f)
             {
                 colorsInTube[i] = LiquidVolume.liquidLayers[i].color;
+                savedColors.Add(LiquidVolume.liquidLayers[i].color);
                 ++currColors;
             }
         }
@@ -113,6 +119,9 @@ public class TubeController : MonoBehaviour
             GM.AddFull(transform.position, false);
             isFull = true;
         }
+
+        UpdateColors();
+
     }
 
     private void Update()
@@ -250,10 +259,32 @@ public class TubeController : MonoBehaviour
         else StartCoroutine(ReturnToStartingPosition(_returnSpeed));
     }
 
+    private void UpdateColors()
+    {
+        if (_flask == null || !_flask.IsHiddenColor)
+            return;
+        if (LiquidVolume.liquidLayers.All(x => x.amount == 0))
+            return;
+
+        var layers = LiquidVolume.liquidLayers.Where(x => x.amount > 0).ToList();
+        for (int i = 0; i < LiquidVolume.liquidLayers.Length - 1; i++)
+        {
+            LiquidVolume.liquidLayers[i].color = hiddenColor;
+        }
+        var lastFilled = LiquidVolume.liquidLayers.ToList().FindLast(x => x.amount > 0); //.color = savedColors.Last();
+        var index = LiquidVolume.liquidLayers.ToList().IndexOf(lastFilled);
+        LiquidVolume.liquidLayers[index].color = savedColors.Last();
+        LiquidVolume.UpdateLayers();
+    }
+
     public void RemoveColor()
     {
         currColors--;
+        if (currColors > 0)
+            savedColors[savedColors.Count - 1] = colorsInTube[currColors - 1];
         LiquidVolume.liquidLayers[currColors].amount = 0f;
+
+        UpdateColors();
 
         SetFoam();
     }
@@ -273,14 +304,15 @@ public class TubeController : MonoBehaviour
         LiquidVolume.UpdateLayers(true);
     }
 
-    public void AddColor(Color colr)
+    public void AddColor(Color color)
     {
         isAddingColor = true;
 
         ColorLerp = 0;
 
-        LiquidVolume.liquidLayers[currColors].color = colr;
-        colorsInTube[currColors] = colr;
+        LiquidVolume.liquidLayers[currColors].color = color;
+        colorsInTube[currColors] = color;
+        savedColors.Add(color);
         currColors++;
 
         SetFoam();
@@ -339,7 +371,7 @@ public class TubeController : MonoBehaviour
         if (sideOffset < 0)
         {
             isInverted = true;
-            offset = new Vector3(_flaskDistance.x + 0.1f, _flaskDistance.y, _flaskDistance.z);
+            offset = new Vector3(_flaskDistance.x, _flaskDistance.y, _flaskDistance.z);
         }
         RotStart = RotationDataObject.RotationData[PlayerPrefs.GetInt("Tube", 0)].EndAngle[currColors - 1];
         _canMouseDown = false;
