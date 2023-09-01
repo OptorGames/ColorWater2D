@@ -96,8 +96,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3355960205005506419}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.33, z: 0.86}
-  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
+  m_LocalPosition: {x: 0, y: -1.385, z: 0.86}
+  m_LocalScale: {x: 1.27, y: 1.27, z: 1.27}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3647283075398598542}
@@ -133,8 +133,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3355960206630884957}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -3.26, z: 1.65}
-  m_LocalScale: {x: 1.48, y: 1.48, z: 1.48}
+  m_LocalPosition: {x: 0, y: -2.63, z: 1.22}
+  m_LocalScale: {x: 1.55, y: 1.55, z: 1.55}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8681043274069836375}
@@ -455,6 +455,16 @@ PrefabInstance:
       value: Flask (1)
       objectReference: {fileID: 0}
     - target: {fileID: 5593291060883314851, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769588345872548594, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -358.9727
+      objectReference: {fileID: 0}
+    - target: {fileID: 8117681543965265533, guid: 4c77d2a59038f9e40a4acb4e7588cd54,
         type: 3}
       propertyPath: m_IsActive
       value: 0
