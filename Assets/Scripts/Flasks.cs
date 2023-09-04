@@ -10,11 +10,8 @@ public class Flasks : MonoBehaviour
     [SerializeField] private GameObject shelf;
 
     public void UpdateShelfVisibility()
-    {
-        if (_flasks.Where(x => x.GameObject.activeInHierarchy).Count() > MaxFlasksInRow)
-            shelf.gameObject.SetActive(true);
-        else
-            shelf.gameObject.SetActive(false);
+    {    
+        shelf.gameObject.SetActive(_flasks.TakeLast(MaxFlasksInRow).Any(x=>x.GameObject.activeInHierarchy));
     }
 
     public List<Flask> FlasksList => _flasks;

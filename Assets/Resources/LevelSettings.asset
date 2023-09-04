@@ -21,7 +21,7 @@ MonoBehaviour:
     <PredefinedColors>k__BackingField: []
   - <Level>k__BackingField: 1
     <FilledTubesAmount>k__BackingField: 2
-    <EmptyTubesAmount>k__BackingField: 2
+    <EmptyTubesAmount>k__BackingField: 1
     <ColorsInTube>k__BackingField: 4
     <WithQuestionMark>k__BackingField: 0
     <PredefinedColors>k__BackingField: []

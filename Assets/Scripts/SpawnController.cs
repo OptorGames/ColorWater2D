@@ -7,13 +7,16 @@ using UnityEngine;
 public class SpawnController : ISpawnController
 {
     private const int numberOfAdTubes = 1;
+    private const int MaxTubesInRow = 6;
 
     [SerializeField] private LevelSO levelSO;
+    [SerializeField] private Transform flasksParent;
+    [SerializeField] private float[] offsets;
+
 
     public int gridX;
     public float verticalOffset;
     //public int level { get; set; }
-    public int spawnCount;
     public float spacing = 1f;
     public GameObject tube;
     public GameObject emptyTube;
@@ -22,6 +25,10 @@ public class SpawnController : ISpawnController
     public Vector3 origin;
     public Flasks Flasks;
     public int activatedFlasks;
+
+    private int TotalTubes;
+
+    private bool _lastSpawnedFromFirstRow = false;
 
     public override int ActivatedFlasks
     {
@@ -33,7 +40,6 @@ public class SpawnController : ISpawnController
 
     public int numberOfEmptyTube = 2;
     private int defaultNumberOfEmptyTube = 2;
-    protected int usedColb;
     protected int difficulty = 0;
     protected List<UsedColor> usedColors = new List<UsedColor>();
     [SerializeField] protected List<TubeController> coloredTubes = new List<TubeController>();
@@ -76,16 +82,17 @@ public class SpawnController : ISpawnController
         numberOfEmptyTube = defaultNumberOfEmptyTube;
         difficulty = PlayerPrefs.GetInt("Difficulty_", 0);
         ChooseDifficulty();
-        spawnCount = FilledTubesAmount + EmptyTubesAmount;
-        usedColb = spawnCount - numberOfEmptyTube;
+        AdTubes = PlayerPrefs.HasKey("FirstStart") ? numberOfAdTubes : 0;
 
-        if (usedColb > Colors.Count)
-            usedColb = Colors.Count;
+        TotalTubes = FilledTubesAmount + EmptyTubesAmount + AdTubes;
+
+        if (FilledTubesAmount > Colors.Count)
+            FilledTubesAmount = Colors.Count;
 
 
         var random = new System.Random();
 
-        while (usedColors.Count < usedColb)
+        while (usedColors.Count < FilledTubesAmount)
         {
             //int colorID = Random.Range(0, colors.Length);
             int colorID = random.Next(Colors.Count);
@@ -142,11 +149,11 @@ public class SpawnController : ISpawnController
         coloredTubes = new List<TubeController>();
         int spawnedCount = 0;
         float y = 0;
-        int adTubes = PlayerPrefs.HasKey("FirstStart") ? numberOfAdTubes : 0;
-        int spawnGrid = (usedColb + numberOfEmptyTube + adTubes);
+        int spawnGrid = FilledTubesAmount + EmptyTubesAmount + AdTubes;
         if (spawnGrid > Colors.Count)
             spawnGrid = Colors.Count;
         activatedFlasks = 0;
+        SetCenter();
         for (int i = 0; i < spawnGrid; i++)
         {
             Vector3 spawnPosition = new Vector3(spawnedCount * spacing, y * spacing, 0) + origin;
@@ -181,6 +188,13 @@ public class SpawnController : ISpawnController
             GM.tubeControllers.Last().SetIsOpenedByAd(true);
     }
 
+    private void SetCenter()
+    {
+        int offsetIndex = (TotalTubes / 2) - 1;
+        float offset = offsets[offsetIndex];
+        flasksParent.position += new Vector3(offset, 0, 0);
+    }
+
     public override void SetCenterPosition()
     {
         GameObject[] tubes = GameObject.FindGameObjectsWithTag("Tube");
@@ -212,23 +226,24 @@ public class SpawnController : ISpawnController
 
     private void PickAndSpawn(Vector3 positionToSpawn, Quaternion rotationToSpawn)
     {
-        var flask = Flasks.FlasksList.Find(x => !x.GameObject.activeInHierarchy);
+        bool activateOnFirstRow = activatedFlasks < TotalTubes / 2;
+
+        int flaskIndex = 0;
+        if (activateOnFirstRow)
+            flaskIndex = Flasks.FlasksList.IndexOf(Flasks.FlasksList.Take(MaxTubesInRow).FirstOrDefault(x => !x.GameObject.activeInHierarchy));
+        else
+            flaskIndex = Flasks.FlasksList.IndexOf(Flasks.FlasksList.TakeLast(MaxTubesInRow).FirstOrDefault(x => !x.GameObject.activeInHierarchy));
+
+        var flask = Flasks.FlasksList[flaskIndex];
         flask?.GameObject.SetActive(true);
         flask?.SetIsHiddenColor(IsHiddenColors);
         activatedFlasks++;
-        if (activatedFlasks >= 5)
-        {
-            GameManager.tubeReturnSpeedModifier = activatedFlasks;
-        }
-        else
-        {
-            GameManager.tubeReturnSpeedModifier = 1;
-        }
+
         if (PlayerPrefs.HasKey("FirstStart"))
         {
             var tube = flask?.GameObject.GetComponent<TubeController>();
             tube.SetFlask(flask);
-            if (activatedFlasks <= usedColb)
+            if (activatedFlasks <= FilledTubesAmount)
             {
                 coloredTubes.Add(tube);
             }
@@ -243,6 +258,8 @@ public class SpawnController : ISpawnController
             coloredTubes.Add(flask?.GameObject.GetComponent<TubeController>());
             _tutorialController.TutorialArrows.Add(Instantiate(_tutorialController.ArrowPoint, flask.GameObject.transform.GetChild(1).position, Quaternion.identity));
         }
+
+        _lastSpawnedFromFirstRow = !_lastSpawnedFromFirstRow;
     }
 
     private void FillTubes()
@@ -324,10 +341,20 @@ public class SpawnController : ISpawnController
 
     public void RefillTubes(List<TubeInfo> tubes)
     {
+        int refilledTubes = 0;
         foreach (TubeInfo info in tubes)
         {
-            var flask = Flasks.FlasksList.Find(x => !x.GameObject.activeInHierarchy);
+            bool activateOnFirstRow = refilledTubes < TotalTubes / 2;
+
+            int flaskIndex = 0;
+            if (activateOnFirstRow)
+                flaskIndex = Flasks.FlasksList.IndexOf(Flasks.FlasksList.Take(MaxTubesInRow).FirstOrDefault(x => !x.GameObject.activeInHierarchy));
+            else
+                flaskIndex = Flasks.FlasksList.IndexOf(Flasks.FlasksList.TakeLast(MaxTubesInRow).FirstOrDefault(x => !x.GameObject.activeInHierarchy));
+
+            var flask = Flasks.FlasksList[flaskIndex];
             flask?.GameObject.SetActive(true);
+            flask?.SetIsHiddenColor(IsHiddenColors);
 
             var controller = flask.GameObject.GetComponent<TubeController>();
             controller.isEmpty = info.isEmpty;
@@ -346,6 +373,7 @@ public class SpawnController : ISpawnController
                 }
             }
 
+            refilledTubes++;
             flask.LiquidVolume.UpdateLayers(true);
         }
     }
@@ -391,6 +419,7 @@ public abstract class ISpawnController : MonoBehaviour
     public int FilledTubesAmount { get; protected set; }
     public int EmptyTubesAmount { get; protected set; }
     public bool IsHiddenColors { get; protected set; }
+    public int AdTubes { get; protected set; }
     public abstract int GetDifficulty();
     public abstract void NotFirstLoad();
     public abstract void SpawnObject();
