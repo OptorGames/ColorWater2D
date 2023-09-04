@@ -15,6 +15,9 @@ public class GameManager : IGameManager
     public static float tubeReturnSpeedModifier = 1;
     public static float defaultTubeReturnSpeed = 8;
 
+    public event Action OnSelectedBackgroundSet;
+    public event Action<bool> OnTubeInteraction;
+
     public static GameManager Instance;
 
     //public List<GameObject> tubesInGame;
@@ -290,7 +293,9 @@ public class GameManager : IGameManager
 
     public override void SetSelectedBackground()
     {
-        background.sprite = Themes[PlayerPrefs.GetInt("Theme")];
+        int theme = PlayerPrefs.GetInt("Theme");
+        background.sprite = Themes[theme];
+        OnSelectedBackgroundSet?.Invoke();
     }
 
     public override void SetSelectedTubes()
@@ -582,6 +587,8 @@ public class GameManager : IGameManager
     {
         adTube?.UpdateWatchCount();
     }
+
+    public override void UpdateProfessorEmotion(bool success) => OnTubeInteraction?.Invoke(success);
 }
 
 public class AllTubesInfo
@@ -632,4 +639,5 @@ public abstract class IGameManager : MonoBehaviour
     public abstract void RemoveEmpty();
     public abstract void AddFull(Vector3 pos, bool isPlay);
     public abstract void RemoveFull();
+    public abstract void UpdateProfessorEmotion(bool emotion);
 }

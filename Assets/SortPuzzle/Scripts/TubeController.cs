@@ -230,6 +230,8 @@ public class TubeController : MonoBehaviour
         {
             GM.SaveTubes();
 
+            GM.UpdateProfessorEmotion(true);
+
             float y = 0;
 
             if (PlayerPrefs.GetInt("Tube") > 0)
@@ -257,7 +259,11 @@ public class TubeController : MonoBehaviour
 
             StartCoroutine(MoveToEndingPosition(_returnSpeed, otherTube));
         }
-        else StartCoroutine(ReturnToStartingPosition(_returnSpeed));
+        else
+        {
+            GM.UpdateProfessorEmotion(false);
+            StartCoroutine(ReturnToStartingPosition(_returnSpeed));
+        }
     }
 
     private void UpdateColors()
@@ -277,7 +283,7 @@ public class TubeController : MonoBehaviour
         var index = LiquidVolume.liquidLayers.ToList().IndexOf(lastFilled);
         LiquidVolume.liquidLayers[index].color = savedColors.Last();
         var hiddenColorsAmount = LiquidVolume.liquidLayers.Where(x => x.amount > 0 && x.color == hiddenColor).Count();
-        for(int i = 0; i < questionMarks.Count; i++)
+        for (int i = 0; i < questionMarks.Count; i++)
         {
             questionMarks[i].SetActive(i < hiddenColorsAmount);
         }

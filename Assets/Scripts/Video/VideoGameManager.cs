@@ -492,4 +492,8 @@ public class VideoGameManager : IGameManager
             yield break;
         }
     }
+
+    public override void UpdateProfessorEmotion(bool emotion)
+    {
+    }
 }
