@@ -271,10 +271,16 @@ public class TubeController : MonoBehaviour
         for (int i = 0; i < LiquidVolume.liquidLayers.Length - 1; i++)
         {
             LiquidVolume.liquidLayers[i].color = hiddenColor;
+            questionMarks[i].SetActive(true);
         }
-        var lastFilled = LiquidVolume.liquidLayers.ToList().FindLast(x => x.amount > 0); //.color = savedColors.Last();
+        var lastFilled = LiquidVolume.liquidLayers.ToList().FindLast(x => x.amount > 0);
         var index = LiquidVolume.liquidLayers.ToList().IndexOf(lastFilled);
         LiquidVolume.liquidLayers[index].color = savedColors.Last();
+        var hiddenColorsAmount = LiquidVolume.liquidLayers.Where(x => x.amount > 0 && x.color == hiddenColor).Count();
+        for(int i = 0; i < questionMarks.Count; i++)
+        {
+            questionMarks[i].SetActive(i < hiddenColorsAmount);
+        }
         LiquidVolume.UpdateLayers();
     }
 
